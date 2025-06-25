@@ -56,7 +56,10 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "gcp-metadata"
+            ]
           },
           "configurations": {
             "production": {
@@ -77,7 +80,10 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "allowedCommonJsDependencies": [
+                "gcp-metadata"
+              ]
             }
           },
           "defaultConfiguration": "production"
