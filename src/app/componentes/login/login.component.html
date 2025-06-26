@@ -1,0 +1,33 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Controle Interno</h2>
+
+    <!-- Etapa 1: Login com Google -->
+    <div *ngIf="!isGoogleLoggedIn">
+      <p>Por favor, faça o login para continuar</p>
+      <button (click)="loginWithGoogle()" class="login-button">Entrar com Google</button>
+    </div>
+
+    <!-- Etapa 2: Inserir Matrícula -->
+    <div *ngIf="isGoogleLoggedIn">
+      <p>Login com Google realizado com sucesso. Agora, insira sua matrícula.</p>
+      <form [formGroup]="matriculaForm" (ngSubmit)="onContinue()">
+        <div class="input-group">
+          <label for="matricula">Matrícula</label>
+          <input id="matricula" type="text" formControlName="matricula" placeholder="Sua matrícula">
+          <div *ngIf="matriculaForm.get('matricula')?.touched && matriculaForm.get('matricula')?.invalid" class="error-message">
+            <small *ngIf="matriculaForm.get('matricula')?.errors?.['required']">Matrícula é obrigatória.</small>
+            <small *ngIf="matriculaForm.get('matricula')?.errors?.['pattern']">A matrícula deve conter apenas números.</small>
+          </div>
+        </div>
+        <button type="submit" [disabled]="matriculaForm.invalid">Continuar</button>
+      </form>
+    </div>
+
+    <!-- Mensagem de Erro Geral -->
+    <div *ngIf="errorMessage" class="error-message server-error">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>
+

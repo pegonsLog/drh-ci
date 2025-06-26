@@ -1,0 +1,28 @@
+<h2>Ponto Facultativo</h2>
+
+<div *ngIf="isLoading" class="loading-placeholder">
+  <p>Carregando dados do Notion...</p>
+</div>
+
+<div *ngIf="!isLoading && notionData.length > 0" class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Matrícula</th>
+        <th>P. Facultativo</th>
+        <th>Data Folga</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of notionData">
+        <td>{{ item.properties['Matricula']?.title?.[0]?.plain_text || 'N/A' }}</td>
+        <td [ngClass]="{'disponivel': !item.properties['Ponto Facultativo']?.multi_select?.[0]?.name}">{{ item.properties['Ponto Facultativo']?.multi_select?.[0]?.name | abbreviateYear }}</td>
+        <td [ngClass]="{'disponivel': !item.properties['Data da folga']?.date?.start}">{{ (item.properties['Data da folga']?.date?.start | date:'dd/MM/yy') || 'Disponível' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="!isLoading && notionData.length === 0">
+  <p>Você não tem Pontos Facultativos</p>
+</div>

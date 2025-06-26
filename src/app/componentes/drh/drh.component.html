@@ -1,0 +1,28 @@
+<h2>DRH</h2>
+
+<div *ngIf="isLoading" class="loading-placeholder">
+  <p>Carregando dados do Notion...</p>
+</div>
+
+<div *ngIf="!isLoading && notionData.length > 0" class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Mat</th>
+        <th>Aquisitivo</th>
+        <th>Data Folga</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of notionData">
+        <td>{{ item.properties['Matricula']?.title?.[0]?.plain_text || 'N/A' }}</td>
+        <td [ngClass]="{'disponivel': !item.properties['Aquisitivo']?.multi_select?.[0]?.name}">{{ item.properties['Aquisitivo']?.multi_select?.[0]?.name | abbreviateYear }}</td>
+        <td [ngClass]="{'disponivel': !item.properties['Data Folga']?.date?.start}">{{ (item.properties['Data Folga']?.date?.start | date:'dd/MM/yy') || 'Disponível' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="!isLoading && notionData.length === 0">
+  <p>Você não tem dados no DRH</p>
+</div>
