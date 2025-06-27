@@ -1,36 +1,33 @@
+// Mobile-first: Estilos base para telas pequenas
 :host {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f0f2f5;
-}
-
-.login-container {
-  text-align: center;
+  padding: 1rem; // Garante um respiro nas bordas da tela
+  box-sizing: border-box;
 }
 
 .login-card {
-  background: #fff;
-  padding: 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
 
   h2 {
     margin-top: 0;
-    color: #1a237e;
-  }
-
-  p {
-    color: #666;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.5rem;
   }
 }
 
 .input-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   text-align: left;
 
   label {
@@ -45,47 +42,64 @@
     padding: 0.75rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box; /* Garante que o padding não afete a largura total */
+    box-sizing: border-box;
     transition: border-color 0.2s;
 
     &:focus {
       outline: none;
-      border-color: #3f51b5;
+      border-color: #007bff;
     }
   }
 }
 
-button {
+.btn-login {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.8rem;
   border: none;
   border-radius: 4px;
-  background-color: #3f51b5;
+  background-color: #007bff;
   color: white;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s;
 
-  &:hover {
-    background-color: #303f9f;
+  &:hover:not(:disabled) {
+    background-color: #0056b3;
   }
 
   &:disabled {
-    background-color: #ccc;
+    background-color: #a0c7e4;
     cursor: not-allowed;
   }
 }
 
 .error-message {
-  color: #d32f2f;
+  color: #dc3545;
   font-size: 0.875rem;
-  margin-top: 0.5rem;
+  text-align: left;
+  margin-top: 0.25rem;
+  min-height: 1em; // Evita que o layout pule quando a mensagem aparece
+}
 
-  &.server-error {
-    margin-top: 1.5rem;
-    background-color: #ffebee;
-    padding: 0.75rem;
-    border-radius: 4px;
+.links-container {
+  margin-top: 1.5rem;
+  text-align: center;
+
+  .link-alterar-senha {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Media query para telas maiores
+@media (min-width: 768px) {
+  .login-card {
+    padding: 2.5rem; // Aumenta o padding em telas maiores
   }
 }

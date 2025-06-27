@@ -1,50 +1,55 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule, RouterLink } from '@angular/router';
+import { FuncionarioService } from '../../services/funcionario.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-      imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
-  matriculaForm: FormGroup;
-  errorMessage: string | null = null;
-  isGoogleLoggedIn = false;
+export class LoginComponent implements OnInit {
+  loginForm: FormGroup;
+  loginError: string | null = null;
+
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private funcionarioService: FuncionarioService
   ) {
-    this.matriculaForm = this.fb.group({
-      matricula: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]]
+        this.loginForm = this.fb.group({
+      matricula: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      senha: ['', Validators.required]
     });
   }
 
-  loginWithGoogle(): void {
-    this.errorMessage = null;
-    this.authService.loginWithGoogle().subscribe({
-      next: () => {
-        this.isGoogleLoggedIn = true;
-      },
-      error: (err) => {
-        console.error('Erro de login com Google:', err);
-        this.errorMessage = 'Falha ao autenticar com o Google. Tente novamente.';
-      }
-    });
+  ngOnInit(): void {
   }
 
-  onContinue(): void {
-    if (this.matriculaForm.invalid) {
+  onSubmit() {
+    if (this.loginForm.invalid) {
       return;
     }
-    const matricula = this.matriculaForm.value.matricula;
-    // Navega para o painel, passando a matrícula como parâmetro
-    this.router.navigate(['/painel', matricula]);
+
+    this.loginError = null;
+    const { matricula, senha } = this.loginForm.value;
+
+    this.funcionarioService.login(matricula, senha).subscribe({
+      next: (response) => {
+        if (response.success && response.matricula) {
+          this.router.navigate(['/painel', response.matricula]);
+        } else {
+          this.loginError = 'Matrícula ou senha inválida. Verifique os dados e tente novamente.';
+        }
+      },
+      error: (err) => {
+        console.error('Erro na autenticação:', err);
+        this.loginError = 'Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde.';
+      }
+    });
   }
 }

@@ -32,7 +32,7 @@ export class TreComponent implements OnChanges {
 
     this.notionService.queryDatabaseTre(this.matricula).subscribe({
       next: (response: any) => {
-        console.log('Dados TRE recebidos do Notion:', response);
+
         this.notionData = response.results.sort((a: any, b: any) => {
           const dateA = a.properties['Data do TRE']?.date?.start;
           const dateB = b.properties['Data do TRE']?.date?.start;
@@ -46,7 +46,7 @@ export class TreComponent implements OnChanges {
         this.isLoading = false;
       },
       error: (err: any) => {
-        console.error('Erro ao buscar dados do TRE:', err);
+
         this.isLoading = false;
       }
     });

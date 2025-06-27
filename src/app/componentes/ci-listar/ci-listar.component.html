@@ -1,0 +1,48 @@
+<div class="ci-list-container">
+  <div class="header">
+    <h2>Comunicações Internas</h2>
+    <div class="button-group">
+      <a class="btn-voltar" [routerLink]="['/painel', matricula]">Voltar ao Painel</a>
+      <a class="new-ci-button" routerLink="/ci-nova">Nova CI</a>
+    </div>
+  </div>
+
+  <div *ngIf="cis$ | async as cis; else loading">
+    <!-- Show table only if there is data -->
+    <div *ngIf="cis.length > 0; else noCis" class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>De</th>
+            <th>Para</th>
+            <th>Comunicação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ci of cis">
+            <td>{{ ci.data | date:'dd/MM/yy' }}</td>
+            <td>{{ ci.de }}</td>
+            <td>{{ ci.para }}</td>
+            <td>{{ ci.comunicacao | slice:0:50 }}...</td>
+            <td class="actions-cell">
+              <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
+              <i class="material-icons icon-delete" (click)="excluirCi(ci.id)" title="Excluir">delete</i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Template for when there is no data -->
+    <ng-template #noCis>
+      <p class="message">Nenhuma comunicação interna encontrada.</p>
+    </ng-template>
+  </div>
+
+  <!-- Template for loading state -->
+  <ng-template #loading>
+    <p class="message">Carregando comunicações...</p>
+  </ng-template>
+</div>

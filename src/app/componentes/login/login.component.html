@@ -1,33 +1,31 @@
-<div class="login-container">
-  <div class="login-card">
+<div class="login-card">
     <h2>Controle Interno</h2>
 
-    <!-- Etapa 1: Login com Google -->
-    <div *ngIf="!isGoogleLoggedIn">
-      <p>Por favor, faça o login para continuar</p>
-      <button (click)="loginWithGoogle()" class="login-button">Entrar com Google</button>
-    </div>
-
-    <!-- Etapa 2: Inserir Matrícula -->
-    <div *ngIf="isGoogleLoggedIn">
-      <p>Login com Google realizado com sucesso. Agora, insira sua matrícula.</p>
-      <form [formGroup]="matriculaForm" (ngSubmit)="onContinue()">
-        <div class="input-group">
-          <label for="matricula">Matrícula</label>
-          <input id="matricula" type="text" formControlName="matricula" placeholder="Sua matrícula">
-          <div *ngIf="matriculaForm.get('matricula')?.touched && matriculaForm.get('matricula')?.invalid" class="error-message">
-            <small *ngIf="matriculaForm.get('matricula')?.errors?.['required']">Matrícula é obrigatória.</small>
-            <small *ngIf="matriculaForm.get('matricula')?.errors?.['pattern']">A matrícula deve conter apenas números.</small>
-          </div>
+    <!-- Formulário direto de matrícula, sem login com Google -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="input-group">
+        <label for="matricula">Matrícula</label>
+        <input id="matricula" formControlName="matricula" maxlength="10" autocomplete="off" type="tel" inputmode="numeric" />
+        <div class="error-message" *ngIf="loginForm.get('matricula')?.invalid && (loginForm.get('matricula')?.dirty || loginForm.get('matricula')?.touched)">
+          <small *ngIf="loginForm.get('matricula')?.errors?.['required']">A matrícula é obrigatória.</small>
+          <small *ngIf="loginForm.get('matricula')?.errors?.['pattern']">A matrícula deve conter apenas números.</small>
         </div>
-        <button type="submit" [disabled]="matriculaForm.invalid">Continuar</button>
-      </form>
-    </div>
+      </div>
 
-    <!-- Mensagem de Erro Geral -->
-    <div *ngIf="errorMessage" class="error-message server-error">
-      {{ errorMessage }}
-    </div>
+      <div class="input-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" class="form-control" formControlName="senha" placeholder="Digite sua senha">
+      </div>
+
+      <div *ngIf="loginError" class="error-message">
+        {{ loginError }}
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="loginForm.invalid">Entrar</button>
+
+      <div class="links-container">
+        <a routerLink="/alterar-senha" class="link-alterar-senha">Alterar senha</a>
+      </div>
+    </form>
+
   </div>
-</div>
-

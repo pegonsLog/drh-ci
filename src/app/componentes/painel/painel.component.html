@@ -1,6 +1,17 @@
-<app-drh [matricula]="matricula"></app-drh>
-<app-pf [matricula]="matricula"></app-pf>
-<app-tre [matricula]="matricula"></app-tre>
+<div class="painel-container">
+  <div class="painel-header">
+    <h1>Painel de Consultas</h1>
+    <div>
+      <a routerLink="/ci-listar" class="btn-header btn-ci">Fazer CI</a>
+      <button (click)="logout()" class="btn-header btn-logout">Sair</button>
+    </div>
+  </div>
+  <section class="notion-data">
 
-<!-- As rotas filhas (DRH, TRE, PF) serão renderizadas aqui -->
-<router-outlet></router-outlet>
+    <div class="grid">
+      <app-drh [matricula]="matricula"></app-drh>
+      <app-pf [matricula]="matricula"></app-pf>
+      <app-tre [matricula]="matricula"></app-tre>
+    </div>
+  </section>
+</div>

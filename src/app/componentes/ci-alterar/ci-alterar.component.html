@@ -1,0 +1,21 @@
+<div class="ci-form-container">
+  <h2>Alterar Comunicação Interna</h2>
+  <form [formGroup]="ciForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="de">De:</label>
+      <input id="de" type="text" formControlName="de">
+    </div>
+
+    <div class="form-group">
+      <label for="para">Para:</label>
+      <input id="para" type="text" formControlName="para">
+    </div>
+
+    <div class="form-group">
+      <label for="comunicacao">Comunicação:</label>
+      <textarea id="comunicacao" formControlName="comunicacao" rows="10"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="ciForm.invalid || ciForm.pristine">Salvar Alterações</button>
+  </form>
+</div>

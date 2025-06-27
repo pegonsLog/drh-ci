@@ -32,10 +32,10 @@ export class PfComponent implements OnChanges {
 
     this.notionService.queryDatabasePf(this.matricula).subscribe({
       next: (response: any) => {
-        console.log('Dados PF recebidos do Notion:', response);
+
         this.notionData = response.results.sort((a: any, b: any) => {
-          const dateA = a.properties['Data da folga']?.date?.start;
-          const dateB = b.properties['Data da folga']?.date?.start;
+          const dateA = a.properties['Data folga']?.date?.start;
+          const dateB = b.properties['Data folga']?.date?.start;
 
           if (dateA && !dateB) return 1;
           if (!dateA && dateB) return -1;
@@ -46,7 +46,7 @@ export class PfComponent implements OnChanges {
         this.isLoading = false;
       },
       error: (err: any) => {
-        console.error('Erro ao buscar dados do PF:', err);
+
         this.isLoading = false;
       }
     });

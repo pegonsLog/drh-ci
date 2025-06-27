@@ -1,0 +1,86 @@
+.painel-container {
+  padding: 0.5rem; // Padding mínimo para mobile
+  background-color: #f4f7f6;
+  min-height: 100vh;
+}
+
+.painel-header {
+  display: flex;
+  flex-direction: column; // Mobile-first: stack title and buttons
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+
+  h1 {
+    color: #333;
+    margin: 0;
+    font-size: 1.8rem;
+  }
+
+  div { // This contains the buttons
+    display: flex;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .btn-header {
+    flex-grow: 1; // Make buttons share space equally
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .btn-ci {
+    background-color: #007bff;
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+
+  .btn-logout {
+    background-color: #dc3545;
+    &:hover {
+      background-color: #c82333;
+    }
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr; // Mobile-first: single column
+  gap: 1.5rem;
+}
+
+// Media Query for larger screens
+@media (min-width: 768px) {
+  .painel-container {
+    padding: 2rem;
+  }
+
+  .painel-header {
+    flex-direction: row; // Horizontal layout on larger screens
+    justify-content: space-between;
+    align-items: center;
+
+    div {
+      width: auto;
+    }
+
+    .btn-header {
+      flex-grow: 0; // Reset grow
+      padding: 0.8rem 1.5rem;
+    }
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); // 3 columns on larger screens
+    gap: 2rem;
+    align-items: start; // Alinha os cards pelo topo
+  }
+}

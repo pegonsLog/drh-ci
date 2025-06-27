@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="card">
+    <h2>Alterar Senha</h2>
+    <form [formGroup]="alterarSenhaForm" (ngSubmit)="onSubmit()">
+      
+      <div class="input-group">
+        <label for="matricula">Matrícula</label>
+        <input type="text" id="matricula" class="form-control" formControlName="matricula" placeholder="Digite sua matrícula">
+      </div>
+
+      <div class="input-group">
+        <label for="novaSenha">Nova Senha</label>
+        <input type="password" id="novaSenha" class="form-control" formControlName="novaSenha" placeholder="Mínimo 6 caracteres">
+      </div>
+
+      <div class="input-group">
+        <label for="confirmarSenha">Confirmar Nova Senha</label>
+        <input type="password" id="confirmarSenha" class="form-control" formControlName="confirmarSenha" placeholder="Repita a nova senha">
+      </div>
+
+      <div *ngIf="alterarSenhaForm.errors?.['senhasNaoCoincidem'] && alterarSenhaForm.get('confirmarSenha')?.touched" class="error-message">
+        As senhas não coincidem.
+      </div>
+
+      <div *ngIf="mensagem" [ngClass]="isError ? 'error-message' : 'success-message'">
+        {{ mensagem }}
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="alterarSenhaForm.invalid">Alterar Senha</button>
+
+      <div class="links-container">
+        <a routerLink="/login" class="link-voltar">Voltar para o Login</a>
+      </div>
+
+    </form>
+  </div>
+</div>

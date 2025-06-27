@@ -32,7 +32,7 @@ export class DrhComponent implements OnChanges {
 
     this.notionService.queryDatabaseDrh(this.matricula).subscribe({
       next: (response: any) => {
-        console.log('Dados DRH recebidos do Notion:', response);
+
         this.notionData = response.results.sort((a: any, b: any) => {
           const dateA = a.properties['Data do uso']?.date?.start;
           const dateB = b.properties['Data do uso']?.date?.start;
@@ -46,7 +46,7 @@ export class DrhComponent implements OnChanges {
         this.isLoading = false;
       },
       error: (err: any) => {
-        console.error('Erro ao buscar dados do DRH:', err);
+
         this.isLoading = false;
       }
     });

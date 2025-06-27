@@ -1,26 +1,37 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { DrhComponent } from "../drh/drh.component";
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FuncionarioService } from '../../services/funcionario.service';
 import { TreComponent } from "../tre/tre.component";
+import { DrhComponent } from "../drh/drh.component";
 import { PfComponent } from "../pf/pf.component";
 
 @Component({
   selector: 'app-painel',
   standalone: true,
-  imports: [RouterModule, DrhComponent, TreComponent, PfComponent],
+  imports: [
+    RouterModule,
+    DrhComponent,
+    PfComponent,
+    TreComponent
+  ],
   templateUrl: './painel.component.html',
-  styleUrl: './painel.component.scss'
+  styleUrls: ['./painel.component.scss']
 })
 export class PainelComponent implements OnInit {
   matricula: string | null = null;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private funcionarioService: FuncionarioService
+  ) { }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.matricula = params.get('matricula');
-      // Agora você pode usar this.matricula para filtrar dados
-      console.log('Matrícula recebida:', this.matricula);
-    });
+    this.matricula = this.route.snapshot.paramMap.get('matricula');
+  }
+
+  logout(): void {
+    this.funcionarioService.logout();
+    this.router.navigate(['/login']);
   }
 }

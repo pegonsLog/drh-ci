@@ -6,6 +6,6 @@
     "pathRewrite": {
       "^/api": ""
     },
-    "cookieDomainRewrite": ""
+    "logLevel": "debug"
   }
 }
