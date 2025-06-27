@@ -1,4 +1,8 @@
 <div class="ci-form-container">
+  <div class="button-group">
+    <a class="btn-voltar" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">Voltar para a Lista</a>
+    <a class="btn-sair" *ngIf="matricula" [routerLink]="['/painel', matricula]">Sair</a>
+  </div>
   <h2>Alterar Comunicação Interna</h2>
   <form [formGroup]="ciForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
@@ -9,11 +13,17 @@
     <div class="form-group">
       <label for="para">Para:</label>
       <input id="para" type="text" formControlName="para">
+      <div *ngIf="ciForm.get('para')?.invalid && (ciForm.get('para')?.dirty || ciForm.get('para')?.touched)" class="error-message">
+        <small *ngIf="ciForm.get('para')?.errors?.['required']">O destinatário é obrigatório.</small>
+      </div>
     </div>
 
     <div class="form-group">
       <label for="comunicacao">Comunicação:</label>
       <textarea id="comunicacao" formControlName="comunicacao" rows="10"></textarea>
+      <div *ngIf="ciForm.get('comunicacao')?.invalid && (ciForm.get('comunicacao')?.dirty || ciForm.get('comunicacao')?.touched)" class="error-message">
+        <small *ngIf="ciForm.get('comunicacao')?.errors?.['required']">A comunicação é obrigatória.</small>
+      </div>
     </div>
 
     <button type="submit" [disabled]="ciForm.invalid || ciForm.pristine">Salvar Alterações</button>

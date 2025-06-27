@@ -16,7 +16,7 @@ export const routes: Routes = [
         component: PainelComponent,
         canActivate: [funcionarioGuard]
     },
-    { path: 'ci-nova', component: CiNovaComponent, canActivate: [funcionarioGuard] },
-    { path: 'ci-alterar/:id', component: CiAlterarComponent, canActivate: [funcionarioGuard] },
-    { path: 'ci-listar', component: CiListarComponent, canActivate: [funcionarioGuard] }
+    { path: 'ci-nova/:matricula', component: CiNovaComponent, canActivate: [funcionarioGuard] },
+    { path: 'ci-alterar/:matricula/:id', component: CiAlterarComponent, canActivate: [funcionarioGuard] },
+    { path: 'ci-listar/:matricula', component: CiListarComponent, canActivate: [funcionarioGuard] }
 ];

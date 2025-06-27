@@ -77,10 +77,4 @@
       padding: 0.8rem 1.5rem;
     }
   }
-
-  .grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); // 3 columns on larger screens
-    gap: 2rem;
-    align-items: start; // Alinha os cards pelo topo
-  }
 }

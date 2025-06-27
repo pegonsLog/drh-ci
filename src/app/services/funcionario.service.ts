@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, updateDoc } from '@angular/fire/firestore';
 import { from, Observable, of } from 'rxjs';
+
+export interface Funcionario {
+  id?: string;
+  funcionario: string;
+  matricula: number;
+}
 import { map, switchMap, catchError } from 'rxjs/operators';
 import * as bcrypt from 'bcryptjs';
 
@@ -53,6 +59,30 @@ export class FuncionarioService {
 
   getMatriculaLogada(): string | null {
     return sessionStorage.getItem('matricula');
+  }
+
+  getFuncionarioByMatricula(matricula: string): Observable<Funcionario | null> {
+    const matriculaAsNumber = parseInt(matricula, 10);
+    if (isNaN(matriculaAsNumber)) {
+      return of(null);
+    }
+
+    const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
+    const q = query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber));
+
+    return from(getDocs(q)).pipe(
+      map(querySnapshot => {
+        if (querySnapshot.empty) {
+          return null;
+        }
+        const doc = querySnapshot.docs[0];
+        return { id: doc.id, ...doc.data() } as Funcionario;
+      }),
+      catchError(error => {
+        console.error('Erro ao buscar dados do funcionário:', error);
+        return of(null);
+      })
+    );
   }
 
   verificarMatricula(matricula: string): Observable<boolean> {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FuncionarioService } from '../../services/funcionario.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { CiService, ComunicacaoInterna } from '../../services/ci.service';
 
@@ -19,6 +19,7 @@ export class CiListarComponent implements OnInit {
   constructor(
     private ciService: CiService, 
     private router: Router,
+    private route: ActivatedRoute,
     private funcionarioService: FuncionarioService
   ) { }
 
@@ -30,20 +31,22 @@ export class CiListarComponent implements OnInit {
         return { ...ci, data: dataAsDate };
       }))
     );
-    this.matricula = this.funcionarioService.getMatriculaLogada();
+    this.matricula = this.route.snapshot.paramMap.get('matricula');
   }
 
   editarCi(id: string | undefined): void {
     if (id) {
-      this.router.navigate(['/ci-alterar', id]);
+      this.router.navigate(['/ci-alterar', this.matricula, id]);
     }
   }
 
   excluirCi(id: string | undefined): void {
     if (id && confirm('Tem certeza que deseja excluir esta comunicação?')) {
       this.ciService.deleteCi(id)
-        .then(() => console.log('CI excluída com sucesso!'))
-        .catch(err => console.error('Erro ao excluir CI:', err));
+        .then(() => {})
+        .catch(err => {
+        // Idealmente, mostrar um erro para o usuário aqui
+      });
     }
   }
 }

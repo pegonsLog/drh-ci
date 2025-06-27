@@ -1,19 +1,33 @@
 <div class="ci-form-container">
-  <h2>Nova Comunicação Interna</h2>
+  <div class="button-group">
+    <a class="btn-voltar" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">Voltar para a Lista</a>
+    <a class="btn-sair" *ngIf="matricula" [routerLink]="['/painel', matricula]">Sair</a>
+  </div>
+  <h2>Nova CI</h2>
   <form [formGroup]="ciForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
+      <label for="matricula">Matrícula:</label>
+      <input id="matricula" type="text" formControlName="matricula">
+    </div>
+    <div class="form-group">
       <label for="de">De:</label>
-      <input id="de" type="text" formControlName="de" placeholder="Seu nome ou setor">
+      <input id="de" type="text" formControlName="de">
     </div>
 
     <div class="form-group">
       <label for="para">Para:</label>
-      <input id="para" type="text" formControlName="para" placeholder="Nome ou setor de destino">
+      <input id="para" type="text" formControlName="para" placeholder="Nome do destinatário">
+      <div *ngIf="ciForm.get('para')?.invalid && (ciForm.get('para')?.dirty || ciForm.get('para')?.touched)" class="error-message">
+        <small *ngIf="ciForm.get('para')?.errors?.['required']">O destinatário é obrigatório.</small>
+      </div>
     </div>
 
     <div class="form-group">
       <label for="comunicacao">Comunicação:</label>
       <textarea id="comunicacao" formControlName="comunicacao" rows="10" placeholder="Digite sua mensagem aqui..."></textarea>
+      <div *ngIf="ciForm.get('comunicacao')?.invalid && (ciForm.get('comunicacao')?.dirty || ciForm.get('comunicacao')?.touched)" class="error-message">
+        <small *ngIf="ciForm.get('comunicacao')?.errors?.['required']">A comunicação é obrigatória.</small>
+      </div>
     </div>
 
     <button type="submit" [disabled]="ciForm.invalid">Salvar Comunicação</button>
