@@ -1,33 +1,4 @@
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
 
-  .btn-voltar,
-  .btn-sair {
-    padding: 0.7rem 1.5rem;
-    border-radius: 5px;
-    text-decoration: none;
-    color: white;
-    font-weight: 600;
-    transition: background-color 0.2s ease-in-out;
-    text-align: center;
-  }
-
-  .btn-voltar {
-    background-color: #6c757d; // Cinza
-    &:hover {
-      background-color: #5a6268;
-    }
-  }
-
-  .btn-sair {
-    background-color: #f44336; // Vermelho
-    &:hover {
-      background-color: #d32f2f;
-    }
-  }
-}
 
 .ci-form-container {
   max-width: 800px;
@@ -37,10 +8,16 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
-  h2 {
+  p {
     text-align: center;
     margin-bottom: 2rem;
-    color: #333;
+    padding: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px !important;
+    font-weight: 600;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
   }
 
   .form-group {
@@ -70,25 +47,51 @@
     }
   }
 
-  button {
+  .button-group {
+    display: flex;
     width: 100%;
-    padding: 1rem;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    gap: 10px;
 
-    &:hover:not(:disabled) {
-      background-color: #0056b3;
+    // Estilo base para todos os botões no grupo
+    button {
+      flex: 1; // Garante que todos os botões ocupem o mesmo espaço
+      padding: 1rem;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
     }
 
-    &:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    // Cores específicas para cada botão
+    button[type="submit"] {
+      background-color: #007bff; // Azul para Salvar
+      &:hover:not(:disabled) {
+        background-color: #0056b3;
+      }
+    }
+
+    .btn-voltar {
+      background-color: #6c757d; // Cinza para Voltar
+      &:hover {
+        background-color: #5a6268;
+      }
+    }
+
+    .btn-sair {
+      background-color: #089033; // Vermelho para Sair
+      &:hover {
+        background-color: #06762d;
+      }
     }
   }
 }

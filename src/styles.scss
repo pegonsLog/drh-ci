@@ -1,23 +1,89 @@
 /* You can add global styles to this file, and also import other style files */
+
+// 1. Include functions first (so you can manipulate colors, SVGs, calc, etc)
+@import "bootstrap/scss/functions";
+
+// 2. Include any default variable overrides here
+
+// 3. Include remainder of required Bootstrap stylesheets
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+// 4. Optionally include any other parts as needed
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/buttons";
+
+// 5. Add utilities API
+@import "bootstrap/scss/helpers";
+@import "bootstrap/scss/utilities/api";
+
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
-body {
+html, body {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 14px;
   color: #333;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 2rem;
   background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
 
 h2 {
   color: #1a237e;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Estilos globais para as tabelas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+/* Garante que as tabelas não estourem seus containers */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Garante que imagens e outros elementos não estourem seus containers */
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Classe para destacar valores disponíveis */
+.disponivel {
+  background-color: #28a745 !important; /* Verde */
+  color: white !important;
+  font-weight: 600;
 }
 
 table {
-  width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
   background-color: #fff;
@@ -74,6 +140,4 @@ tbody tr:last-of-type {
   border-radius: 8px; /* Para manter as bordas arredondadas */
 }
 
-.disponivel {
-  color: blue;
-}
+

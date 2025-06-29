@@ -1,17 +1,21 @@
 <div class="painel-container">
-  <div class="painel-header">
-    <h1>Painel de Consultas</h1>
-    <div>
-      <a [routerLink]="['/ci-listar', matricula]" class="btn-header btn-ci">Fazer CI</a>
-      <button (click)="logout()" class="btn-header btn-logout">Sair</button>
+  <header class="painel-header">
+    <p>PAINEL DE CONSULTAS</p>
+    <div class="header-buttons">
+      <a [routerLink]="['/ci-listar', matricula]" class="btn btn-ci">CI's</a>
+      <button (click)="logout()" class="btn btn-logout">Sair</button>
     </div>
-  </div>
-  <section class="notion-data">
+  </header>
 
-    <div>
+  <main class="components-grid">
+    <div class="component-wrapper">
       <app-drh [matricula]="matricula"></app-drh>
+    </div>
+    <div class="component-wrapper">
       <app-pf [matricula]="matricula"></app-pf>
+    </div>
+    <div class="component-wrapper">
       <app-tre [matricula]="matricula"></app-tre>
     </div>
-  </section>
+  </main>
 </div>

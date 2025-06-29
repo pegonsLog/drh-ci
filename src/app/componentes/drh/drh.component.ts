@@ -2,11 +2,13 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { NotionService } from '../../services/notion.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { AbbreviateYearPipe } from '../../pipes/abbreviate-year.pipe';
+import { PfComponent } from "../pf/pf.component";
+import { TreComponent } from "../tre/tre.component";
 
 @Component({
   selector: 'app-drh',
   standalone: true,
-  imports: [CommonModule, DatePipe, AbbreviateYearPipe],
+  imports: [CommonModule, DatePipe, AbbreviateYearPipe, PfComponent, TreComponent],
   templateUrl: './drh.component.html',
   styleUrl: './drh.component.scss'
 })

@@ -5,6 +5,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { routes } from './app.routes';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 
 
@@ -22,6 +23,6 @@ export const appConfig: ApplicationConfig = {
       "messagingSenderId": "768613774145",
       "measurementId": "G-ZSWZG9WGNW"
     })),
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => getFirestore()), provideAnimationsAsync()
   ]
 };
