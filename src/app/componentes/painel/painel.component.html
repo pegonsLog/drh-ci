@@ -2,8 +2,9 @@
   <header class="painel-header">
     <p>PAINEL DE CONSULTAS</p>
     <div class="header-buttons">
-      <a [routerLink]="['/ci-listar', matricula]" class="btn btn-ci">CI's</a>
-      <button (click)="logout()" class="btn btn-logout">Sair</button>
+      <button class="btn btn-ci" (click)="navegarParaCiListar()">CI'S</button>
+      <button class="btn btn-funcionarios" *ngIf="perfilUsuario === 'adm'" (click)="navegarParaFuncionarioListar()">Usuário</button>
+      <button class="btn btn-logout" (click)="logout()">Sair</button>
     </div>
   </header>
 

@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, query, where, getDocs, doc, updateDoc } from '@angular/fire/firestore';
-import { from, Observable, of } from 'rxjs';
+import { Firestore, collection, query, where, getDocs, doc, updateDoc, getDoc, addDoc, deleteDoc } from '@angular/fire/firestore';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
 
 export interface Funcionario {
   id?: string;
   funcionario: string;
   matricula: number;
+  perfil: string;
+  senha?: string; // Senha é opcional aqui, pois não queremos retorná-la sempre
 }
 import { map, switchMap, catchError } from 'rxjs/operators';
 import * as bcrypt from 'bcryptjs';
@@ -14,6 +16,8 @@ import * as bcrypt from 'bcryptjs';
   providedIn: 'root'
 })
 export class FuncionarioService {
+  private perfilUsuario = new BehaviorSubject<string | null>(sessionStorage.getItem('perfil'));
+  perfilUsuario$ = this.perfilUsuario.asObservable();
 
   constructor(private firestore: Firestore) { }
 
@@ -55,6 +59,17 @@ export class FuncionarioService {
 
   logout(): void {
     sessionStorage.removeItem('matricula');
+    sessionStorage.removeItem('perfil');
+    this.perfilUsuario.next(null);
+  }
+
+  setPerfil(perfil: string | null): void {
+    if (perfil) {
+      sessionStorage.setItem('perfil', perfil);
+    } else {
+      sessionStorage.removeItem('perfil');
+    }
+    this.perfilUsuario.next(perfil);
   }
 
   getMatriculaLogada(): string | null {
@@ -94,6 +109,74 @@ export class FuncionarioService {
     const q = query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber));
     return from(getDocs(q)).pipe(
       map(querySnapshot => !querySnapshot.empty)
+    );
+  }
+
+  getFuncionarios(): Observable<Funcionario[]> {
+    const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
+    return from(getDocs(query(funcionariosCollectionRef))).pipe(
+      map(querySnapshot => {
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Funcionario));
+      }),
+      catchError(error => {
+        console.error('Erro ao buscar funcionários:', error);
+        return of([]);
+      })
+    );
+  }
+
+  getFuncionarioById(id: string): Observable<Funcionario | null> {
+    const funcionarioDocRef = doc(this.firestore, 'funcionarios', id);
+    return from(getDoc(funcionarioDocRef)).pipe(
+      map(docSnap => {
+        if (docSnap.exists()) {
+          return { id: docSnap.id, ...docSnap.data() } as Funcionario;
+        } else {
+          return null;
+        }
+      }),
+      catchError(error => {
+        console.error('Erro ao buscar funcionário por ID:', error);
+        return of(null);
+      })
+    );
+  }
+
+  addFuncionario(funcionario: Omit<Funcionario, 'id'>): Observable<string | null> {
+    const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
+    // Hash da senha antes de salvar
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync((funcionario as any).senha, salt);
+    const funcionarioComSenhaHasheada = { ...funcionario, senha: hashedPassword };
+
+    return from(addDoc(funcionariosCollectionRef, funcionarioComSenhaHasheada)).pipe(
+      map(docRef => docRef.id),
+      catchError(error => {
+        console.error('Erro ao adicionar funcionário:', error);
+        return of(null);
+      })
+    );
+  }
+
+  updateFuncionario(id: string, funcionario: Partial<Funcionario>): Observable<boolean> {
+    const funcionarioDocRef = doc(this.firestore, 'funcionarios', id);
+    return from(updateDoc(funcionarioDocRef, funcionario)).pipe(
+      map(() => true),
+      catchError(error => {
+        console.error('Erro ao atualizar funcionário:', error);
+        return of(false);
+      })
+    );
+  }
+
+  deleteFuncionario(id: string): Observable<boolean> {
+    const funcionarioDocRef = doc(this.firestore, 'funcionarios', id);
+    return from(deleteDoc(funcionarioDocRef)).pipe(
+      map(() => true),
+      catchError(error => {
+        console.error('Erro ao excluir funcionário:', error);
+        return of(false);
+      })
     );
   }
 

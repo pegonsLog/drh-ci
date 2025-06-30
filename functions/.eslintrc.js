@@ -14,6 +14,8 @@ module.exports = {
     "no-restricted-globals": ["error", "name", "length"],
     "prefer-arrow-callback": "error",
     "quotes": ["error", "double", {"allowTemplateLiterals": true}],
+    "camelcase": "off",
+    "no-invalid-this": "off",
     "max-len": "off",
     "indent": "off",
   },

@@ -26,9 +26,22 @@ export class CiListarComponent implements OnInit {
   ngOnInit(): void {
     this.cis$ = this.ciService.getCis().pipe(
       map(cis => cis.map(ci => {
-        // Convert Firestore Timestamp to JavaScript Date for the DatePipe
-        const dataAsDate = (ci.data as any).toDate();
-        return { ...ci, data: dataAsDate };
+        const data = ci.data as any;
+
+        // Prioridade 1: Timestamp do Firestore
+        if (data && typeof data.toDate === 'function') {
+          return { ...ci, data: data.toDate() };
+        }
+
+        // Prioridade 2: String ou número que pode ser convertido para uma data válida
+        const parsedDate = new Date(data);
+        if (data && !isNaN(parsedDate.getTime())) {
+          return { ...ci, data: parsedDate };
+        }
+
+        // Fallback: Manter o valor original (provavelmente uma string inválida)
+        // O tipo é ajustado para 'any' para evitar erro de compilação, e o template irá tratar.
+        return { ...ci, data: data as any };
       }))
     );
     this.matricula = this.route.snapshot.paramMap.get('matricula');
@@ -39,6 +52,7 @@ export class CiListarComponent implements OnInit {
       this.router.navigate(['/ci-alterar', this.matricula, id]);
     }
   }
+
 
   excluirCi(id: string | undefined): void {
     if (id && confirm('Tem certeza que deseja excluir esta comunicação?')) {

@@ -1,0 +1,22 @@
+<div class="ci-visualizar-container">
+  <div class="actions">
+    <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
+    <button (click)="gerarPdfEEnviar()" class="btn-gerar-pdf">Gerar PDF e Enviar</button>
+  </div>
+
+  <div #ciContainer class="ci-landscape-sheet">
+    <!-- Coluna Esquerda (Original) -->
+    <div class="data-field para">{{ destinatario?.funcionario }}</div>
+    <div class="data-field de">{{ remetente?.funcionario }}</div>
+    <div class="data-field comunicacao" [innerHTML]="ci?.comunicacao"></div>
+    <div class="data-field data-emissao">{{ dataExibicao }}</div>
+    <div class="data-field assinatura-remetente">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</div>
+
+    <!-- Coluna Direita (Cópia) -->
+    <div class="data-field para_copy">{{ destinatario?.funcionario }}</div>
+    <div class="data-field de_copy">{{ remetente?.funcionario }}</div>
+    <div class="data-field comunicacao_copy" [innerHTML]="ci?.comunicacao"></div>
+    <div class="data-field data-emissao_copy">{{ dataExibicao }}</div>
+    <div class="data-field assinatura-remetente_copy">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</div>
+  </div>
+</div>

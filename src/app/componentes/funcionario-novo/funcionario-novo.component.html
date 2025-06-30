@@ -1,0 +1,35 @@
+<div class="funcionario-form-container">
+  <p>NOVO FUNCIONÁRIO</p>
+  <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="funcionario">Nome do Funcionário:</label>
+      <input id="funcionario" type="text" formControlName="funcionario" placeholder="Nome completo">
+      <div *ngIf="funcionarioForm.get('funcionario')?.invalid && funcionarioForm.get('funcionario')?.touched" class="error-message">
+        <small *ngIf="funcionarioForm.get('funcionario')?.errors?.['required']">O nome é obrigatório.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="matricula">Matrícula:</label>
+      <input id="matricula" type="text" formControlName="matricula" placeholder="Apenas números">
+      <div *ngIf="funcionarioForm.get('matricula')?.invalid && funcionarioForm.get('matricula')?.touched" class="error-message">
+        <small *ngIf="funcionarioForm.get('matricula')?.errors?.['required']">A matrícula é obrigatória.</small>
+        <small *ngIf="funcionarioForm.get('matricula')?.errors?.['pattern']">A matrícula deve conter apenas números.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="senha">Senha:</label>
+      <input id="senha" type="password" formControlName="senha" placeholder="Mínimo 6 caracteres">
+      <div *ngIf="funcionarioForm.get('senha')?.invalid && funcionarioForm.get('senha')?.touched" class="error-message">
+        <small *ngIf="funcionarioForm.get('senha')?.errors?.['required']">A senha é obrigatória.</small>
+        <small *ngIf="funcionarioForm.get('senha')?.errors?.['minlength']">A senha deve ter no mínimo 6 caracteres.</small>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" [disabled]="funcionarioForm.invalid">Salvar Funcionário</button>
+      <button class="btn-voltar" *ngIf="matriculaLogado" [routerLink]="['/funcionario-listar', matriculaLogado]">Voltar para a Lista</button>
+    </div>
+  </form>
+</div>

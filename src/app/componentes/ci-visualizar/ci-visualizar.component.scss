@@ -1,0 +1,70 @@
+.ci-visualizar-container {
+  padding: 2rem;
+  background-color: #f4f4f4;
+}
+
+.actions {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-voltar, .btn-gerar-pdf {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-voltar { background-color: #6c757d; }
+.btn-gerar-pdf { background-color: #007bff; }
+
+.ci-landscape-sheet {
+  background-image: url('/assets/ci.jpg');
+  background-repeat: no-repeat;
+  background-size: 95% 95%;
+  background-position: center;
+  width: 297mm;
+  height: 210mm;
+  margin: 0 auto;
+  position: relative;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.data-field {
+  position: absolute;
+  font-family: Arial, sans-serif; /* Fonte alterada */
+  font-size: 14pt;
+  white-space: pre-wrap;
+  line-height: 1.2;
+}
+
+/* --- Coordenadas Ajustadas (Esquerda) --- */
+.para { top: 114px; left: 95px; }
+.area-para { top: 185px; left: 70px; }
+.de { top: 157px; left: 95px; }
+.comunicacao {
+  top: 212px;
+  left: 70px;
+  width: 440px;
+  height: 505px;
+  overflow: hidden;
+}
+.data-emissao { top: 717px; left: 180px; font-size: 10pt;}
+.assinatura-remetente { top: 737px; left: 319px; font-size: 10pt; }
+
+/* --- Coordenadas Ajustadas (Direita - Cópia) --- */
+.para_copy { top: 114px; left: 652px; }
+.de_copy { top: 157px; left: 652px; }
+.comunicacao_copy {
+  top: 212px;
+  left: 623px;
+  width: 440px;
+  height: 505px;
+  overflow: hidden;
+}
+.data-emissao_copy { top: 718px; left: 731px; font-size: 10pt;}
+.assinatura-remetente_copy { top: 737px; left: 870px; font-size: 10pt; }

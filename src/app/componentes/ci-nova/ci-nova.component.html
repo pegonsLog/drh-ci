@@ -12,10 +12,15 @@
     </div>
 
     <div class="form-group">
-      <label for="para">Para:</label>
-      <input id="para" type="text" formControlName="para" placeholder="Nome do destinatário">
-      <div *ngIf="ciForm.get('para')?.invalid && (ciForm.get('para')?.dirty || ciForm.get('para')?.touched)" class="error-message">
-        <small *ngIf="ciForm.get('para')?.errors?.['required']">O destinatário é obrigatório.</small>
+      <label for="destinatario_matricula">Para:</label>
+      <select id="destinatario_matricula" formControlName="destinatario_matricula" class="form-select">
+        <option value="" disabled>Selecione um destinatário</option>
+        <option *ngFor="let funcionario of funcionarios" [value]="funcionario.matricula">
+          {{ funcionario.funcionario }}
+        </option>
+      </select>
+      <div *ngIf="ciForm.get('destinatario_matricula')?.invalid && (ciForm.get('destinatario_matricula')?.dirty || ciForm.get('destinatario_matricula')?.touched)" class="error-message">
+        <small *ngIf="ciForm.get('destinatario_matricula')?.errors?.['required']">O destinatário é obrigatório.</small>
       </div>
     </div>
 
@@ -29,7 +34,7 @@
 
     <div class="button-group">
       <button type="submit" [disabled]="ciForm.invalid">Salvar Comunicação</button>
-      <button class="btn-voltar" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">Voltar para a Lista</button>
+      <button class="btn-voltar" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">Cancelar</button>
       <button class="btn-sair" *ngIf="matricula" [routerLink]="['/painel', matricula]">Sair</button>
     </div>
   </form>

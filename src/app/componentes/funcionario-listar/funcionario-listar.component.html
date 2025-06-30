@@ -1,0 +1,41 @@
+<div class="funcionario-list-container">
+  <div class="header">
+    <p>LISTA DE FUNCIONÁRIOS</p>
+    <div class="button-group">
+      <a class="btn-voltar" [routerLink]="['/painel', matricula]">Voltar ao Painel</a>
+      <a class="new-funcionario-button" *ngIf="perfilUsuario === 'adm'" [routerLink]="['/funcionario-novo', matricula]">Novo Funcionário</a>
+    </div>
+  </div>
+
+  <div *ngIf="funcionarios$ | async as funcionarios; else loading">
+    <div *ngIf="funcionarios.length > 0; else noFuncionarios" class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Matrícula</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let funcionario of funcionarios">
+            <td>{{ funcionario.funcionario }}</td>
+            <td>{{ funcionario.matricula }}</td>
+            <td class="actions-cell">
+              <i class="material-icons icon-edit" (click)="editarFuncionario(funcionario.id)" title="Editar">edit</i>
+              <i class="material-icons icon-delete" (click)="excluirFuncionario(funcionario.id)" title="Excluir">delete</i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noFuncionarios>
+      <p class="message">Nenhum funcionário encontrado.</p>
+    </ng-template>
+  </div>
+
+  <ng-template #loading>
+    <p class="message">Carregando funcionários...</p>
+  </ng-template>
+</div>

@@ -8,7 +8,8 @@ export interface ComunicacaoInterna {
   para: string;
   data: Date;
   comunicacao: string;
-  matricula: string;
+  matricula: string; // Matrícula do remetente
+  destinatario_matricula?: string; // Matrícula do destinatário
 }
 
 @Injectable({
