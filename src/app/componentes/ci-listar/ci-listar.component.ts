@@ -54,6 +54,24 @@ export class CiListarComponent implements OnInit {
     }
   }
 
+  gerarPdfEEnviar(id: string | undefined): void {
+    if (!id) return;
+
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      // Em dispositivos móveis, navega com um parâmetro especial para gerar o PDF sem mostrar a tela.
+      this.router.navigate(['/ci-visualizar', this.matricula, id], { 
+        queryParams: { acao: 'gerarPDF', origem: 'mobile' } 
+      });
+    } else {
+      // Em desktop, navega normalmente para mostrar o modal de confirmação.
+      this.router.navigate(['/ci-visualizar', this.matricula, id], { 
+        queryParams: { acao: 'gerarPDF' } 
+      });
+    }
+  }
+
 
   excluirCi(id: string | undefined): void {
     if (id && confirm('Tem certeza que deseja excluir esta comunicação?')) {

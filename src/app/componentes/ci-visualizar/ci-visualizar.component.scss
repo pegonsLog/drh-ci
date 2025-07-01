@@ -1,16 +1,23 @@
 .ci-visualizar-container {
-  padding: 2rem;
-  background-color: #f4f4f4;
+  padding: 1cm;
+  background-color: #e0e0e0; // Fundo um pouco mais escuro para contraste
   font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .actions {
-  margin-bottom: 2rem;
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 1000; // Garante que os botões fiquem sobre o conteúdo
   display: flex;
+  flex-direction: column; // Empilha os botões verticalmente
   gap: 1rem;
 }
 
-.btn-voltar, .btn-gerar-pdf {
+.btn-voltar, .btn-gerar-pdf, .btn-imprimir {
   padding: 0.8rem 1.5rem;
   border: none;
   border-radius: 5px;
@@ -21,6 +28,7 @@
 
 .btn-voltar { background-color: #6c757d; }
 .btn-gerar-pdf { background-color: #007bff; }
+.btn-imprimir { background-color: #28a745; }
 
 // Novo container para a folha A4 paisagem
 .ci-sheet-container {
@@ -29,10 +37,10 @@
   background-color: white;
   width: 297mm;
   min-height: 210mm;
-  margin: 0 auto;
+  margin: 0;
   padding: 1cm;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  gap: 1cm;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  gap: 2cm;
 }
 
 .ci-form-wrapper {
@@ -40,16 +48,17 @@
 }
 
 .ci-form {
-  border: 1px solid black;
+  border: 2px solid black; // A borda do formulário em si
   display: flex;
   flex-direction: column;
   height: 100%;
+  background-color: white; // Garante que o formulário seja branco
 }
 
 // Estilos das seções do formulário
 .form-header, .form-to-from, .form-footer {
   display: flex;
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid black;
 }
 
 .form-body {
@@ -70,7 +79,7 @@
 .header-title {
   width: 85%;
   font-weight: bold;
-  border-right: 1px solid black;
+  border-right: 2px solid black;
   font-size: 16px;
 }
 
@@ -95,7 +104,7 @@
     .address-row {
       padding: 8px;
       &:first-child {
-        border-bottom: 1px solid black;
+        border-bottom: 2px solid black;
       }
       label {
         font-weight: bold;
@@ -105,12 +114,12 @@
   }
 
   .area-section {
-    border-left: 1px solid black;
-    width: 25%;
+    border-left: 2px solid black;
+    width: 28%;
     .area-row { 
       padding: 8px;
       &:first-child {
-        border-bottom: 1px solid black;
+        border-bottom: 2px solid black;
       }
        label {
         font-weight: bold;
@@ -124,7 +133,7 @@
 .form-footer {
   .footer-box {
     margin-top: 1rem;
-    border-top: 1px solid black;
+    border-top: 2px solid black;
     width: 50%;
     padding-top: 16px;
     display: flex;
@@ -133,7 +142,7 @@
     align-items: center;
 
     &:first-child {
-      border-right: 1px solid black;
+      border-right: 2px solid black;
     }
 
     label {
@@ -141,5 +150,89 @@
       color: #555;
       margin-top: 4px;
     }
+  }
+}
+
+@page {
+  size: A4 landscape;
+  margin: 0; // Impede que o navegador adicione suas próprias margens.
+}
+
+// Media Query para Responsividade em Dispositivos Móveis
+@media (max-width: 768px) {
+  // Aplica estilos responsivos apenas se o componente não estiver em modo de geração de PDF.
+  // Isso garante que o PDF sempre seja gerado com o layout de desktop.
+  :host:not(.pdf-generation-mode) {
+    .ci-visualizar-container {
+      padding: 16px; // Reduz o padding geral em telas menores
+    }
+
+    .botoes-container {
+      position: static; // Remove o posicionamento flutuante
+      display: flex;
+      flex-direction: column; // Empilha os botões
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: stretch; // Estica os botões
+    }
+
+    .btn-imprimir,
+    .btn-gerar-pdf {
+      display: none; // Oculta os botões de ação no mobile
+    }
+
+    .ci-sheet-container {
+      width: 100%; // Ocupa toda a largura
+      min-height: auto; // Altura automática
+      flex-direction: column; // Empilha a CI e a cópia
+      padding: 16px;
+      gap: 20px; // Espaçamento entre original e cópia
+      box-shadow: none; // Remove a sombra para uma aparência mais limpa
+    }
+
+    .ci-form-wrapper {
+      width: 100%; // Cada formulário ocupa a largura total
+    }
+
+    .form-body {
+      min-height: auto; // Altura do corpo se ajusta ao conteúdo
+      padding: 16px;
+    }
+  }
+}
+
+:host(.headless-mode) {
+  // Move o componente para fora da tela para que não seja visível,
+  // mas ainda possa ser renderizado pelo html2canvas.
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  z-index: -1; // Garante que fique atrás de outros elementos.
+}
+
+@media print {
+  // Oculta os botões e outros elementos de UI
+  .actions {
+    display: none;
+  }
+
+  // Reseta o corpo da página para a impressão
+  body, html {
+    background-color: white;
+    margin: 0;
+    padding: 0;
+  }
+
+  // A SOLUÇÃO ROBUSTA: Desativa o flexbox para evitar o alinhamento vertical na impressão
+  .ci-visualizar-container {
+    display: block; // Remove o comportamento do flexbox
+    background-color: white;
+    padding: 0; // Remove o padding da tela
+  }
+
+  // Garante que a folha não tenha sombra e seja centralizada horizontalmente
+  .ci-sheet-container {
+    box-shadow: none;
+    margin: 0 auto; // Centraliza na página, sem margem vertical
   }
 }

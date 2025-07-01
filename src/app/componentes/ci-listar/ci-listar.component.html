@@ -37,7 +37,7 @@
             <td>{{ ci.comunicacao | slice:0:50 }}...</td>
                         <td class="actions-cell">
               <i class="material-icons icon-view" [routerLink]="['/ci-visualizar', matricula, ci.id]" title="Visualizar">visibility</i>
-              <!-- <i class="material-icons icon-pdf" [routerLink]="['/ci-visualizar', matricula, ci.id]" [queryParams]="{ gerar: 'true' }" title="Gerar PDF e Enviar">picture_as_pdf</i> -->
+              <i class="material-icons icon-email btn-gerar-pdf-mobile" (click)="gerarPdfEEnviar(ci.id)" title="Gerar PDF e Enviar">email</i>
               <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
               <i class="material-icons icon-delete" (click)="excluirCi(ci.id)" title="Excluir">delete</i>
             </td>

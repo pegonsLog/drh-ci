@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, updateDoc, getDoc, addDoc, deleteDoc, orderBy } from '@angular/fire/firestore';
-import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, from, Observable, of } from 'rxjs';
 
 export interface Funcionario {
   id?: string;
   funcionario: string;
-  matricula: number;
+  matricula: string;
   perfil: string;
   senha?: string; // Senha é opcional aqui, pois não queremos retorná-la sempre
 }
@@ -22,17 +22,23 @@ export class FuncionarioService {
   constructor(private firestore: Firestore) { }
 
   login(matricula: string, senha: string): Observable<{ success: boolean, matricula?: string }> {
-    const matriculaAsNumber = parseInt(matricula, 10);
-    if (isNaN(matriculaAsNumber)) {
-      return of({ success: false });
-    }
-
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
-    const q = query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber));
 
-    return from(getDocs(q)).pipe(
-      map(querySnapshot => {
-        if (querySnapshot.size !== 1) {
+    // Busca por matrícula como string
+    const qString = query(funcionariosCollectionRef, where('matricula', '==', matricula));
+    const stringSearch$ = from(getDocs(qString));
+
+    // Busca por matrícula como número
+    const matriculaAsNumber = parseInt(matricula, 10);
+    const numberSearch$ = !isNaN(matriculaAsNumber)
+      ? from(getDocs(query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber))))
+      : of(null);
+
+    return forkJoin([stringSearch$, numberSearch$]).pipe(
+      map(([stringSnapshot, numberSnapshot]) => {
+        const querySnapshot = stringSnapshot?.size === 1 ? stringSnapshot : numberSnapshot;
+
+        if (!querySnapshot || querySnapshot.size !== 1) {
           return { success: false };
         }
 
@@ -76,25 +82,36 @@ export class FuncionarioService {
     return sessionStorage.getItem('matricula');
   }
 
-  getFuncionarioByMatricula(matricula: string): Observable<Funcionario | null> {
-    const matriculaAsNumber = parseInt(matricula, 10);
-    if (isNaN(matriculaAsNumber)) {
+    getFuncionarioByMatricula(matricula: string): Observable<Funcionario | null> {
+    if (!matricula) {
       return of(null);
     }
 
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
-    const q = query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber));
 
-    return from(getDocs(q)).pipe(
-      map(querySnapshot => {
-        if (querySnapshot.empty) {
-          return null;
+    // Tenta buscar tanto como string quanto como número para lidar com inconsistências de dados.
+    const qString = query(funcionariosCollectionRef, where('matricula', '==', matricula));
+    const stringSearch$ = from(getDocs(qString));
+
+    const matriculaAsNumber = parseInt(matricula, 10);
+    const numberSearch$ = !isNaN(matriculaAsNumber)
+      ? from(getDocs(query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber))))
+      : of(null);
+
+    return forkJoin([stringSearch$, numberSearch$]).pipe(
+      map(([stringSnapshot, numberSnapshot]) => {
+        if (stringSnapshot && !stringSnapshot.empty) {
+          const doc = stringSnapshot.docs[0];
+          return { id: doc.id, ...doc.data() } as Funcionario;
         }
-        const doc = querySnapshot.docs[0];
-        return { id: doc.id, ...doc.data() } as Funcionario;
+        if (numberSnapshot && !numberSnapshot.empty) {
+          const doc = numberSnapshot.docs[0];
+          return { id: doc.id, ...doc.data() } as Funcionario;
+        }
+        return null;
       }),
       catchError(error => {
-        console.error('Erro ao buscar dados do funcionário:', error);
+        console.error('Erro ao buscar funcionário por matrícula (string/número):', error);
         return of(null);
       })
     );
@@ -102,11 +119,7 @@ export class FuncionarioService {
 
   verificarMatricula(matricula: string): Observable<boolean> {
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
-    const matriculaAsNumber = parseInt(matricula, 10);
-    if (isNaN(matriculaAsNumber)) {
-      return of(false);
-    }
-    const q = query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber));
+    const q = query(funcionariosCollectionRef, where('matricula', '==', matricula));
     return from(getDocs(q)).pipe(
       map(querySnapshot => !querySnapshot.empty)
     );
@@ -182,13 +195,8 @@ export class FuncionarioService {
   }
 
   alterarSenha(matricula: string, novaSenha: string): Observable<boolean> {
-    const matriculaAsNumber = parseInt(matricula, 10);
-    if (isNaN(matriculaAsNumber)) {
-      return of(false);
-    }
-
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
-    const q = query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber));
+    const q = query(funcionariosCollectionRef, where('matricula', '==', matricula));
 
     return from(getDocs(q)).pipe(
       switchMap(querySnapshot => {

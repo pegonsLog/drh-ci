@@ -31,6 +31,7 @@
     display: flex;
     gap: 10px;
     width: 100%;
+    align-items: stretch; // Garante que os botões se estiquem para ter a mesma altura.
   }
 
   .new-ci-button,
@@ -97,6 +98,13 @@ table {
   font-size: 24px;
   transition: color 0.2s ease-in-out;
 
+  &.icon-view {
+    color: #28a745; // Verde para destacar a ação principal
+    &:hover {
+      color: #218838;
+    }
+  }
+
   &.icon-edit {
     color: #ffc107; // Amarelo
     &:hover {
@@ -108,6 +116,13 @@ table {
     color: #dc3545; // Vermelho
     &:hover {
       color: #c82333;
+    }
+  }
+
+  &.icon-email {
+    color: #007bff; // Azul para consistência
+    &:hover {
+      color: #0056b3;
     }
   }
 }
@@ -126,8 +141,13 @@ table {
 
   .header {
     flex-direction: row;
-    align-items: center;
+    align-items: stretch; // Garante que o título e os botões tenham a mesma altura.
     justify-content: space-between;
+
+    p {
+      display: flex;
+      align-items: center; // Centraliza o texto do título verticalmente.
+    }
 
     .button-group {
       width: auto;
@@ -137,5 +157,10 @@ table {
     .btn-voltar {
       flex-grow: 0;
     }
+  }
+
+  /* No desktop, oculta o ícone de atalho para gerar PDF, pois a ação principal é visualizar. */
+  .btn-gerar-pdf-mobile {
+    display: none;
   }
 }
