@@ -1,0 +1,10 @@
+<div class="modal-overlay" (click)="fechar()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Confirmar Impressão</h2>
+    <p>Deseja imprimir o documento com ou sem cópia?</p>
+    <div class="modal-actions">
+      <button (click)="escolher(true)" class="btn btn-com-copia">Com Cópia</button>
+      <button (click)="escolher(false)" class="btn btn-sem-copia">Sem Cópia</button>
+    </div>
+  </div>
+</div>

@@ -7,15 +7,18 @@ import { forkJoin, of, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ConfirmacaoImpressaoModalComponent } from '../confirmacao-impressao-modal/confirmacao-impressao-modal.component';
 
 @Component({
   selector: 'app-ci-visualizar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmacaoImpressaoModalComponent],
   templateUrl: './ci-visualizar.component.html',
   styleUrls: ['./ci-visualizar.component.scss']
 })
 export class CiVisualizarComponent implements OnInit {
+  mostrarModal = false;
+  imprimirComCopia = true; // Controla a visibilidade da cópia na tela
   @ViewChild('ciContainer') ciContainer!: ElementRef;
   ci: ComunicacaoInterna | null = null;
   remetente: Funcionario | null = null;
@@ -78,7 +81,7 @@ export class CiVisualizarComponent implements OnInit {
 
         if (gerarPdf) {
           // Timeout para garantir que o DOM seja atualizado com os dados antes de gerar o PDF
-          setTimeout(() => this.gerarPdfEEnviar(true), 100);
+          setTimeout(() => this.processarEscolhaDeImpressao(true), 100);
         }
       });
     }
@@ -90,28 +93,40 @@ export class CiVisualizarComponent implements OnInit {
     }
   }
 
-      gerarPdfEEnviar(navigateBack = false): void {
-    const data = this.ciContainer.nativeElement;
-    // Reduzido o 'scale' e alterado o formato da imagem para JPEG para diminuir o tamanho do arquivo
-    html2canvas(data, { scale: 3, useCORS: true }).then(canvas => {
-      const contentDataURL = canvas.toDataURL('image/jpeg', 0.9);
-      // 'l' para landscape (paisagem)
-      const pdf = new jsPDF('l', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      pdf.addImage(contentDataURL, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+  solicitarImpressao(): void {
+    this.mostrarModal = true;
+  }
 
-      const fileName = `CI de ${this.remetente?.funcionario || 'remetente'}.pdf`;
-      pdf.save(fileName);
+  fecharModal(): void {
+    this.mostrarModal = false;
+  }
+
+  processarEscolhaDeImpressao(comCopia: boolean): void {
+    this.imprimirComCopia = comCopia;
+    this.mostrarModal = false;
+
+    // Atraso para o *ngIf remover a cópia do DOM antes de gerar o PDF
+    setTimeout(() => {
+      this.executarGeracaoPdfEEnviar();
+    }, 100);
+  }
+
+  private executarGeracaoPdfEEnviar(): void {
+    const data = this.ciContainer.nativeElement;
+
+    html2canvas(data, { scale: 3, useCORS: true }).then(canvas => {
+      const contentDataURL = canvas.toDataURL('image/jpeg', 0.7);
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const imgWidth = 297;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      pdf.addImage(contentDataURL, 'JPEG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`CI_${this.ci?.id}.pdf`);
 
       // Abrir Gmail
       const subject = `CI de ${this.remetente?.funcionario || 'remetente'}`;
-      const mailtoUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}`;
+      const body = `Prezados, segue em anexo a CI.`;
+      const mailtoUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.open(mailtoUrl, '_blank');
-
-      if (navigateBack) {
-        this.voltarParaLista();
-      }
     });
   }
 }

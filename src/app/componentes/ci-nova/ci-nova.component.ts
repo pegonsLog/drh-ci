@@ -52,19 +52,28 @@ export class CiNovaComponent implements OnInit {
   onSubmit(): void {
     if (this.ciForm.valid) {
       const formValue = this.ciForm.getRawValue();
-      
-      const destinatarioMatricula = formValue.destinatario_matricula;
-      const destinatario = this.funcionarios.find(f => f.matricula.toString() === destinatarioMatricula);
+
+      const destinatarioMatriculaValue = formValue.destinatario_matricula;
+
+      // Compara os valores como strings para garantir a correspondência correta
+      const destinatario = this.funcionarios.find(
+        f => f.matricula.toString() === destinatarioMatriculaValue.toString()
+      );
 
       if (!destinatario) {
-        // Idealmente, mostrar um erro para o usuário aqui
+        alert('O funcionário destinatário não foi encontrado. Por favor, selecione um válido.');
         return;
       }
 
+      // Constrói o objeto `novaCi` explicitamente para garantir a consistência dos tipos
       const novaCi = {
-        ...formValue,
-        para: destinatario.funcionario, // Adiciona o nome do funcionário
-        data: new Date() // Corrigido para ser uma chamada de função
+        de: formValue.de,
+        comunicacao: formValue.comunicacao,
+        para: destinatario.funcionario,
+        data: new Date(),
+        // Garante que ambas as matrículas sejam salvas como STRINGS
+        matricula: formValue.matricula.toString(),
+        destinatario_matricula: destinatarioMatriculaValue.toString()
       };
 
       this.ciService.addCi(novaCi)
@@ -72,11 +81,12 @@ export class CiNovaComponent implements OnInit {
           if (this.matricula) {
             this.router.navigate(['/ci-listar', this.matricula]);
           } else {
-            this.router.navigate(['/ci-listar']);
+            this.router.navigate(['/painel']); // Rota de fallback
           }
         })
         .catch(err => {
-          // Idealmente, mostrar um erro para o usuário aqui
+          console.error('Erro ao criar CI:', err);
+          alert('Ocorreu um erro ao salvar a Comunicação Interna.');
         });
     }
   }

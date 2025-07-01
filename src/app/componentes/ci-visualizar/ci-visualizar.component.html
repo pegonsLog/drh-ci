@@ -1,22 +1,89 @@
 <div class="ci-visualizar-container">
   <div class="actions">
     <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
-    <button (click)="gerarPdfEEnviar()" class="btn-gerar-pdf">Gerar PDF e Enviar</button>
+    <button (click)="solicitarImpressao()" class="btn-gerar-pdf">Gerar PDF e Enviar</button>
+
   </div>
 
-  <div #ciContainer class="ci-landscape-sheet">
-    <!-- Coluna Esquerda (Original) -->
-    <div class="data-field para">{{ destinatario?.funcionario }}</div>
-    <div class="data-field de">{{ remetente?.funcionario }}</div>
-    <div class="data-field comunicacao" [innerHTML]="ci?.comunicacao"></div>
-    <div class="data-field data-emissao">{{ dataExibicao }}</div>
-    <div class="data-field assinatura-remetente">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</div>
+  <div #ciContainer class="ci-sheet-container">
+    <!-- Este container irá segurar os dois formulários -->
+    <div class="ci-form-wrapper">
+      <!-- Formulário 1 (Original) -->
+      <div class="ci-form">
+        <!-- Cabeçalho -->
+        <div class="form-header">
+          <div class="header-title">COMUNICAÇÃO INTERNA</div>         
+          <div class="header-logo">
+            <img src="assets/logo.png" alt="Logo BHTRANS">
+          </div>
+        </div>
+        <!-- Para/De -->
+        <div class="form-to-from">
+          <div class="address-section">
+            <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
+            <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
+          </div>
+          <div class="area-section">
+            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+          </div>
+        </div>
+        <!-- Corpo -->
+        <div class="form-body" [innerHTML]="ci?.comunicacao"></div>
+        <!-- Rodapé -->
+        <div class="form-footer">
+          <div class="footer-box">
+            <span>Belo Horizonte, {{ dataExibicao }}</span>
+            <label style="border-top: 1px solid black; width: 90%; display: flex; align-items: center; justify-content: center;">Data</label>
+          </div>
+          <div class="footer-box">
+            <span style="font-size: 12px;border-top: 1px solid black; width: 90%; display: flex; justify-content: center;">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Coluna Direita (Cópia) -->
-    <div class="data-field para_copy">{{ destinatario?.funcionario }}</div>
-    <div class="data-field de_copy">{{ remetente?.funcionario }}</div>
-    <div class="data-field comunicacao_copy" [innerHTML]="ci?.comunicacao"></div>
-    <div class="data-field data-emissao_copy">{{ dataExibicao }}</div>
-    <div class="data-field assinatura-remetente_copy">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</div>
+    <div class="ci-form-wrapper">
+      <!-- Formulário 2 (Cópia) -->
+      <div class="ci-form" *ngIf="imprimirComCopia">
+        <!-- Cabeçalho -->
+        <div class="form-header">
+          <div class="header-title">COMUNICAÇÃO INTERNA</div>
+          <div class="header-logo">
+            <img src="assets/logo.png" alt="Logo BHTRANS">
+          </div>
+        </div>
+        <!-- Para/De -->
+        <div class="form-to-from">
+          <div class="address-section">
+            <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
+            <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
+          </div>
+          <div class="area-section">
+            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+          </div>
+        </div>
+        <!-- Corpo -->
+        <div class="form-body" [innerHTML]="ci?.comunicacao"></div>
+        <!-- Rodapé -->
+        <div class="form-footer">
+          <div class="footer-box">
+            <span>Belo Horizonte, {{ dataExibicao }}</span>
+            <label style="border-top: 1px solid black; width: 90%; display: flex; align-items: center; justify-content: center;">Data</label>
+          </div>
+          <div class="footer-box">
+            <span style="font-size: 12px; border-top: 1px solid black; width: 90%; display: flex; justify-content: center;">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Modal de Confirmação -->
+<app-confirmacao-impressao-modal 
+  *ngIf="mostrarModal" 
+  (escolhaImpressao)="processarEscolhaDeImpressao($event)" 
+  (modalFechado)="fecharModal()">
+</app-confirmacao-impressao-modal>

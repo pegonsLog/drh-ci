@@ -1,6 +1,7 @@
 .ci-visualizar-container {
   padding: 2rem;
   background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
 }
 
 .actions {
@@ -21,50 +22,124 @@
 .btn-voltar { background-color: #6c757d; }
 .btn-gerar-pdf { background-color: #007bff; }
 
-.ci-landscape-sheet {
-  background-image: url('/assets/ci.jpg');
-  background-repeat: no-repeat;
-  background-size: 95% 95%;
-  background-position: center;
+// Novo container para a folha A4 paisagem
+.ci-sheet-container {
+  display: flex;
+  justify-content: space-around;
+  background-color: white;
   width: 297mm;
-  height: 210mm;
+  min-height: 210mm;
   margin: 0 auto;
-  position: relative;
-  border: 1px solid #ccc;
+  padding: 1cm;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  gap: 1cm;
 }
 
-.data-field {
-  position: absolute;
-  font-family: Arial, sans-serif; /* Fonte alterada */
-  font-size: 14pt;
-  white-space: pre-wrap;
-  line-height: 1.2;
+.ci-form-wrapper {
+  width: 48%; // Cada formulário ocupa quase metade do espaço
 }
 
-/* --- Coordenadas Ajustadas (Esquerda) --- */
-.para { top: 114px; left: 95px; }
-.area-para { top: 185px; left: 70px; }
-.de { top: 157px; left: 95px; }
-.comunicacao {
-  top: 212px;
-  left: 70px;
-  width: 440px;
-  height: 505px;
-  overflow: hidden;
+.ci-form {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
-.data-emissao { top: 717px; left: 180px; font-size: 10pt;}
-.assinatura-remetente { top: 737px; left: 319px; font-size: 10pt; }
 
-/* --- Coordenadas Ajustadas (Direita - Cópia) --- */
-.para_copy { top: 114px; left: 652px; }
-.de_copy { top: 157px; left: 652px; }
-.comunicacao_copy {
-  top: 212px;
-  left: 623px;
-  width: 440px;
-  height: 505px;
-  overflow: hidden;
+// Estilos das seções do formulário
+.form-header, .form-to-from, .form-footer {
+  display: flex;
+  border-bottom: 1px solid black;
 }
-.data-emissao_copy { top: 718px; left: 731px; font-size: 10pt;}
-.assinatura-remetente_copy { top: 737px; left: 870px; font-size: 10pt; }
+
+.form-body {
+  font-size: 16px;
+  flex-grow: 1; // Ocupa o espaço restante
+  padding: 24px;
+  min-height: 12cm; // Altura mínima para o corpo da CI
+}
+
+// Cabeçalho
+.header-title, .header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.header-title {
+  width: 85%;
+  font-weight: bold;
+  border-right: 1px solid black;
+  font-size: 16px;
+}
+
+.header-logo {
+  width: 15%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    max-width: 100%;
+    max-height: 45px; // Ajusta a altura máxima do logo
+    object-fit: contain; // Mantém a proporção da imagem
+  }
+}
+
+// Para/De
+.form-to-from {
+  .address-section {
+    width: 85%;
+    flex-grow: 1;
+    .address-row {
+      padding: 8px;
+      &:first-child {
+        border-bottom: 1px solid black;
+      }
+      label {
+        font-weight: bold;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .area-section {
+    border-left: 1px solid black;
+    width: 25%;
+    .area-row { 
+      padding: 8px;
+      &:first-child {
+        border-bottom: 1px solid black;
+      }
+       label {
+        font-weight: bold;
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
+// Rodapé
+.form-footer {
+  .footer-box {
+    margin-top: 1rem;
+    border-top: 1px solid black;
+    width: 50%;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+
+    &:first-child {
+      border-right: 1px solid black;
+    }
+
+    label {
+      font-size: 0.8em;
+      color: #555;
+      margin-top: 4px;
+    }
+  }
+}

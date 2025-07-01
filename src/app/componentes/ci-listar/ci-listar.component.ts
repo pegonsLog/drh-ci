@@ -24,27 +24,28 @@ export class CiListarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.cis$ = this.ciService.getCis().pipe(
-      map(cis => cis.map(ci => {
-        const data = ci.data as any;
-
-        // Prioridade 1: Timestamp do Firestore
-        if (data && typeof data.toDate === 'function') {
-          return { ...ci, data: data.toDate() };
-        }
-
-        // Prioridade 2: String ou número que pode ser convertido para uma data válida
-        const parsedDate = new Date(data);
-        if (data && !isNaN(parsedDate.getTime())) {
-          return { ...ci, data: parsedDate };
-        }
-
-        // Fallback: Manter o valor original (provavelmente uma string inválida)
-        // O tipo é ajustado para 'any' para evitar erro de compilação, e o template irá tratar.
-        return { ...ci, data: data as any };
-      }))
-    );
     this.matricula = this.route.snapshot.paramMap.get('matricula');
+    if (this.matricula) {
+      this.cis$ = this.ciService.getCisPorUsuario(this.matricula).pipe(
+        map(cis => cis.map(ci => {
+          const data = ci.data as any;
+
+          // Prioridade 1: Timestamp do Firestore
+          if (data && typeof data.toDate === 'function') {
+            return { ...ci, data: data.toDate() };
+          }
+
+          // Prioridade 2: String ou número que pode ser convertido para uma data válida
+          const parsedDate = new Date(data);
+          if (data && !isNaN(parsedDate.getTime())) {
+            return { ...ci, data: parsedDate };
+          }
+
+          // Fallback: Manter o valor original (provavelmente uma string inválida)
+          return { ...ci, data: data as any };
+        }))
+      );
+    }
   }
 
   editarCi(id: string | undefined): void {

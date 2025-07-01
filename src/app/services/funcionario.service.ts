@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, query, where, getDocs, doc, updateDoc, getDoc, addDoc, deleteDoc } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, getDocs, doc, updateDoc, getDoc, addDoc, deleteDoc, orderBy } from '@angular/fire/firestore';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 
 export interface Funcionario {
@@ -114,7 +114,8 @@ export class FuncionarioService {
 
   getFuncionarios(): Observable<Funcionario[]> {
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
-    return from(getDocs(query(funcionariosCollectionRef))).pipe(
+    const q = query(funcionariosCollectionRef, orderBy('funcionario'));
+    return from(getDocs(q)).pipe(
       map(querySnapshot => {
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Funcionario));
       }),
