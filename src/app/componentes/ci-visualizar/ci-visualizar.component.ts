@@ -1,23 +1,26 @@
-import { Component, OnInit, ElementRef, ViewChild, Renderer2 } from '@angular/core';
+import { Component, OnInit, ElementRef, Renderer2, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { CiService, ComunicacaoInterna } from '../../services/ci.service';
 import { FuncionarioService, Funcionario } from '../../services/funcionario.service';
 import { forkJoin, of, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { ConfirmacaoImpressaoModalComponent } from '../confirmacao-impressao-modal/confirmacao-impressao-modal.component';
+import jsPDF from 'jspdf';
+import { CommonModule } from '@angular/common';
 import { GoogleDriveService } from '../../services/google-drive.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { LayoutModule } from '@angular/cdk/layout';
+import { ConfirmacaoImpressaoModalComponent } from '../confirmacao-impressao-modal/confirmacao-impressao-modal.component';
 
 @Component({
   selector: 'app-ci-visualizar',
   standalone: true,
-  imports: [CommonModule, ConfirmacaoImpressaoModalComponent],
+  imports: [CommonModule, LayoutModule, ConfirmacaoImpressaoModalComponent],
   templateUrl: './ci-visualizar.component.html',
   styleUrls: ['./ci-visualizar.component.scss']
 })
 export class CiVisualizarComponent implements OnInit {
+  isDesktop = false;
   mostrarModal = false;
   imprimirComCopia = true; // Controla a visibilidade da cópia na tela
   @ViewChild('ciContainer') ciContainer!: ElementRef;
@@ -34,10 +37,18 @@ export class CiVisualizarComponent implements OnInit {
     private funcionarioService: FuncionarioService,
     private renderer: Renderer2,
     private el: ElementRef,
-    private googleDriveService: GoogleDriveService
-  ) { }
+    private googleDriveService: GoogleDriveService,
+    private breakpointObserver: BreakpointObserver
+  ) {
+    this.breakpointObserver.observe([
+      Breakpoints.WebLandscape,
+      Breakpoints.WebPortrait
+    ]).subscribe(result => {
+      this.isDesktop = result.matches;
+    });
+  }
 
-    ngOnInit(): void {
+  ngOnInit(): void {
     this.matriculaLogado = this.funcionarioService.getMatriculaLogada();
     const ciId = this.route.snapshot.paramMap.get('id');
     const acao = this.route.snapshot.queryParamMap.get('acao');
@@ -132,13 +143,17 @@ export class CiVisualizarComponent implements OnInit {
     const data = this.ciContainer.nativeElement;
 
     // Adiciona uma classe ao host para forçar o layout de desktop durante a captura
-    this.renderer.addClass(this.el.nativeElement, 'pdf-generation-mode');
+    if (this.isDesktop) {
+      this.renderer.addClass(this.el.nativeElement, 'pdf-generation-mode');
+    }
 
     // Pequeno atraso para garantir que o navegador aplique os estilos antes da captura
     setTimeout(() => {
       html2canvas(data, { scale: 3, useCORS: true }).then(canvas => {
         // Remove a classe imediatamente após a captura para restaurar o layout responsivo
-        this.renderer.removeClass(this.el.nativeElement, 'pdf-generation-mode');
+        if (this.isDesktop) {
+          this.renderer.removeClass(this.el.nativeElement, 'pdf-generation-mode');
+        }
 
         const contentDataURL = canvas.toDataURL('image/jpeg', 0.7);
         const pdf = new jsPDF('l', 'mm', 'a4');
@@ -171,9 +186,20 @@ export class CiVisualizarComponent implements OnInit {
             // Abre o cliente de e-mail padrão com os campos preenchidos
             const subject = `CI de solicitação de folga de ${this.remetente?.funcionario || 'remetente'} - ${dataFormatada}`;
             const body = `Prezado(a),\n\nA CI de solicitação de folga foi gerada e salva no Google Drive.\n\nVocê pode acessá-la diretamente pelo link abaixo:\n${fileLink}\n\nAtenciosamente.`;
-            // Usamos o protocolo 'mailto:' que é universalmente compatível com clientes de e-mail em desktop e mobile.
-            const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            const recipientEmail = 'consultafolgadrh@gmail.com';
+
+          // Verifica se o sistema operacional é macOS para decidir a ação de e-mail
+          const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+
+          if (isMac) {
+            // No macOS, abre o Gmail em uma nova aba para uma melhor experiência web
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipientEmail}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(gmailUrl, '_blank');
+          } else {
+            // Para outros sistemas, usa o 'mailto:' padrão que abre o cliente de e-mail local
+            const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.location.href = mailtoUrl;
+          }
           },
           error: (err) => {
             console.error('Falha ao salvar no Google Drive:', err);
@@ -186,6 +212,6 @@ export class CiVisualizarComponent implements OnInit {
           this.voltarParaLista();
         }
       });
-    }, 50);
+    }, 500);
   }
 }

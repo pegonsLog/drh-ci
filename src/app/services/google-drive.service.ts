@@ -10,7 +10,7 @@ export class GoogleDriveService {
 
   // ATENÇÃO: O Client ID está exposto no frontend. 
   // Para um ambiente de produção, o fluxo de autenticação deve ser tratado por um backend seguro.
-  private clientId = '124721379210-oqsgle4m2bdmhl33ncqkipqqn0ufcbo5.apps.googleusercontent.com';
+  private clientId = '801826585187-sgt389b16vv257cb1hpmbmt8ht481hra.apps.googleusercontent.com';
   private scope = 'https://www.googleapis.com/auth/drive.file';
   
   private tokenClient: any;
@@ -61,7 +61,7 @@ export class GoogleDriveService {
           const metadata = {
             name: fileName,
             mimeType: 'application/pdf',
-            parents: ['1dp6-WRaFBhiWYMUw5-Mtho7Ej9LzEEEW'] // ID da pasta de destino
+            parents: ['1zdGIE10Bu9k3Uozt5uMRGpEytsVjFMtZ'] // ID da pasta de destino
           };
 
           const form = new FormData();

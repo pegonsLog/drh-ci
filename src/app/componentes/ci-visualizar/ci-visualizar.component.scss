@@ -1,6 +1,6 @@
 .ci-visualizar-container {
   padding: 1cm;
-  background-color: #e0e0e0; // Fundo um pouco mais escuro para contraste
+  background-color: #e0e0e0;
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
@@ -11,9 +11,9 @@
   position: fixed;
   top: 2rem;
   right: 2rem;
-  z-index: 1000; // Garante que os botões fiquem sobre o conteúdo
+  z-index: 1000;
   display: flex;
-  flex-direction: column; // Empilha os botões verticalmente
+  flex-direction: column;
   gap: 1rem;
 }
 
@@ -30,7 +30,6 @@
 .btn-gerar-pdf { background-color: #007bff; }
 .btn-imprimir { background-color: #28a745; }
 
-// Novo container para a folha A4 paisagem
 .ci-sheet-container {
   display: flex;
   justify-content: space-around;
@@ -44,18 +43,17 @@
 }
 
 .ci-form-wrapper {
-  width: 48%; // Cada formulário ocupa quase metade do espaço
+  width: 48%;
 }
 
 .ci-form {
-  border: 2px solid black; // A borda do formulário em si
+  border: 2px solid black;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: white; // Garante que o formulário seja branco
+  background-color: white;
 }
 
-// Estilos das seções do formulário
 .form-header, .form-to-from, .form-footer {
   display: flex;
   border-bottom: 2px solid black;
@@ -63,12 +61,11 @@
 
 .form-body {
   font-size: 16px;
-  flex-grow: 1; // Ocupa o espaço restante
+  flex-grow: 1;
   padding: 24px;
-  min-height: 12cm; // Altura mínima para o corpo da CI
+  min-height: 12cm;
 }
 
-// Cabeçalho
 .header-title, .header-logo {
   display: flex;
   align-items: center;
@@ -91,12 +88,11 @@
 
   img {
     max-width: 100%;
-    max-height: 45px; // Ajusta a altura máxima do logo
-    object-fit: contain; // Mantém a proporção da imagem
+    max-height: 45px;
+    object-fit: contain;
   }
 }
 
-// Para/De
 .form-to-from {
   .address-section {
     width: 85%;
@@ -129,7 +125,6 @@
   }
 }
 
-// Rodapé
 .form-footer {
   .footer-box {
     margin-top: 1rem;
@@ -155,84 +150,132 @@
 
 @page {
   size: A4 landscape;
-  margin: 0; // Impede que o navegador adicione suas próprias margens.
+  margin: 0;
 }
 
 // Media Query para Responsividade em Dispositivos Móveis
 @media (max-width: 768px) {
-  // Aplica estilos responsivos apenas se o componente não estiver em modo de geração de PDF.
-  // Isso garante que o PDF sempre seja gerado com o layout de desktop.
   :host:not(.pdf-generation-mode) {
     .ci-visualizar-container {
-      padding: 16px; // Reduz o padding geral em telas menores
+      padding: 16px;
     }
 
     .botoes-container {
-      position: static; // Remove o posicionamento flutuante
+      position: static;
       display: flex;
-      flex-direction: column; // Empilha os botões
+      flex-direction: column;
       gap: 10px;
       margin-bottom: 20px;
-      align-items: stretch; // Estica os botões
+      align-items: stretch;
     }
 
     .btn-imprimir,
     .btn-gerar-pdf {
-      display: none; // Oculta os botões de ação no mobile
+      display: none;
     }
 
     .ci-sheet-container {
-      width: 100%; // Ocupa toda a largura
-      min-height: auto; // Altura automática
-      flex-direction: column; // Empilha a CI e a cópia
+      width: 100%;
+      min-height: auto;
+      flex-direction: column;
       padding: 16px;
-      gap: 20px; // Espaçamento entre original e cópia
-      box-shadow: none; // Remove a sombra para uma aparência mais limpa
+      gap: 20px;
+      box-shadow: none;
     }
 
     .ci-form-wrapper {
-      width: 100%; // Cada formulário ocupa a largura total
+      width: 100%;
     }
 
     .form-body {
-      min-height: auto; // Altura do corpo se ajusta ao conteúdo
+      min-height: auto;
       padding: 16px;
     }
   }
 }
 
-:host(.headless-mode) {
-  // Move o componente para fora da tela para que não seja visível,
-  // mas ainda possa ser renderizado pelo html2canvas.
-  position: absolute;
-  top: -9999px;
-  left: -9999px;
-  z-index: -1; // Garante que fique atrás de outros elementos.
+// Mixin para os estilos de impressão/PDF, evitando duplicação de código
+@mixin print-layout {
+  .actions {
+    display: none !important;
+  }
+
+  .ci-visualizar-container {
+    display: block !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .ci-sheet-container {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    padding: 10mm !important;
+    box-sizing: border-box !important;
+    background: white !important;
+    margin: 0 auto !important;
+  }
+
+  .ci-form-wrapper {
+    width: 135mm !important;
+    height: 190mm !important;
+    border: 2px solid black !important;
+    overflow: hidden !important;
+  }
+
+  .ci-form {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  // Redimensiona o conteúdo do formulário para caber no PDF
+  .header-title {
+    font-size: 14px !important;
+    padding: 6px !important;
+  }
+  .header-logo img {
+    max-height: 40px !important;
+  }
+  .address-row,
+  .area-row {
+    padding: 6px !important;
+    font-size: 11px !important;
+  }
+  .form-body {
+    padding: 16px !important;
+    font-size: 12px !important;
+    min-height: 110mm !important;
+  }
+  .form-footer {
+    font-size: 10px !important;
+  }
+  .footer-box span {
+    font-size: 10px !important;
+  }
+
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
 }
 
+// Aplica o mixin para a classe de geração de PDF
+:host(.pdf-generation-mode) {
+  @include print-layout;
+}
+
+// Aplica o mixin para o contexto de impressão
 @media print {
-  // Oculta os botões e outros elementos de UI
-  .actions {
-    display: none;
-  }
+  @include print-layout;
+}
 
-  // Reseta o corpo da página para a impressão
-  body, html {
-    background-color: white;
-    margin: 0;
-    padding: 0;
-  }
-
-  // A SOLUÇÃO ROBUSTA: Desativa o flexbox para evitar o alinhamento vertical na impressão
-  .ci-visualizar-container {
-    display: block; // Remove o comportamento do flexbox
-    background-color: white;
-    padding: 0; // Remove o padding da tela
-  }
-
-  // Garante que a folha não tenha sombra e seja centralizada horizontalmente
-  .ci-sheet-container {
-    box-shadow: none;
-    margin: 0 auto; // Centraliza na página, sem margem vertical
-  }
+:host(.headless-mode) {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  z-index: -1;
 }
