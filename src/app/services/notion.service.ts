@@ -24,7 +24,7 @@ export class NotionService {
       filter: {
         property: matriculaPropertyName,
         title: {
-          contains: matricula
+          equals: matricula
         }
       }
     };

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FuncionarioService } from '../../services/funcionario.service';
-import { TreComponent } from "../tre/tre.component";
-import { DrhComponent } from "../drh/drh.component";
-import { PfComponent } from "../pf/pf.component";
+import { TreComponent } from "../consulta/tre/tre.component";
+import { DrhComponent } from "../consulta/drh/drh.component";
+import { PfComponent } from "../consulta/pf/pf.component";
 
 @Component({
   selector: 'app-painel',
@@ -54,5 +54,9 @@ export class PainelComponent implements OnInit {
 
   navegarParaFuncionarioListar(): void {
     this.router.navigate(['/funcionario-listar', this.matricula]);
+  }
+
+  navegarParaEscalaListar(): void {
+    this.router.navigate(['/escala-listar']);
   }
 }

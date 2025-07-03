@@ -1,0 +1,34 @@
+<div class="escala-form-container">
+  <p>ALTERAR ESCALA</p>
+  <form [formGroup]="escalaForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="ano">Ano:</label>
+      <input id="ano" type="text" formControlName="ano" placeholder="Ex: 2025">
+      <div *ngIf="escalaForm.get('ano')?.invalid && escalaForm.get('ano')?.touched" class="error-message">
+        <small *ngIf="escalaForm.get('ano')?.errors?.['required']">O ano é obrigatório.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="turno">Turno:</label>
+      <input id="turno" type="text" formControlName="turno" placeholder="Ex: Manhã, Tarde, Noite">
+      <div *ngIf="escalaForm.get('turno')?.invalid && escalaForm.get('turno')?.touched" class="error-message">
+        <small *ngIf="escalaForm.get('turno')?.errors?.['required']">O turno é obrigatório.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="link">Link da Escala:</label>
+      <input id="link" type="url" formControlName="link" placeholder="https://...">
+      <div *ngIf="escalaForm.get('link')?.invalid && escalaForm.get('link')?.touched" class="error-message">
+        <small *ngIf="escalaForm.get('link')?.errors?.['required']">O link é obrigatório.</small>
+        <small *ngIf="escalaForm.get('link')?.errors?.['pattern']">Informe uma URL válida (http ou https).</small>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" [disabled]="escalaForm.invalid || escalaForm.pristine">Salvar Alterações</button>
+      <button class="btn-voltar" routerLink="/escala-listar">Voltar para a Lista</button>
+    </div>
+  </form>
+</div>

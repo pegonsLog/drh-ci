@@ -1,0 +1,43 @@
+<div class="escala-list-container">
+  <div class="header">
+    <p>ESCALAS</p>
+    <div class="header-actions">
+      <a class="btn-voltar" [routerLink]="['/painel', matriculaUsuario]">Voltar ao Painel</a>
+      <button class="new-escala-button" *ngIf="isAdm" (click)="abrirNovaEscala()">Nova Escala</button>
+    </div>
+  </div>
+
+  <div *ngIf="escalas$ | async as escalas; else loading">
+    <div *ngIf="escalas.length > 0; else noEscalas" class="card-grid">
+      <div class="escala-card" *ngFor="let escala of escalas" (click)="abrirLink(escala.link)">
+        <div class="card-content">
+          <span class="ano">{{ escala.ano }}</span>
+          <span class="turno">{{ escala.turno }}</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-alterar" *ngIf="isAdm" (click)="$event.stopPropagation(); editarEscala(escala.id)">Alterar</button>
+          <button class="btn-excluir" *ngIf="isAdm" (click)="$event.stopPropagation(); confirmarExclusao(escala.id)">Excluir</button>
+        </div>
+      </div>
+    </div>
+    <ng-template #noEscalas>
+      <p class="message">Nenhuma escala encontrada.</p>
+    </ng-template>
+  </div>
+
+  <ng-template #loading>
+    <p class="message">Carregando escalas...</p>
+  </ng-template>
+
+  <!-- Modal de confirmação de exclusão -->
+  <div class="modal-excluir" *ngIf="mostrarModalExcluir">
+    <div class="modal-content">
+      <p>Tem certeza que deseja excluir esta escala?</p>
+      <div class="modal-actions">
+        <button class="btn-confirmar" (click)="excluirEscalaConfirmada()">Sim, excluir</button>
+        <button class="btn-cancelar" (click)="cancelarExclusao()">Cancelar</button>
+      </div>
+    </div>
+    <div class="modal-backdrop" (click)="cancelarExclusao()"></div>
+  </div>
+</div>

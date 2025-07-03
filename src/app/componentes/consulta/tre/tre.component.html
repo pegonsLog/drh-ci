@@ -1,0 +1,33 @@
+<h4>TRE</h4>
+
+<div *ngIf="isLoading" class="loading-placeholder">
+  <p>Carregando dados...</p>
+</div>
+
+<div *ngIf="!isLoading && notionData.length > 0" class="table-responsive">
+  <table class="table table-striped table-hover table-sm">
+    <thead>
+      <tr>
+        <th>Mat</th>
+        <th>Eleição</th>
+        <th>Data Folga</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of notionData">
+        <!-- Coluna 'Mat', tipo Título -->
+        <td>{{ item.properties['Matricula']?.title?.[0]?.plain_text || 'N/A' }}</td>
+        
+        <!-- Coluna 'Eleicao', tratando como tipo 'multi_select'. -->
+        <td [ngClass]="{'disponivel': !item.properties['Eleicao']?.multi_select?.[0]?.name}">{{ item.properties['Eleicao']?.multi_select?.[0]?.name | abbreviateYear }}</td>
+        
+        <!-- Coluna 'Data Folga', tipo Data -->
+        <td [ngClass]="{'disponivel': !item.properties['Data Folga']?.date?.start}">{{ (item.properties['Data Folga']?.date?.start | date:'dd/MM/yy') || 'Disponível' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="!isLoading && notionData.length === 0">
+  <p>Você não tem TREs</p>
+</div>

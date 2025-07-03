@@ -1,16 +1,19 @@
 import { Routes } from '@angular/router';
-import { AlterarSenhaComponent } from './componentes/alterar-senha/alterar-senha.component';
-import { CiAlterarComponent } from './componentes/ci-alterar/ci-alterar.component';
-import { CiListarComponent } from './componentes/ci-listar/ci-listar.component';
-import { CiNovaComponent } from './componentes/ci-nova/ci-nova.component';
-import { LoginComponent } from './componentes/login/login.component';
+import { AlterarSenhaComponent } from './componentes/autenticacao/alterar-senha/alterar-senha.component';
+import { CiAlterarComponent } from './componentes/consulta/ci/ci-alterar/ci-alterar.component';
+import { CiListarComponent } from './componentes/consulta/ci/ci-listar/ci-listar.component';
+import { CiNovaComponent } from './componentes/consulta/ci/ci-nova/ci-nova.component';
+import { LoginComponent } from './componentes/autenticacao/login/login.component';
 import { PainelComponent } from './componentes/painel/painel.component';
 import { funcionarioGuard } from './guards/funcionario.guard';
 import { adminGuard } from './guards/admin.guard';
-import { FuncionarioListarComponent } from './componentes/funcionario-listar/funcionario-listar.component';
-import { FuncionarioNovoComponent } from './componentes/funcionario-novo/funcionario-novo.component';
-import { FuncionarioAlterarComponent } from './componentes/funcionario-alterar/funcionario-alterar.component';
-import { CiVisualizarComponent } from './componentes/ci-visualizar/ci-visualizar.component';
+import { FuncionarioListarComponent } from './componentes/autenticacao/funcionario/funcionario-listar/funcionario-listar.component';
+import { FuncionarioNovoComponent } from './componentes/autenticacao/funcionario/funcionario-novo/funcionario-novo.component';
+import { FuncionarioAlterarComponent } from './componentes/autenticacao/funcionario/funcionario-alterar/funcionario-alterar.component';
+import { CiVisualizarComponent } from './componentes/consulta/ci/ci-visualizar/ci-visualizar.component';
+import { EscalaListarComponent } from './componentes/consulta/escala/escala-listar/escala-listar.component';
+import { EscalaNovaComponent } from './componentes/consulta/escala/escala-nova/escala-nova.component';
+import { EscalaAlterarComponent } from './componentes/consulta/escala/escala-alterar/escala-alterar.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -27,5 +30,8 @@ export const routes: Routes = [
     { path: 'ci-visualizar/:matricula/:id', component: CiVisualizarComponent, canActivate: [funcionarioGuard] },
     { path: 'funcionario-listar/:matricula', component: FuncionarioListarComponent, canActivate: [funcionarioGuard] },
     { path: 'funcionario-novo/:matricula', component: FuncionarioNovoComponent, canActivate: [adminGuard] },
-    { path: 'funcionario-alterar/:matricula/:id', component: FuncionarioAlterarComponent, canActivate: [adminGuard] }
+    { path: 'funcionario-alterar/:matricula/:id', component: FuncionarioAlterarComponent, canActivate: [adminGuard] },
+    { path: 'escala-listar', component: EscalaListarComponent, canActivate: [funcionarioGuard] },
+    { path: 'escala-nova', component: EscalaNovaComponent, canActivate: [adminGuard] },
+    { path: 'escala-alterar/:id', component: EscalaAlterarComponent, canActivate: [adminGuard] }
 ];
