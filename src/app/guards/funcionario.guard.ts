@@ -7,14 +7,25 @@ import { of } from 'rxjs';
 export const funcionarioGuard: CanActivateFn = (route, state) => {
   const funcionarioService = inject(FuncionarioService);
   const router = inject(Router);
+  const matricula = funcionarioService.getMatriculaLogada();
 
-  const matriculaLogada = funcionarioService.getMatriculaLogada();
-
-  if (matriculaLogada) {
-    return true; // Usuário está logado, permite o acesso
+  if (!matricula) {
+    router.navigate(['/login']);
+    return of(false);
   }
 
-  // Usuário não está logado, redireciona para o login
-  router.navigate(['/login']);
-  return false;
+  return funcionarioService.getFuncionarioByMatricula(matricula).pipe(
+    map(funcionario => {
+      if (funcionario) {
+        return true;
+      } else {
+        router.navigate(['/login']);
+        return false;
+      }
+    }),
+    catchError(() => {
+      router.navigate(['/login']);
+      return of(false);
+    })
+  );
 };

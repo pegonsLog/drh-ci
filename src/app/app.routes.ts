@@ -28,7 +28,7 @@ export const routes: Routes = [
     { path: 'ci-alterar/:matricula/:id', component: CiAlterarComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-listar/:matricula', component: CiListarComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-visualizar/:matricula/:id', component: CiVisualizarComponent, canActivate: [funcionarioGuard] },
-    { path: 'funcionario-listar/:matricula', component: FuncionarioListarComponent, canActivate: [funcionarioGuard] },
+    { path: 'funcionario-listar/:matricula', component: FuncionarioListarComponent, canActivate: [adminGuard] },
     { path: 'funcionario-novo/:matricula', component: FuncionarioNovoComponent, canActivate: [adminGuard] },
     { path: 'funcionario-alterar/:matricula/:id', component: FuncionarioAlterarComponent, canActivate: [adminGuard] },
     { path: 'escala-listar', component: EscalaListarComponent, canActivate: [funcionarioGuard] },
