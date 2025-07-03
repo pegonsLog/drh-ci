@@ -24,6 +24,7 @@ export class FuncionarioNovoComponent implements OnInit {
     this.funcionarioForm = this.fb.group({
       funcionario: ['', Validators.required],
       matricula: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      perfil: ['', Validators.required],
       senha: ['', [Validators.required, Validators.minLength(6)]]
     });
   }

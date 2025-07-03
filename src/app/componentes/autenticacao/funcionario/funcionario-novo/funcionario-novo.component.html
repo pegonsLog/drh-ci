@@ -19,6 +19,18 @@
     </div>
 
     <div class="form-group">
+      <label for="perfil">Perfil:</label>
+      <select id="perfil" formControlName="perfil" class="form-select">
+        <option value="" disabled>Selecione o perfil</option>
+        <option value="adm">Administrador</option>
+        <option value="user">Usuário</option>
+      </select>
+      <div *ngIf="funcionarioForm.get('perfil')?.invalid && funcionarioForm.get('perfil')?.touched" class="error-message">
+        <small *ngIf="funcionarioForm.get('perfil')?.errors?.['required']">O perfil é obrigatório.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
       <label for="senha">Senha:</label>
       <input id="senha" type="password" formControlName="senha" placeholder="Mínimo 6 caracteres">
       <div *ngIf="funcionarioForm.get('senha')?.invalid && funcionarioForm.get('senha')?.touched" class="error-message">

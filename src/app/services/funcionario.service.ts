@@ -42,18 +42,55 @@ export class FuncionarioService {
           return { success: false };
         }
 
-        const userDoc = querySnapshot.docs[0].data();
-        const hashedPassword = userDoc['senha'];
+        const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+        const hashedPassword = userData['senha'];
 
         if (!hashedPassword || typeof hashedPassword !== 'string') {
           return { success: false };
         }
 
-        const isAuth = bcrypt.compareSync(senha, hashedPassword);
-        if (isAuth) {
-          sessionStorage.setItem('matricula', matricula);
-          return { success: true, matricula: matricula };
+        // Tenta autenticar com a senha criptografada (padrão)
+        // DEBUG: Log para ver a senha armazenada
+
+
+        // 1. Tenta autenticar com a senha criptografada (padrão)
+        try {
+          const isAuth = bcrypt.compareSync(senha, hashedPassword);
+          if (isAuth) {
+
+            const perfil = userData['perfil'] || 'user';
+            sessionStorage.setItem('matricula', matricula);
+            sessionStorage.setItem('perfil', perfil);
+            this.perfilUsuario.next(perfil);
+            return { success: true, matricula: matricula };
+          }
+        } catch (e) {
+            console.warn('[AUTH] Erro ao comparar hash. Provavelmente a senha armazenada não é um hash válido.', e);
         }
+
+        // 2. LÓGICA DE MIGRAÇÃO: Se a autenticação falhar, verifica se a senha é texto plano
+        if (hashedPassword === senha) {
+          console.warn(`[MIGRAÇÃO] Senha em texto plano detectada para o usuário ${matricula}. Atualizando para hash.`);
+          try {
+            const salt = bcrypt.genSaltSync(10);
+            const newHashedPassword = bcrypt.hashSync(senha, salt);
+            const userDocRef = doc(this.firestore, 'funcionarios', userDoc.id);
+            updateDoc(userDocRef, { senha: newHashedPassword }); // Atualiza em background
+
+
+            const perfil = userData['perfil'] || 'user';
+            sessionStorage.setItem('matricula', matricula);
+            sessionStorage.setItem('perfil', perfil);
+            this.perfilUsuario.next(perfil);
+            return { success: true, matricula: matricula };
+          } catch (e) {
+            console.error('[MIGRAÇÃO] Falha ao tentar criar hash e atualizar a senha.', e);
+            return { success: false }; // Impede o login se a migração falhar
+          }
+        }
+
+
         return { success: false };
       }),
       catchError(error => {
@@ -156,14 +193,35 @@ export class FuncionarioService {
     );
   }
 
-  addFuncionario(funcionario: Omit<Funcionario, 'id'>): Observable<string | null> {
-    const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
-    // Hash da senha antes de salvar
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync((funcionario as any).senha, salt);
-    const funcionarioComSenhaHasheada = { ...funcionario, senha: hashedPassword };
+  addFuncionario(funcionario: Funcionario): Observable<string | null> {
+    // 1. Valida a matrícula e converte para número
+    const matriculaAsNumber = parseInt(funcionario.matricula as any, 10);
+    if (isNaN(matriculaAsNumber)) {
+      console.error('Erro: Matrícula inválida, não pode ser convertida para número.');
+      return of(null);
+    }
 
-    return from(addDoc(funcionariosCollectionRef, funcionarioComSenhaHasheada)).pipe(
+    // 2. Valida a senha (obrigatória para novos funcionários)
+    const senha = funcionario.senha;
+    if (!senha) {
+      console.error('Erro: Senha não fornecida para o novo funcionário.');
+      return of(null);
+    }
+
+    // 3. Criptografa a senha
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(senha, salt);
+
+    // 4. Monta o objeto final com dados validados e tipados corretamente
+    const dataToSave = {
+      ...funcionario,
+      matricula: matriculaAsNumber,
+      senha: hashedPassword,
+    };
+
+    // 5. Salva no Firestore
+    const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
+    return from(addDoc(funcionariosCollectionRef, dataToSave)).pipe(
       map(docRef => docRef.id),
       catchError(error => {
         console.error('Erro ao adicionar funcionário:', error);
@@ -172,9 +230,20 @@ export class FuncionarioService {
     );
   }
 
-  updateFuncionario(id: string, funcionario: Partial<Funcionario>): Observable<boolean> {
+  updateFuncionario(id: string, funcionarioData: Partial<Funcionario>): Observable<boolean> {
     const funcionarioDocRef = doc(this.firestore, 'funcionarios', id);
-    return from(updateDoc(funcionarioDocRef, funcionario)).pipe(
+
+    const dataToUpdate: Partial<Funcionario> = { ...funcionarioData };
+
+    // Se uma nova senha foi fornecida, faz o hash. Senão, remove o campo para não sobrescrever.
+    if (dataToUpdate.senha) {
+      const salt = bcrypt.genSaltSync(10);
+      dataToUpdate.senha = bcrypt.hashSync(dataToUpdate.senha, salt);
+    } else {
+      delete dataToUpdate.senha; // Garante que a senha não seja alterada para um valor vazio
+    }
+
+    return from(updateDoc(funcionarioDocRef, dataToUpdate)).pipe(
       map(() => true),
       catchError(error => {
         console.error('Erro ao atualizar funcionário:', error);
@@ -196,21 +265,33 @@ export class FuncionarioService {
 
   alterarSenha(matricula: string, novaSenha: string): Observable<boolean> {
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
-    const q = query(funcionariosCollectionRef, where('matricula', '==', matricula));
 
-    return from(getDocs(q)).pipe(
-      switchMap(querySnapshot => {
-        if (querySnapshot.size === 1) {
-          const userDoc = querySnapshot.docs[0];
-          const userDocRef = doc(this.firestore, 'funcionarios', userDoc.id);
-          const salt = bcrypt.genSaltSync(10);
-          const hashedPassword = bcrypt.hashSync(novaSenha, salt);
-          return from(updateDoc(userDocRef, { senha: hashedPassword })).pipe(
-            map(() => true)
-          );
-        } else {
+    // Busca por matrícula como string
+    const stringSearch$ = from(getDocs(query(funcionariosCollectionRef, where('matricula', '==', matricula))));
+
+    // Busca por matrícula como número
+    const matriculaAsNumber = parseInt(matricula, 10);
+    const numberSearch$ = !isNaN(matriculaAsNumber)
+      ? from(getDocs(query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber))))
+      : of(null);
+
+    return forkJoin([stringSearch$, numberSearch$]).pipe(
+      switchMap(([stringSnapshot, numberSnapshot]) => {
+        const querySnapshot = stringSnapshot?.size === 1 ? stringSnapshot : numberSnapshot;
+
+        if (!querySnapshot || querySnapshot.empty) {
+          console.error('[ALTERAR SENHA] Matrícula não encontrada:', matricula);
           return of(false);
         }
+
+        const userDoc = querySnapshot.docs[0];
+        const userDocRef = doc(this.firestore, 'funcionarios', userDoc.id);
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(novaSenha, salt);
+
+        return from(updateDoc(userDocRef, { senha: hashedPassword })).pipe(
+          map(() => true)
+        );
       }),
       catchError(error => {
         console.error('Erro ao alterar senha:', error);
@@ -218,4 +299,6 @@ export class FuncionarioService {
       })
     );
   }
+
+
 }

@@ -36,10 +36,12 @@
             <td>{{ ci.para }}</td>
             <td>{{ ci.comunicacao | slice:0:50 }}...</td>
                         <td class="actions-cell">
-              <i class="material-icons icon-view" [routerLink]="['/ci-visualizar', matricula, ci.id]" title="Visualizar">visibility</i>
-              <i class="material-icons icon-email btn-gerar-pdf-mobile" (click)="gerarPdfEEnviar(ci.id)" title="Gerar PDF e Enviar">email</i>
-              <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
-              <i class="material-icons icon-delete" (click)="excluirCi(ci.id)" title="Excluir">delete</i>
+              <div class="action-icons-wrapper">
+                <i class="material-icons icon-view" [routerLink]="['/ci-visualizar', matricula, ci.id]" title="Visualizar">visibility</i>
+                <i class="material-icons icon-email btn-gerar-pdf-mobile" (click)="gerarPdfEEnviar(ci.id)" title="Gerar PDF e Enviar">email</i>
+                <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
+                <i class="material-icons icon-delete" (click)="excluirCi(ci.id)" title="Excluir">delete</i>
+              </div>
             </td>
           </tr>
         </tbody>

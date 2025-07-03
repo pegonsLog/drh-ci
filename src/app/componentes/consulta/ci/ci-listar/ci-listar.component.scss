@@ -71,9 +71,10 @@ table {
   margin-top: 1rem;
 
   th, td {
-    padding: 1rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid #ddd; /* Linha separadora */
     text-align: left;
-    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle; /* Centraliza o conteúdo verticalmente */
   }
 
   th {
@@ -88,13 +89,34 @@ table {
 }
 
 .actions-cell {
+  /* A célula da tabela agora só precisa do alinhamento vertical, que já é herdado da regra global para 'td'. */
+}
+
+.action-icons-wrapper {
+  /* Este wrapper agora controla o layout dos ícones com Flexbox. */
   display: flex;
   align-items: center;
-  gap: 1rem; // Espaço entre os ícones
+  justify-content: flex-start;
+  gap: 1rem;
+
+  i, a {
+    text-decoration: none !important;
+    border: none !important;
+    cursor: pointer;
+  }
+}
+
+.icon-view, .icon-email, .icon-edit, .icon-delete {
+  cursor: pointer;
+  margin: 0 5px;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #0056b3;
+  }
 }
 
 .material-icons {
-  cursor: pointer;
   font-size: 24px;
   transition: color 0.2s ease-in-out;
 
