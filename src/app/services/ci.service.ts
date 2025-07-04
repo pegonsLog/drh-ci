@@ -11,12 +11,12 @@ export interface NewComunicacaoInterna {
   matricula: string;
   destinatario_matricula?: string;
   aprovacaoStatus: 'aprovado' | 'reprovado' | 'pendente';
+  dataAprovacao?: any;
 }
 
 // Interface para CIs que vêm do banco (com id obrigatório)
 export interface ComunicacaoInterna extends NewComunicacaoInterna {
   id: string;
-  aprovacaoStatus: 'aprovado' | 'reprovado' | 'pendente';
 }
 
 @Injectable({
@@ -91,8 +91,14 @@ export class CiService {
     return deleteDoc(ciDocRef);
   }
 
-  updateAprovacaoStatus(id: string, status: 'aprovado' | 'reprovado' | 'pendente') {
+  updateAprovacaoStatus(id: string, status: 'aprovado' | 'reprovado' | 'pendente', dataAprovacao?: any) {
     const ciDocRef = doc(this.firestore, `cis/${id}`);
-    return updateDoc(ciDocRef, { aprovacaoStatus: status });
+    const dataToUpdate: any = { aprovacaoStatus: status };
+
+    if (dataAprovacao) {
+      dataToUpdate.dataAprovacao = dataAprovacao;
+    }
+
+    return updateDoc(ciDocRef, dataToUpdate);
   }
 }

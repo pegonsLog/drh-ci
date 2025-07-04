@@ -24,6 +24,7 @@ export class CiVisualizarComponent implements OnInit {
   destinatario: Funcionario | null = null;
   matriculaLogado: string | null = null;
   dataExibicao: string | null = null;
+  dataAprovacaoExibicao: string | null = null;
   perfilUsuario$: Observable<string | null>;
 
   constructor(
@@ -73,6 +74,19 @@ export class CiVisualizarComponent implements OnInit {
               }
             }
 
+            // Lógica para formatar a data de aprovação
+            if (ci.dataAprovacao) {
+              if (typeof (ci.dataAprovacao as any).toDate === 'function') {
+                this.dataAprovacaoExibicao = (ci.dataAprovacao as any).toDate().toLocaleDateString('pt-BR');
+              } else {
+                try {
+                  this.dataAprovacaoExibicao = new Date(ci.dataAprovacao).toLocaleDateString('pt-BR');
+                } catch (e) {
+                  this.dataAprovacaoExibicao = 'Data inválida';
+                }
+              }
+            }
+
             const remetente$ = this.funcionarioService.getFuncionarioByMatricula(String(ci.matricula));
             let destinatario$: Observable<Funcionario | null>;
             if (ci.destinatario_matricula) {
@@ -116,9 +130,18 @@ export class CiVisualizarComponent implements OnInit {
     if (!this.ci || !this.respostaAprovacao) {
       return;
     }
-    this.ciService.updateAprovacaoStatus(this.ci.id, this.respostaAprovacao)
+
+    const dataAprovacao = this.respostaAprovacao === 'aprovado' ? new Date() : undefined;
+
+    this.ciService.updateAprovacaoStatus(this.ci.id, this.respostaAprovacao, dataAprovacao)
       .then(() => {
         alert('Resposta salva com sucesso!');
+        if (this.ci) {
+          this.ci.aprovacaoStatus = this.respostaAprovacao!;
+          if (dataAprovacao) {
+            this.ci.dataAprovacao = dataAprovacao;
+          }
+        }
         this.voltarParaLista();
       })
       .catch((err: any) => {

@@ -42,7 +42,14 @@
             <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
           </div>
         </div>
-        <div class="form-body" [innerHTML]="ci.comunicacao"></div>
+        <div class="form-body-wrapper">
+          <div class="form-body" [innerHTML]="ci.comunicacao"></div>
+          <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
+            <div class="stamp-text">De acordo</div>
+            <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+            <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+          </div>
+        </div>
         <div class="form-footer">
           <div class="footer-box">
             <span>Belo Horizonte, {{ dataExibicao }}</span>
@@ -72,7 +79,14 @@
             <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
           </div>
         </div>
-        <div class="form-body" [innerHTML]="ci.comunicacao"></div>
+        <div class="form-body-wrapper">
+          <div class="form-body" [innerHTML]="ci.comunicacao"></div>
+          <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
+            <div class="stamp-text">De acordo</div>
+            <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+            <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+          </div>
+        </div>
         <div class="form-footer">
           <div class="footer-box">
             <span>Belo Horizonte, {{ dataExibicao }}</span>

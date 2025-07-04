@@ -48,8 +48,8 @@ export class CiListarComponent implements OnInit {
   }
 
   enviarEmailNotificacao(ci: ComunicacaoInterna): void {
-    const subject = 'Nova Comunicação Interna para Aprovação';
-    const body = `Olá, ${ci.para}.\n\nVocê recebeu uma nova Comunicação Interna para sua análise.\n\nAcesse o sistema em: https://drh-ci.web.app\n\nAtenciosamente.`;
+    const subject = `CI de ${ci.de} para Aprovação`;
+    const body = `Olá, ${ci.para}.\n\nVocê recebeu uma nova CI para sua análise.\n\nAcesse o sistema em: https://drh-ci.web.app\n\nAtenciosamente.`;
 
     let matriculaRemetente = ci.matricula;
     let matriculaDestinatario = ci.destinatario_matricula;
