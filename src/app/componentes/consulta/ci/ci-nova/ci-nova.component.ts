@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { CiService } from '../../../../services/ci.service';
+import { CiService, NewComunicacaoInterna } from '../../../../services/ci.service';
 import { FuncionarioService, Funcionario } from '../../../../services/funcionario.service';
 import { Observable } from 'rxjs';
 
@@ -66,11 +66,12 @@ export class CiNovaComponent implements OnInit {
       }
 
       // Constrói o objeto `novaCi` explicitamente para garantir a consistência dos tipos
-      const novaCi = {
+      const novaCi: NewComunicacaoInterna = {
         de: formValue.de,
         comunicacao: formValue.comunicacao,
         para: destinatario.funcionario,
         data: new Date(),
+        aprovacaoStatus: 'pendente', // Define o status inicial como pendente
         // Garante que ambas as matrículas sejam salvas como STRINGS
         matricula: formValue.matricula.toString(),
         destinatario_matricula: destinatarioMatriculaValue.toString()

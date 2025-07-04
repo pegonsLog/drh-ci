@@ -1,14 +1,8 @@
-<app-confirmacao-impressao-modal
-  *ngIf="mostrarModal"
-  (decisao)="processarEscolhaDeImpressao($event)">
-</app-confirmacao-impressao-modal>
-
 <div class="ci-list-container">
   <div class="header">
-    <p>LISTA DE CI'S MAT: {{ matricula }}</p>
+    <p>LISTA DE CI'S APROVAÇÃO PARA MAT: {{ matricula }}</p>
     <div class="button-group">
       <a class="btn-voltar" [routerLink]="['/painel', matricula]">Voltar ao Painel</a>
-      <a class="new-ci-button" [routerLink]="['/ci-nova', matricula]">Nova CI</a>
     </div>
   </div>
 
@@ -46,10 +40,11 @@
             </td>
             <td class="actions-cell">
               <div class="action-icons-wrapper">
-                                <i class="material-icons icon-view" (click)="abrirModalImpressao(ci.id)" title="Visualizar">visibility</i>
-                <i class="material-icons icon-email" (click)="enviarEmailNotificacao(ci)" title="Notificar por E-mail">email</i>
+                <a [routerLink]="['/ci-visualizar', matricula, ci.id]" [queryParams]="{ copia: 'false' }">
+                  <i class="material-icons icon-view" title="Visualizar">visibility</i>
+                </a>
+                <i class="material-icons icon-email btn-gerar-pdf-mobile" (click)="gerarPdfEEnviar(ci.id)" title="Gerar PDF e Enviar">email</i>
                 <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
-                <i class="material-icons icon-delete" (click)="excluirCi(ci.id)" title="Excluir">delete</i>
               </div>
             </td>
           </tr>
@@ -68,6 +63,3 @@
     <p class="message">Carregando CI's...</p>
   </ng-template>
 </div>
-<ng-container *ngIf="(perfilUsuario$ | async) === 'gestor'">
-  <app-ci-listar-aprovacao></app-ci-listar-aprovacao>
-</ng-container>

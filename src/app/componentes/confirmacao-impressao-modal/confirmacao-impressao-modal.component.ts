@@ -10,11 +10,11 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./confirmacao-impressao-modal.component.scss']
 })
 export class ConfirmacaoImpressaoModalComponent {
-  @Output() escolhaImpressao = new EventEmitter<boolean>();
+  @Output() decisao = new EventEmitter<boolean>();
   @Output() modalFechado = new EventEmitter<void>();
 
   escolher(comCopia: boolean): void {
-    this.escolhaImpressao.emit(comCopia);
+    this.decisao.emit(comCopia);
   }
 
   fechar(): void {

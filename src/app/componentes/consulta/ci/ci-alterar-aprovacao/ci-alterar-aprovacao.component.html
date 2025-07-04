@@ -1,0 +1,39 @@
+<div class="ci-form-container" *ngIf="ci$ | async as ci">
+  <p>APROVAR/REPROVAR CI</p>
+
+  <div class="ci-details">
+    <div class="detail-item">
+      <strong>De:</strong> {{ ci.de }}
+    </div>
+    <div class="detail-item">
+      <strong>Para:</strong> {{ ci.para }}
+    </div>
+    <div class="detail-item">
+      <strong>Data:</strong> {{ ci.data | date:'dd/MM/yyyy' }}
+    </div>
+    <div class="detail-item comunicacao-content">
+      <strong>Comunicação:</strong>
+      <pre>{{ ci.comunicacao }}</pre>
+    </div>
+  </div>
+
+  <form [formGroup]="aprovacaoForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="aprovacaoStatus">Ação:</label>
+      <select id="aprovacaoStatus" formControlName="aprovacaoStatus" class="form-select">
+        <option value="" disabled>Selecione uma ação</option>
+        <option value="pendente">Pendente</option>
+        <option value="aprovado">Aprovar</option>
+        <option value="reprovado">Reprovar</option>
+      </select>
+      <div *ngIf="aprovacaoForm.get('aprovacaoStatus')?.invalid && (aprovacaoForm.get('aprovacaoStatus')?.dirty || aprovacaoForm.get('aprovacaoStatus')?.touched)" class="error-message">
+        <small *ngIf="aprovacaoForm.get('aprovacaoStatus')?.errors?.['required']">A seleção de uma ação é obrigatória.</small>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" [disabled]="aprovacaoForm.invalid" class="btn btn-primary">Salvar</button>
+      <button type="button" class="btn btn-secondary btn-voltar" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">Voltar</button>
+    </div>
+  </form>
+</div>

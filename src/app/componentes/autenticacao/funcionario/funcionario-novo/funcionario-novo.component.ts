@@ -25,6 +25,7 @@ export class FuncionarioNovoComponent implements OnInit {
       funcionario: ['', Validators.required],
       matricula: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
       perfil: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.minLength(6)]]
     });
   }

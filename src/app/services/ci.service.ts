@@ -6,16 +6,17 @@ import { Observable, filter, map } from 'rxjs';
 export interface NewComunicacaoInterna {
   de: string;
   para: string;
-  data: Date;
+  data: any;
   comunicacao: string;
   matricula: string;
   destinatario_matricula?: string;
-  aprovacaoStatus?: 'pendente' | 'aprovado' | 'reprovado';
+  aprovacaoStatus: 'aprovado' | 'reprovado' | 'pendente';
 }
 
 // Interface para CIs que vêm do banco (com id obrigatório)
 export interface ComunicacaoInterna extends NewComunicacaoInterna {
   id: string;
+  aprovacaoStatus: 'aprovado' | 'reprovado' | 'pendente';
 }
 
 @Injectable({
@@ -53,6 +54,22 @@ export class CiService {
     );
   }
 
+  getCisParaAprovacao(matricula: string): Observable<ComunicacaoInterna[]> {
+    const q = query(this.ciCollection, where('destinatario_matricula', '==', matricula), orderBy('data', 'desc'));
+    return (collectionData(q, { idField: 'id' }) as Observable<ComunicacaoInterna[]>).pipe(
+      map(cis => {
+        // Garante a ordenação no lado do cliente para lidar com quaisquer inconsistências
+        return cis.sort((a, b) => {
+          const dateA = a.data as any;
+          const dateB = b.data as any;
+          const timeA = dateA?.toDate ? dateA.toDate().getTime() : new Date(dateA).getTime();
+          const timeB = dateB?.toDate ? dateB.toDate().getTime() : new Date(dateB).getTime();
+          return timeB - timeA; // Descendente
+        });
+      })
+    );
+  }
+
   getCi(id: string): Observable<ComunicacaoInterna> {
     const ciDocRef = doc(this.firestore, `cis/${id}`);
     // docData pode retornar `undefined`, então filtramos para garantir o tipo de retorno
@@ -74,7 +91,7 @@ export class CiService {
     return deleteDoc(ciDocRef);
   }
 
-  updateAprovacaoStatus(id: string, status: 'aprovado' | 'reprovado') {
+  updateAprovacaoStatus(id: string, status: 'aprovado' | 'reprovado' | 'pendente') {
     const ciDocRef = doc(this.firestore, `cis/${id}`);
     return updateDoc(ciDocRef, { aprovacaoStatus: status });
   }

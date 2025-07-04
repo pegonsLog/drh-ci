@@ -24,9 +24,10 @@ export class FuncionarioAlterarComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.funcionarioForm = this.fb.group({
-      funcionario: ['', Validators.required],
+      funcionario: [{value: '', disabled: true}, Validators.required],
       matricula: [{value: '', disabled: true}, Validators.required],
       perfil: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       senha: ['']
     });
   }

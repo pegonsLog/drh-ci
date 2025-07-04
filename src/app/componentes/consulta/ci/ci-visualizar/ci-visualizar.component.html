@@ -1,7 +1,30 @@
 <ng-container *ngIf="ci">
+  <div class="floating-buttons">
+    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
+    <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
+    <button (click)="sair()" class="btn-sair">Sair</button>
+  </div>
+  <!-- Bloco flutuante de aprovação -->
+  <div *ngIf="(perfilUsuario$ | async) === 'gestor' && isDestinatario" class="floating-aprovacao">
+    <div class="radio-group d-flex flex-column gap-2 align-items-start">
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="aprovacao-float" id="pendenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacao">
+        <label class="form-check-label" for="pendenteRadioFloat">Pendente</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="aprovacao-float" id="aprovadoRadioFloat" value="aprovado" [(ngModel)]="respostaAprovacao">
+        <label class="form-check-label" for="aprovadoRadioFloat">Aprovar</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="aprovacao-float" id="reprovadoRadioFloat" value="reprovado" [(ngModel)]="respostaAprovacao">
+        <label class="form-check-label" for="reprovadoRadioFloat">Reprovar</label>
+      </div>
+      <button (click)="salvarAprovacao()" [disabled]="!respostaAprovacao" class="btn btn-primary mt-2">Salvar Resposta</button>
+    </div>
+  </div>
 <div class="ci-visualizar-container">
   <!-- Container da CI para impressão/PDF -->
-  <div #ciContainer class="ci-sheet-container">
+  <div #ciContainer class="ci-sheet-container" [class.sem-copia]="!imprimirComCopia">
     <!-- Cópia 1 (Original) -->
     <div class="ci-form-wrapper">
       <div class="ci-form">
@@ -23,17 +46,17 @@
         <div class="form-footer">
           <div class="footer-box">
             <span>Belo Horizonte, {{ dataExibicao }}</span>
-            <label style="border-top: 1px solid black; width: 90%; display: flex; align-items: center; justify-content: center;">Data</label>
+            <label class="footer-label">Data</label>
           </div>
           <div class="footer-box">
-            <span style="font-size: 12px;border-top: 1px solid black; width: 90%; display: flex; justify-content: center;">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+            <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Cópia 2 (para impressão) -->
-    <div class="ci-form-wrapper" *ngIf="imprimirComCopia">
+    <!-- Cópia 2 (Cópia) -->
+    <div *ngIf="imprimirComCopia" class="ci-form-wrapper">
       <div class="ci-form">
         <div class="form-header">
           <div class="header-title">COMUNICAÇÃO INTERNA</div>
@@ -53,49 +76,15 @@
         <div class="form-footer">
           <div class="footer-box">
             <span>Belo Horizonte, {{ dataExibicao }}</span>
-            <label style="border-top: 1px solid black; width: 90%; display: flex; align-items: center; justify-content: center;">Data</label>
+            <label class="footer-label">Data</label>
           </div>
           <div class="footer-box">
-            <span style="font-size: 12px; border-top: 1px solid black; width: 90%; display: flex; justify-content: center;">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+            <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Seção de Aprovação (visível apenas para o destinatário se pendente) -->
-  <div *ngIf="isDestinatario && ci.aprovacaoStatus === 'pendente'" class="aprovacao-section">
-    <h3>Resposta do Destinatário</h3>
-    <div class="radio-group">
-      <label>
-        <input type="radio" name="aprovacao" value="aprovado" [(ngModel)]="respostaAprovacao">
-        Aprovar
-      </label>
-      <label>
-        <input type="radio" name="aprovacao" value="reprovado" [(ngModel)]="respostaAprovacao">
-        Reprovar
-      </label>
-    </div>
-    <button (click)="salvarAprovacao()" [disabled]="!respostaAprovacao" class="btn-salvar-resposta">Salvar Resposta</button>
   </div>
-
-  <!-- Seção de Status (visível para todos se já respondido) -->
-  <div *ngIf="ci.aprovacaoStatus && ci.aprovacaoStatus !== 'pendente'" class="status-section">
-    <h3>Status da Solicitação: <span [ngClass]="ci.aprovacaoStatus">{{ ci.aprovacaoStatus | titlecase }}</span></h3>
-  </div>
-
-  <!-- Botões de Ação no Rodapé -->
-  <div class="actions-footer">
-    <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
-    <button (click)="solicitarImpressao()" class="btn-gerar-pdf">Gerar PDF e Enviar</button>
-    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
-  </div>
-  </div>
+ </div>
 </ng-container>
-
-<!-- Modal de Confirmação -->
-<app-confirmacao-impressao-modal 
-  *ngIf="mostrarModal" 
-  (escolhaImpressao)="processarEscolhaDeImpressao($event)" 
-  (modalFechado)="fecharModal()">
-</app-confirmacao-impressao-modal>

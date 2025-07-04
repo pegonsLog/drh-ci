@@ -7,7 +7,9 @@ export interface Funcionario {
   funcionario: string;
   matricula: string;
   perfil: string;
-  senha?: string; // Senha é opcional aqui, pois não queremos retorná-la sempre
+  email?: string;
+  senha?: string;
+
 }
 import { map, switchMap, catchError } from 'rxjs/operators';
 import * as bcrypt from 'bcryptjs';
