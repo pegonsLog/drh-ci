@@ -12,12 +12,13 @@
   "engines": {
     "node": "22"
   },
-  "main": "index.js",
+  "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^12.6.0",
     "firebase-functions": "^6.0.1",
     "axios": "^1.6.8",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "googleapis": "^105.0.0"
   },
   "devDependencies": {
     "eslint": "^8.15.0",

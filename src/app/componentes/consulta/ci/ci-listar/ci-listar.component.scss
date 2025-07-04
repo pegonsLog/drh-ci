@@ -88,9 +88,7 @@ table {
   }
 }
 
-.actions-cell {
-  /* A célula da tabela agora só precisa do alinhamento vertical, que já é herdado da regra global para 'td'. */
-}
+
 
 .action-icons-wrapper {
   /* Este wrapper agora controla o layout dos ícones com Flexbox. */
@@ -184,5 +182,29 @@ table {
   /* No desktop, oculta o ícone de atalho para gerar PDF, pois a ação principal é visualizar. */
   .btn-gerar-pdf-mobile {
     display: none;
+  }
+}
+
+.status-cell span {
+  padding: 5px 10px;
+  border-radius: 15px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-align: center;
+  display: inline-block;
+  min-width: 80px;
+
+  &.pendente {
+    background-color: #ffc107; // Amarelo
+    color: #212529; // Cor de texto escura para melhor contraste
+  }
+
+  &.aprovado {
+    background-color: #28a745; // Verde
+  }
+
+  &.reprovado {
+    background-color: #dc3545; // Vermelho
   }
 }

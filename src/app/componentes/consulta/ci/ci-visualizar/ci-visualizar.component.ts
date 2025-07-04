@@ -6,7 +6,8 @@ import { forkJoin, of, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { GoogleDriveService } from '../../../../services/google-drive.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -15,11 +16,13 @@ import { ConfirmacaoImpressaoModalComponent } from '../../../confirmacao-impress
 @Component({
   selector: 'app-ci-visualizar',
   standalone: true,
-  imports: [CommonModule, LayoutModule, ConfirmacaoImpressaoModalComponent],
+  imports: [CommonModule, LayoutModule, ConfirmacaoImpressaoModalComponent, FormsModule, TitleCasePipe],
   templateUrl: './ci-visualizar.component.html',
   styleUrls: ['./ci-visualizar.component.scss']
 })
 export class CiVisualizarComponent implements OnInit {
+  isDestinatario = false;
+  respostaAprovacao: 'aprovado' | 'reprovado' | null = null;
   isDesktop = false;
   mostrarModal = false;
   imprimirComCopia = true; // Controla a visibilidade da cópia na tela
@@ -64,6 +67,11 @@ export class CiVisualizarComponent implements OnInit {
         switchMap((ci: ComunicacaoInterna) => {
           if (ci) {
             this.ci = ci;
+            // Define o status padrão para CIs antigas que não têm o campo
+            if (!this.ci.aprovacaoStatus) {
+              this.ci.aprovacaoStatus = 'pendente';
+            }
+            this.isDestinatario = this.matriculaLogado === this.ci.destinatario_matricula;
 
             // Lógica para formatar a data
             if (ci.data) {
@@ -137,6 +145,23 @@ export class CiVisualizarComponent implements OnInit {
 
   imprimirPagina(): void {
     window.print();
+  }
+
+  salvarAprovacao(): void {
+    if (!this.ci || !this.respostaAprovacao) {
+      return;
+    }
+    this.ciService.updateAprovacaoStatus(this.ci.id, this.respostaAprovacao)
+      .then(() => {
+        if (this.ci && this.respostaAprovacao) { // Garante que respostaAprovacao não seja nulo
+          this.ci.aprovacaoStatus = this.respostaAprovacao;
+        }
+        alert('Resposta salva com sucesso!');
+      })
+      .catch((err: any) => {
+        console.error('Erro ao salvar resposta:', err);
+        alert('Falha ao salvar a resposta. Tente novamente.');
+      });
   }
 
   private executarGeracaoPdfEEnviar(): void {

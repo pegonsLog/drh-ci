@@ -17,17 +17,16 @@
             <th>De</th>
             <th>Para</th>
             <th>Comunicação</th>
+            <th>Status</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let ci of cis">
-                        <td>
-              <!-- Renderiza com o pipe se for um objeto Date válido -->
+            <td>
               <ng-container *ngIf="ci.data.getTime; else rawData">
                 {{ ci.data | date:'dd/MM/yy' }}
               </ng-container>
-              <!-- Renderiza a string original se não for uma data válida -->
               <ng-template #rawData>
                 {{ ci.data }}
               </ng-template>
@@ -35,7 +34,12 @@
             <td>{{ ci.de }}</td>
             <td>{{ ci.para }}</td>
             <td>{{ ci.comunicacao | slice:0:50 }}...</td>
-                        <td class="actions-cell">
+            <td class="status-cell">
+              <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
+                {{ (ci.aprovacaoStatus || 'pendente') | titlecase }}
+              </span>
+            </td>
+            <td class="actions-cell">
               <div class="action-icons-wrapper">
                 <i class="material-icons icon-view" [routerLink]="['/ci-visualizar', matricula, ci.id]" title="Visualizar">visibility</i>
                 <i class="material-icons icon-email btn-gerar-pdf-mobile" (click)="gerarPdfEEnviar(ci.id)" title="Gerar PDF e Enviar">email</i>

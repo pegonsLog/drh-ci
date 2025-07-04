@@ -1,24 +1,14 @@
+<ng-container *ngIf="ci">
 <div class="ci-visualizar-container">
-  <div class="actions">
-    <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
-    <button (click)="solicitarImpressao()" class="btn-gerar-pdf">Gerar PDF e Enviar</button>
-    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
-
-  </div>
-
+  <!-- Container da CI para impressão/PDF -->
   <div #ciContainer class="ci-sheet-container">
-    <!-- Este container irá segurar os dois formulários -->
+    <!-- Cópia 1 (Original) -->
     <div class="ci-form-wrapper">
-      <!-- Formulário 1 (Original) -->
       <div class="ci-form">
-        <!-- Cabeçalho -->
         <div class="form-header">
-          <div class="header-title">COMUNICAÇÃO INTERNA</div>         
-          <div class="header-logo">
-            <img src="assets/logo.png" alt="Logo BHTRANS">
-          </div>
+          <div class="header-title">COMUNICAÇÃO INTERNA</div>
+          <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
         </div>
-        <!-- Para/De -->
         <div class="form-to-from">
           <div class="address-section">
             <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
@@ -29,9 +19,7 @@
             <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
           </div>
         </div>
-        <!-- Corpo -->
-        <div class="form-body" [innerHTML]="ci?.comunicacao"></div>
-        <!-- Rodapé -->
+        <div class="form-body" [innerHTML]="ci.comunicacao"></div>
         <div class="form-footer">
           <div class="footer-box">
             <span>Belo Horizonte, {{ dataExibicao }}</span>
@@ -44,17 +32,13 @@
       </div>
     </div>
 
-    <div class="ci-form-wrapper">
-      <!-- Formulário 2 (Cópia) -->
-      <div class="ci-form" *ngIf="imprimirComCopia">
-        <!-- Cabeçalho -->
+    <!-- Cópia 2 (para impressão) -->
+    <div class="ci-form-wrapper" *ngIf="imprimirComCopia">
+      <div class="ci-form">
         <div class="form-header">
           <div class="header-title">COMUNICAÇÃO INTERNA</div>
-          <div class="header-logo">
-            <img src="assets/logo.png" alt="Logo BHTRANS">
-          </div>
+          <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
         </div>
-        <!-- Para/De -->
         <div class="form-to-from">
           <div class="address-section">
             <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
@@ -65,9 +49,7 @@
             <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
           </div>
         </div>
-        <!-- Corpo -->
-        <div class="form-body" [innerHTML]="ci?.comunicacao"></div>
-        <!-- Rodapé -->
+        <div class="form-body" [innerHTML]="ci.comunicacao"></div>
         <div class="form-footer">
           <div class="footer-box">
             <span>Belo Horizonte, {{ dataExibicao }}</span>
@@ -80,7 +62,36 @@
       </div>
     </div>
   </div>
-</div>
+
+  <!-- Seção de Aprovação (visível apenas para o destinatário se pendente) -->
+  <div *ngIf="isDestinatario && ci.aprovacaoStatus === 'pendente'" class="aprovacao-section">
+    <h3>Resposta do Destinatário</h3>
+    <div class="radio-group">
+      <label>
+        <input type="radio" name="aprovacao" value="aprovado" [(ngModel)]="respostaAprovacao">
+        Aprovar
+      </label>
+      <label>
+        <input type="radio" name="aprovacao" value="reprovado" [(ngModel)]="respostaAprovacao">
+        Reprovar
+      </label>
+    </div>
+    <button (click)="salvarAprovacao()" [disabled]="!respostaAprovacao" class="btn-salvar-resposta">Salvar Resposta</button>
+  </div>
+
+  <!-- Seção de Status (visível para todos se já respondido) -->
+  <div *ngIf="ci.aprovacaoStatus && ci.aprovacaoStatus !== 'pendente'" class="status-section">
+    <h3>Status da Solicitação: <span [ngClass]="ci.aprovacaoStatus">{{ ci.aprovacaoStatus | titlecase }}</span></h3>
+  </div>
+
+  <!-- Botões de Ação no Rodapé -->
+  <div class="actions-footer">
+    <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
+    <button (click)="solicitarImpressao()" class="btn-gerar-pdf">Gerar PDF e Enviar</button>
+    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
+  </div>
+  </div>
+</ng-container>
 
 <!-- Modal de Confirmação -->
 <app-confirmacao-impressao-modal 

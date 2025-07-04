@@ -29,7 +29,8 @@ export class CiAlterarComponent implements OnInit {
     this.ciForm = this.fb.group({
       de: [{value: '', disabled: true}, Validators.required],
       para: ['', Validators.required],
-      comunicacao: ['', Validators.required]
+      comunicacao: ['', Validators.required],
+      aprovacaoStatus: ['pendente', Validators.required]
     });
   }
 

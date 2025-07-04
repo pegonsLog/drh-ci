@@ -10,6 +10,7 @@ export interface NewComunicacaoInterna {
   comunicacao: string;
   matricula: string;
   destinatario_matricula?: string;
+  aprovacaoStatus?: 'pendente' | 'aprovado' | 'reprovado';
 }
 
 // Interface para CIs que vêm do banco (com id obrigatório)
@@ -71,5 +72,10 @@ export class CiService {
   deleteCi(id: string) {
     const ciDocRef = doc(this.firestore, `cis/${id}`);
     return deleteDoc(ciDocRef);
+  }
+
+  updateAprovacaoStatus(id: string, status: 'aprovado' | 'reprovado') {
+    const ciDocRef = doc(this.firestore, `cis/${id}`);
+    return updateDoc(ciDocRef, { aprovacaoStatus: status });
   }
 }
