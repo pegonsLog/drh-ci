@@ -1,8 +1,6 @@
 <div class="login-card">
     <h2>Consulta de Folgas DRH</h2>
-
-    <!-- Formulário direto de matrícula, sem login com Google -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="loginForm">
       <div class="input-group">
         <label for="matricula">Matrícula</label>
         <input id="matricula" formControlName="matricula" maxlength="10" autocomplete="off" type="tel" inputmode="numeric" placeholder="Só os números"/>
@@ -10,22 +8,25 @@
           <small *ngIf="loginForm.get('matricula')?.errors?.['required']">A matrícula é obrigatória.</small>
           <small *ngIf="loginForm.get('matricula')?.errors?.['pattern']">A matrícula deve conter apenas números.</small>
         </div>
-      </div>  
+      </div>
 
       <div class="input-group">
         <label for="senha">Senha</label>
-        <input type="password" id="senha" class="form-control" formControlName="senha" placeholder="Só os números, mínimo 6 caracteres" inputmode="numeric">
+        <input type="password" id="senha" class="form-control" formControlName="senha" placeholder="Mínimo 6 caracteres" inputmode="numeric">
       </div>
 
-      <div *ngIf="loginError" class="error-message">
+      <div class="error-message">
         {{ loginError }}
       </div>
-
-      <button type="submit" class="btn-login" [disabled]="loginForm.invalid">Entrar</button>
-
+      <div class="btn-group-vertical w-100" role="group">
+        <button type="button" class="btn btn-primary mb-2" (click)="loginAndNavigate('ci-painel')">Consulta</button>
+        <button type="button" class="btn btn-primary mb-2" (click)="loginAndNavigate('ci-listar-aprovacao')">Aprovação</button>
+        <button type="button" class="btn btn-primary mb-2" (click)="loginAndNavigate('ci-listar-lancamento')">Lançamento</button>
+        <button type="button" class="btn btn-primary" (click)="loginAndNavigate('ci-listar-apuracao')">Apuração</button>
+      </div>
       <div class="links-container">
         <a routerLink="/alterar-senha" class="link-alterar-senha">Alterar senha</a>
       </div>
     </form>
 
-  </div>
+ </div>

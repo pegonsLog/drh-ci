@@ -5,7 +5,7 @@
     <button (click)="sair()" class="btn-sair">Sair</button>
   </div>
   <!-- Bloco flutuante de aprovação -->
-  <div *ngIf="(perfilUsuario$ | async) === 'gestor' && isDestinatario" class="floating-aprovacao">
+  <div *ngIf="((perfilUsuario$ | async) === 'gestor' && isDestinatario) || (perfilUsuario$ | async) === 'adm'" class="floating-aprovacao">
     <div class="radio-group d-flex flex-column gap-2 align-items-start">
       <div class="form-check">
         <input class="form-check-input" type="radio" name="aprovacao-float" id="pendenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacao">
@@ -20,6 +20,21 @@
         <label class="form-check-label" for="reprovadoRadioFloat">Reprovar</label>
       </div>
       <button (click)="salvarAprovacao()" [disabled]="!respostaAprovacao" class="btn btn-primary mt-2">Salvar Resposta</button>
+    </div>
+  </div>
+
+  <!-- Bloco flutuante de lançamento -->
+  <div *ngIf="(perfilUsuario$ | async) === 'adm' || (perfilUsuario$ | async) === 'apurador'" class="floating-lancamento">
+    <div class="radio-group d-flex flex-column gap-2 align-items-start">
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="lancamento-float" id="naoLancadoRadioFloat" value="nao_lancado" [(ngModel)]="respostaLancamento">
+        <label class="form-check-label" for="naoLancadoRadioFloat">Não Lançado</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="lancamento-float" id="lancadoRadioFloat" value="lancado" [(ngModel)]="respostaLancamento">
+        <label class="form-check-label" for="lancadoRadioFloat">Lançado</label>
+      </div>
+      <button (click)="salvarLancamento()" [disabled]="!respostaLancamento" class="btn btn-success mt-2">Salvar Lançamento</button>
     </div>
   </div>
 <div class="ci-visualizar-container">

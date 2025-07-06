@@ -347,3 +347,18 @@
     color: #212529; // Cor escura para o texto do label para garantir a leitura
   }
 }
+
+.floating-lancamento {
+  @extend .floating-aprovacao; // Herda todos os estilos da aprovação
+  top: 240px; // Posição ajustada para ficar abaixo da seção de aprovação
+
+  .btn-success {
+    background-color: #198754; // Verde para o botão de salvar lançamento
+    border-color: #198754;
+
+    &:hover {
+      background-color: #157347;
+      border-color: #146c43;
+    }
+  }
+}

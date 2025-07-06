@@ -1,0 +1,3 @@
+no componente ci-visulizar criar uma nova secção flutuante abaixo da secção de aprovação
+no mesmo modelo de aprovação,  para lançamento, como as opções de Lançado e Não Lançado, 
+porem o gestor não podera visualizar a opção de lançamento, somente o adm e apurador podera visualizar

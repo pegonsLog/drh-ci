@@ -72,6 +72,7 @@ export class CiNovaComponent implements OnInit {
         para: destinatario.funcionario,
         data: new Date(),
         aprovacaoStatus: 'pendente', // Define o status inicial como pendente
+        lancamentoStatus: 'nao_lancado', // Define o status de lançamento inicial
         // Garante que ambas as matrículas sejam salvas como STRINGS
         matricula: formValue.matricula.toString(),
         destinatario_matricula: destinatarioMatriculaValue.toString()

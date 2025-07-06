@@ -16,6 +16,8 @@ import { adminGuard } from './guards/admin.guard';
 import { funcionarioGuard } from './guards/funcionario.guard';
 import { CiAlterarAprovacaoComponent } from './componentes/consulta/ci/ci-alterar-aprovacao/ci-alterar-aprovacao.component';
 import { CiListarAprovacaoComponent } from './componentes/consulta/ci/ci-listar-aprovacao/ci-listar-aprovacao.component';
+import { CiListarLancamentoComponent } from './componentes/consulta/ci/ci-listar-lancamento/ci-listar-lancamento.component';
+import { CiListarApuracaoComponent } from './componentes/consulta/ci/ci-listar-apuracao/ci-listar-apuracao.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -31,6 +33,8 @@ export const routes: Routes = [
     { path: 'ci-listar/:matricula', component: CiListarComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-alterar-aprovacao/:matricula/:id', component: CiAlterarAprovacaoComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-listar-aprovacao/:matricula', component: CiListarAprovacaoComponent, canActivate: [funcionarioGuard] },
+    { path: 'ci-listar-lancamento', component: CiListarLancamentoComponent, canActivate: [funcionarioGuard] },
+    { path: 'ci-listar-apuracao/:matricula', component: CiListarApuracaoComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-visualizar/:matricula/:id', component: CiVisualizarComponent, canActivate: [funcionarioGuard] },
     { path: 'funcionario-listar/:matricula', component: FuncionarioListarComponent, canActivate: [adminGuard] },
     { path: 'funcionario-novo/:matricula', component: FuncionarioNovoComponent, canActivate: [adminGuard] },

@@ -19,6 +19,7 @@ export class CiVisualizarComponent implements OnInit {
   imprimirComCopia = true;
   isDestinatario = false;
   respostaAprovacao: 'aprovado' | 'reprovado' | null = null;
+  respostaLancamento: 'lancado' | 'nao_lancado' | null = null;
   ci: ComunicacaoInterna | null = null;
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
@@ -117,9 +118,8 @@ export class CiVisualizarComponent implements OnInit {
   }
 
   sair(): void {
-    if (this.matriculaLogado) {
-      this.router.navigate(['/painel', this.matriculaLogado]);
-    }
+    this.funcionarioService.logout();
+    this.router.navigate(['/login']);
   }
 
   imprimirPagina(): void {
@@ -147,6 +147,30 @@ export class CiVisualizarComponent implements OnInit {
       .catch((err: any) => {
         console.error('Erro ao salvar resposta:', err);
         alert('Falha ao salvar a resposta. Tente novamente.');
+      });
+  }
+
+  salvarLancamento(): void {
+    if (!this.ci || !this.respostaLancamento) {
+      return;
+    }
+
+    const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
+
+    this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento)
+      .then(() => {
+        alert('Status de lançamento atualizado com sucesso!');
+        if (this.ci) {
+          this.ci.lancamentoStatus = this.respostaLancamento!;
+          if (dataLancamento) {
+            this.ci.dataLancamento = dataLancamento;
+          }
+        }
+        this.voltarParaLista();
+      })
+      .catch((err: any) => {
+        console.error('Erro ao salvar status de lançamento:', err);
+        alert('Falha ao salvar o status de lançamento. Tente novamente.');
       });
   }
 }

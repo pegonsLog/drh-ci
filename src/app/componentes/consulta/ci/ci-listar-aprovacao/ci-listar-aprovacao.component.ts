@@ -73,4 +73,9 @@ export class CiListarAprovacaoComponent implements OnInit {
       });
     }
   }
+
+  logout(): void {
+    this.funcionarioService.logout();
+    this.router.navigate(['/login']);
+  }
 }

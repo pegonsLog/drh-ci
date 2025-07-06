@@ -5,14 +5,13 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { CiService, ComunicacaoInterna } from '../../../../services/ci.service';
-import { CiListarAprovacaoComponent } from "../ci-listar-aprovacao/ci-listar-aprovacao.component";
 import { ConfirmacaoImpressaoModalComponent } from '../../../confirmacao-impressao-modal/confirmacao-impressao-modal.component';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-ci-listar',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterLink, DatePipe, CiListarAprovacaoComponent, ConfirmacaoImpressaoModalComponent],
+  imports: [CommonModule, RouterModule, RouterLink, DatePipe, ConfirmacaoImpressaoModalComponent],
   templateUrl: './ci-listar.component.html',
   styleUrls: ['./ci-listar.component.scss']
 })

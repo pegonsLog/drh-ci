@@ -12,6 +12,8 @@ export interface NewComunicacaoInterna {
   destinatario_matricula?: string;
   aprovacaoStatus: 'aprovado' | 'reprovado' | 'pendente';
   dataAprovacao?: any;
+  lancamentoStatus: 'nao_lancado' | 'lancado';
+  dataLancamento?: any;
 }
 
 // Interface para CIs que vêm do banco (com id obrigatório)
@@ -100,5 +102,31 @@ export class CiService {
     }
 
     return updateDoc(ciDocRef, dataToUpdate);
+  }
+
+  updateLancamentoStatus(id: string, status: 'lancado' | 'nao_lancado', dataLancamento?: any) {
+    const ciDocRef = doc(this.firestore, `cis/${id}`);
+    const dataToUpdate: any = { lancamentoStatus: status };
+
+    if (dataLancamento) {
+      dataToUpdate.dataLancamento = dataLancamento;
+    }
+
+    return updateDoc(ciDocRef, dataToUpdate);
+  }
+
+  getCisParaLancamento(): Observable<ComunicacaoInterna[]> {
+    const q = query(this.ciCollection, orderBy('lancado', 'asc'), orderBy('data', 'desc'));
+    return collectionData(q, { idField: 'id' }) as Observable<ComunicacaoInterna[]>;
+  }
+
+  getCisParaApuracao(): Observable<ComunicacaoInterna[]> {
+    const q = query(
+      this.ciCollection,
+      where('aprovacaoStatus', '==', 'aprovado'),
+      where('lancamentoStatus', '==', 'nao_lancado'),
+      orderBy('data', 'desc')
+    );
+    return collectionData(q, { idField: 'id' }) as Observable<ComunicacaoInterna[]>;
   }
 }

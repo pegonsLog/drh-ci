@@ -1,0 +1,67 @@
+<div class="ci-list-container">
+    <div class="header">
+      <p>LISTA DE CI'S - LANÇAMENTO</p>
+      <div class="button-group">
+        <button class="btn btn-danger" (click)="logout()">Sair</button>
+      </div>
+    </div>
+  
+    <div *ngIf="cis$ | async as cis; else loading">
+      <!-- Show table only if there is data -->
+      <div *ngIf="cis.length > 0; else noCis" class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>De</th>
+              <th>Para</th>
+              <th>Comunicação</th>
+              <th>Status</th>
+              <th>Lançamento</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ci of cis">
+              <td>
+                <ng-container *ngIf="ci.data.getTime; else rawData">
+                  {{ ci.data | date:'dd/MM/yy' }}
+                </ng-container>
+                <ng-template #rawData>
+                  {{ ci.data }}
+                </ng-template>
+              </td>
+              <td>{{ ci.de }}</td>
+              <td>{{ ci.para }}</td>
+              <td>{{ ci.comunicacao | slice:0:50 }}...</td>
+              <td class="status-cell">
+                <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
+                  {{ (ci.aprovacaoStatus || 'pendente') | titlecase }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <div class="action-icons-wrapper">
+                  <a [routerLink]="['/ci-visualizar', ci.id]" [queryParams]="{ copia: 'false' }">
+                    <i class="material-icons icon-view" title="Visualizar">visibility</i>
+                  </a>
+                  <i class="material-icons icon-email btn-gerar-pdf-mobile" (click)="gerarPdfEEnviar(ci.id)" title="Gerar PDF e Enviar">email</i>
+                  <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <!-- Template for when there is no data -->
+      <ng-template #noCis>
+        <p class="message">Nenhuma CI encontrada.</p>
+      </ng-template>
+    </div>
+  
+    <!-- Template for loading state -->
+    <ng-template #loading>
+      <p class="message">Carregando CI's...</p>
+    </ng-template>
+  </div>
+  
