@@ -1,1 +1,2 @@
-o perfil aprovação não poderá ver o botão 
+o componente alterar senha, do jeito que está, possibilita um usuario mudar a senha de outro e entrar no sistema,
+preciso que ele so possa mudar a senha dele proprio

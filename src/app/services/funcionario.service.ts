@@ -265,7 +265,7 @@ export class FuncionarioService {
     );
   }
 
-  alterarSenha(matricula: string, novaSenha: string): Observable<boolean> {
+  alterarSenha(matricula: string, senhaAtual: string, novaSenha: string): Observable<boolean> {
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
 
     // Busca por matrícula como string
@@ -287,11 +287,23 @@ export class FuncionarioService {
         }
 
         const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+        const hashedPassword = userData['senha'];
+
+        // 1. Validar a senha atual
+        const isSenhaAtualValida = bcrypt.compareSync(senhaAtual, hashedPassword);
+
+        if (!isSenhaAtualValida) {
+          console.warn('[ALTERAR SENHA] Tentativa de alteração com senha atual incorreta para a matrícula:', matricula);
+          return of(false); // Senha atual não confere
+        }
+
+        // 2. Se a senha atual for válida, prosseguir com a alteração
         const userDocRef = doc(this.firestore, 'funcionarios', userDoc.id);
         const salt = bcrypt.genSaltSync(10);
-        const hashedPassword = bcrypt.hashSync(novaSenha, salt);
+        const newHashedPassword = bcrypt.hashSync(novaSenha, salt);
 
-        return from(updateDoc(userDocRef, { senha: hashedPassword })).pipe(
+        return from(updateDoc(userDocRef, { senha: newHashedPassword })).pipe(
           map(() => true)
         );
       }),

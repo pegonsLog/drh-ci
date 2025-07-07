@@ -1,0 +1,87 @@
+<ng-container *ngIf="ci">
+  <div class="floating-buttons">
+    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
+    <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
+    <button (click)="sair()" class="btn-sair">Sair</button>
+  </div>
+
+<div class="ci-visualizar-container">
+  <!-- Container da CI para impressão/PDF -->
+  <div #ciContainer class="ci-sheet-container" [class.sem-copia]="!imprimirComCopia">
+    <!-- Cópia 1 (Original) -->
+    <div class="ci-form-wrapper">
+      <div class="ci-form">
+        <div class="form-header">
+          <div class="header-title">COMUNICAÇÃO INTERNA</div>
+          <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
+        </div>
+        <div class="form-to-from">
+          <div class="address-section">
+            <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
+            <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
+          </div>
+          <div class="area-section">
+            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+          </div>
+        </div>
+        <div class="form-body-wrapper">
+          <div class="form-body" [innerHTML]="ci.comunicacao"></div>
+          <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
+            <div class="stamp-text">De acordo</div>
+            <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+            <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <div class="footer-box">
+            <span>Belo Horizonte, {{ dataExibicao }}</span>
+            <label class="footer-label">Data</label>
+          </div>
+          <div class="footer-box">
+            <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cópia 2 (Cópia) -->
+    <div *ngIf="imprimirComCopia" class="ci-form-wrapper">
+      <div class="ci-form">
+        <div class="form-header">
+          <div class="header-title">COMUNICAÇÃO INTERNA</div>
+          <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
+        </div>
+        <div class="form-to-from">
+          <div class="address-section">
+            <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
+            <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
+          </div>
+          <div class="area-section">
+            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+          </div>
+        </div>
+        <div class="form-body-wrapper">
+          <div class="form-body" [innerHTML]="ci.comunicacao"></div>
+          <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
+            <div class="stamp-text">De acordo</div>
+            <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+            <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <div class="footer-box">
+            <span>Belo Horizonte, {{ dataExibicao }}</span>
+            <label class="footer-label">Data</label>
+          </div>
+          <div class="footer-box">
+            <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+ </div>
+</ng-container>

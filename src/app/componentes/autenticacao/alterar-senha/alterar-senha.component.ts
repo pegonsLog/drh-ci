@@ -23,6 +23,7 @@ export class AlterarSenhaComponent implements OnInit {
   ) {
     this.alterarSenhaForm = this.fb.group({
       matricula: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      senhaAtual: ['', Validators.required],
       novaSenha: ['', [Validators.required, Validators.minLength(6)]],
       confirmarSenha: ['', Validators.required]
     }, { validator: this.senhasCoincidem });
@@ -47,22 +48,22 @@ export class AlterarSenhaComponent implements OnInit {
 
     this.mensagem = null;
     this.isError = false;
-    const { matricula, novaSenha } = this.alterarSenhaForm.value;
+    const { matricula, senhaAtual, novaSenha } = this.alterarSenhaForm.value;
 
-    this.funcionarioService.alterarSenha(matricula, novaSenha).subscribe({
-            next: (sucesso: boolean) => {
+    this.funcionarioService.alterarSenha(matricula, senhaAtual, novaSenha).subscribe({
+      next: (sucesso: boolean) => {
         if (sucesso) {
           this.mensagem = 'Senha alterada com sucesso! Você será redirecionado para o login em 3 segundos.';
           this.isError = false;
           this.alterarSenhaForm.reset();
           setTimeout(() => this.router.navigate(['/login']), 3000);
         } else {
-          this.mensagem = 'Matrícula não encontrada. Verifique os dados e tente novamente.';
+          this.mensagem = 'Matrícula ou senha atual incorreta. Verifique os dados e tente novamente.';
           this.isError = true;
         }
       },
       error: () => {
-        this.mensagem = 'Ocorreu um erro ao tentar alterar a senha. Tente novamente mais tarde.';
+        this.mensagem = 'Ocorreu um erro de comunicação com o servidor. Tente novamente mais tarde.';
         this.isError = true;
       }
     });

@@ -1,0 +1,43 @@
+<div class="ci-form-container">
+  <p>ALTERAR CI</p>
+  <form [formGroup]="ciForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="de">De:</label>
+      <input id="de" type="text" formControlName="de">
+    </div>
+
+    <div class="form-group">
+      <label for="para">Para:</label>
+      <select id="para" formControlName="para" class="form-select">
+        <option value="" disabled>Selecione um destinatário</option>
+        <option *ngFor="let funcionario of (funcionarios$ | async)" [value]="funcionario.matricula">
+          {{ funcionario.funcionario }}
+        </option>
+      </select>
+      <div *ngIf="ciForm.get('para')?.invalid && (ciForm.get('para')?.dirty || ciForm.get('para')?.touched)" class="error-message">
+        <small *ngIf="ciForm.get('para')?.errors?.['required']">O destinatário é obrigatório.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="comunicacao">Comunicação:</label>
+      <textarea id="comunicacao" formControlName="comunicacao" rows="10"></textarea>
+      <div *ngIf="ciForm.get('comunicacao')?.invalid && (ciForm.get('comunicacao')?.dirty || ciForm.get('comunicacao')?.touched)" class="error-message">
+        <small *ngIf="ciForm.get('comunicacao')?.errors?.['required']">A comunicação é obrigatória.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="lancamentoStatus">Status Lançamento:</label>
+      <select id="lancamentoStatus" formControlName="lancamentoStatus" class="form-select">
+        <option value="nao_lancado">Não Lançado</option>
+        <option value="lancado">Lançado</option>
+      </select>
+    </div>
+    <div class="button-group">
+      <button type="submit" [disabled]="ciForm.invalid || ciForm.pristine">Salvar Alterações</button>
+      <button class="btn-voltar" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">Voltar para a Lista</button>
+      <button class="btn-sair" *ngIf="matricula" [routerLink]="['/painel', matricula]">Sair</button>
+    </div>
+  </form>
+</div>

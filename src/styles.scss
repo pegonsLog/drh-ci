@@ -140,4 +140,9 @@ tbody tr:last-of-type {
   border-radius: 8px; /* Para manter as bordas arredondadas */
 }
 
-
+@media print {
+  .floating-buttons,
+  .floating-lancamento {
+    display: none !important;
+  }
+}
