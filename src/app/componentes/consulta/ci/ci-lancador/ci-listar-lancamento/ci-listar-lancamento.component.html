@@ -2,7 +2,9 @@
     <div class="header">
       <p>LISTA DE CI'S - LANÇAMENTO</p>
       <div class="button-group">
-        <button class="btn btn-danger" (click)="logout()">Sair</button>
+        <a class="btn-escala" *ngIf="matriculaLogada" [routerLink]="['/escala-gestor', matriculaLogada]">Escalas</a>
+        <a class="btn-usuario" *ngIf="perfilUsuario === 'adm'" [routerLink]="['/funcionarios']">Usuários</a>
+        <a class="btn-voltar" (click)="logout()">Sair</a>
       </div>
     </div>
   
@@ -57,12 +59,12 @@
             </tr>
           </tbody>
         </table>
+      </div>
 
-        <div class="pagination-controls">
-          <button (click)="previousPage()" [disabled]="pageNumber === 1" class="btn btn-secondary">Anterior</button>
-          <span>Página {{ pageNumber }}</span>
-          <button (click)="nextPage()" [disabled]="isLastPage" class="btn btn-secondary">Próximo</button>
-        </div>
+      <div class="pagination-controls" *ngIf="cis.length > 0">
+        <button (click)="previousPage()" [disabled]="pageNumber === 1 || isLoading" class="btn btn-secondary">Anterior</button>
+        <span>Página {{ pageNumber }}</span>
+        <button (click)="nextPage()" [disabled]="isLastPage || isLoading" class="btn btn-secondary">Próximo</button>
       </div>
 
       <ng-template #noCis>

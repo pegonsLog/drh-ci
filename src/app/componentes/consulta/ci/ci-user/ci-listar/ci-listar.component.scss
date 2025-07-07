@@ -217,3 +217,11 @@ table {
     background-color: #007bff; // Azul
   }
 }
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px;
+}

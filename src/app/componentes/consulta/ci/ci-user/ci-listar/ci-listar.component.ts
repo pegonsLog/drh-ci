@@ -1,12 +1,12 @@
 import { Component, OnInit, Inject } from '@angular/core';
-
 import { FuncionarioService } from '../../../../../services/funcionario.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { ConfirmacaoImpressaoModalComponent } from '../../../../confirmacao-impressao-modal/confirmacao-impressao-modal.component';
 import { RouterModule } from '@angular/router';
+import { DocumentData, DocumentSnapshot } from 'firebase/firestore';
 
 @Component({
   selector: 'app-ci-listar',
@@ -19,16 +19,79 @@ export class CiListarComponent implements OnInit {
   mostrarModal = false;
   ciSelecionadaId: string | null = null;
   matricula: string | null = null;
-  cis$!: Observable<ComunicacaoInterna[]>;
   perfilUsuario$: Observable<string | null>;
 
+  // Pagination properties
+  cis: ComunicacaoInterna[] = [];
+  isLoading = true;
+  pageNumber = 1;
+  pageSize = 10;
+  isLastPage = false;
+
+  private firstDocOnPage: DocumentSnapshot<DocumentData> | null = null;
+  private lastDocOnPage: DocumentSnapshot<DocumentData> | null = null;
+
   constructor(
-    @Inject(CiService) private ciService: CiService, 
+    @Inject(CiService) private ciService: CiService,
     private router: Router,
     private route: ActivatedRoute,
     @Inject(FuncionarioService) private funcionarioService: FuncionarioService
-  ) { 
+  ) {
     this.perfilUsuario$ = this.funcionarioService.perfilUsuario$;
+  }
+
+  ngOnInit(): void {
+    this.matricula = this.route.snapshot.paramMap.get('matricula');
+    if (this.matricula) {
+      this.loadCis('next'); // Load initial page
+    } else {
+      this.isLoading = false;
+    }
+  }
+
+  loadCis(direction: 'next' | 'prev', cursor?: DocumentSnapshot<DocumentData>): void {
+    if (!this.matricula) return;
+    this.isLoading = true;
+
+    this.ciService.getCisPorUsuarioPaginado(this.matricula, this.pageSize, direction, cursor).subscribe(result => {
+      if (result.cis.length === 0) {
+        if (direction === 'next') this.isLastPage = true;
+        this.isLoading = false;
+        return;
+      }
+
+      this.cis = result.cis.map(ci => {
+        const data = ci.data as any;
+        if (data && typeof data.toDate === 'function') {
+          return { ...ci, data: data.toDate() };
+        }
+        const parsedDate = new Date(data);
+        if (data && !isNaN(parsedDate.getTime())) {
+          return { ...ci, data: parsedDate };
+        }
+        return { ...ci, data: data as any };
+      });
+
+      this.firstDocOnPage = result.firstDoc;
+      this.lastDocOnPage = result.lastDoc;
+      this.isLastPage = result.cis.length < this.pageSize;
+      this.isLoading = false;
+    });
+  }
+
+  nextPage(): void {
+    if (!this.isLastPage) {
+      this.pageNumber++;
+      this.loadCis('next', this.lastDocOnPage ?? undefined);
+    }
+  }
+
+  previousPage(): void {
+    if (this.pageNumber > 1) {
+      this.pageNumber--;
+      this.isLastPage = false;
+      this.loadCis('prev', this.firstDocOnPage ?? undefined);
+    }
   }
 
   abrirModalImpressao(ciId: string): void {
@@ -38,8 +101,8 @@ export class CiListarComponent implements OnInit {
 
   processarEscolhaDeImpressao(comCopia: boolean): void {
     if (this.ciSelecionadaId && this.matricula) {
-      this.router.navigate(['/ci-visualizar', this.matricula, this.ciSelecionadaId], { 
-        queryParams: { copia: comCopia.toString() } 
+      this.router.navigate(['/ci-visualizar', this.matricula, this.ciSelecionadaId], {
+        queryParams: { copia: comCopia.toString() }
       });
     }
     this.mostrarModal = false;
@@ -60,7 +123,6 @@ export class CiListarComponent implements OnInit {
       return;
     }
 
-    // Abra a aba imediatamente para evitar bloqueio de pop-up
     const popup = window.open('', '_blank');
     if (!popup) {
       alert('Não foi possível abrir a janela do Gmail. Verifique se o navegador está bloqueando pop-ups.');
@@ -80,36 +142,12 @@ export class CiListarComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.matricula = this.route.snapshot.paramMap.get('matricula');
-    if (this.matricula) {
-      this.cis$ = this.ciService.getCisPorUsuario(this.matricula).pipe(
-        map(cis => cis.map(ci => {
-          const data = ci.data as any;
-
-          // Prioridade 1: Timestamp do Firestore
-          if (data && typeof data.toDate === 'function') {
-            return { ...ci, data: data.toDate() };
-          }
-
-          // Prioridade 2: String ou número que pode ser convertido para uma data válida
-          const parsedDate = new Date(data);
-          if (data && !isNaN(parsedDate.getTime())) {
-            return { ...ci, data: parsedDate };
-          }
-
-          // Fallback: Manter o valor original (provavelmente uma string inválida)
-          return { ...ci, data: data as any };
-        }))
-      );
-    }
-  }
-
   editarCi(id: string | undefined): void {
     if (id) {
       this.router.navigate(['/ci-alterar', this.matricula, id]);
     }
   }
+
 
   gerarPdfEEnviar(id: string | undefined): void {
     if (!id) return;

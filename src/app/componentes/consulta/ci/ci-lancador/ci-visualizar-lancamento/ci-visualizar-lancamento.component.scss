@@ -388,11 +388,32 @@
 }
 
 .floating-lancamento {
-  @extend .floating-aprovacao; // Herda todos os estilos da aprovação
-  top: 240px; // Posição ajustada para ficar abaixo da seção de aprovação
+  position: fixed;
+  top: 240px; /* Posição ajustada para ficar abaixo dos outros blocos flutuantes */
+  right: 2rem;
+  z-index: 998; /* Z-index um pouco menor para não sobrepor outros menus se houver */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 190px;
+  align-items: flex-start; /* Alinha os itens à esquerda dentro do bloco */
+
+  .form-check {
+    width: 100%; /* Garante que o radio ocupe todo o espaço */
+  }
+
+  .form-check-label {
+    color: #212529;
+    font-size: 1rem;
+  }
 
   .btn-success {
-    background-color: #198754; // Verde para o botão de salvar lançamento
+    width: 100%; /* Botão ocupa toda a largura do container */
+    background-color: #198754;
     border-color: #198754;
 
     &:hover {

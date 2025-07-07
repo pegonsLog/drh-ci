@@ -146,3 +146,47 @@ tbody tr:last-of-type {
     display: none !important;
   }
 }
+
+/* Estilos de botão personalizados */
+.btn-escala, .btn-usuario, .btn-voltar {
+  @extend .btn;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white !important; // Garante que o texto seja branco
+  margin-left: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-escala {
+  background-color: #6f42c1; // Roxo do Bootstrap
+  border-color: #6f42c1;
+
+  &:hover {
+    background-color: #5a32a3;
+    border-color: #5a32a3;
+  }
+}
+
+.btn-usuario {
+  background-color: #3f51b5; // Azul índigo (usado no cabeçalho da tabela)
+  border-color: #3f51b5;
+
+  &:hover {
+    background-color: #303f9f;
+    border-color: #303f9f;
+  }
+}
+
+.btn-voltar {
+  background-color: #dc3545; // Vermelho de perigo do Bootstrap
+  border-color: #dc3545;
+
+  &:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+  }
+}

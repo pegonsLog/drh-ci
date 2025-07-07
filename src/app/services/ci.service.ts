@@ -47,33 +47,112 @@ export class CiService {
   }
 
   getCisPorUsuario(matricula: string): Observable<ComunicacaoInterna[]> {
-    const q = query(this.ciCollection, where('matricula', '==', matricula), orderBy('data', 'desc'));
-    return (collectionData(q, { idField: 'id' }) as Observable<ComunicacaoInterna[]>).pipe(
-      map(cis => {
-        // Garante a ordenação no lado do cliente para lidar com quaisquer inconsistências
-        return cis.sort((a, b) => {
-          const dateA = a.data as any;
-          const dateB = b.data as any;
-          const timeA = dateA?.toDate ? dateA.toDate().getTime() : new Date(dateA).getTime();
-          const timeB = dateB?.toDate ? dateB.toDate().getTime() : new Date(dateB).getTime();
-          return timeB - timeA; // Descendente
+    // Mantido para compatibilidade, busca todos os resultados (limite alto).
+    return this.getCisPorUsuarioPaginado(matricula, 1000, 'next').pipe(
+      map(result => result.cis)
+    );
+  }
+
+  getCisPorUsuarioPaginado(matricula: string, pageSize: number, direction: 'next' | 'prev', cursor?: DocumentSnapshot<DocumentData>): Observable<{ cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }> {
+    const cisCollection = collection(this.firestore, 'cis');
+    const constraints = [ where('matricula', '==', matricula) ];
+
+    let q;
+    if (direction === 'prev' && cursor) {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'asc'),
+        endBefore(cursor),
+        limitToLast(pageSize)
+      );
+    } else {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'desc'),
+        limit(pageSize)
+      );
+      if (cursor && direction === 'next') {
+        q = query(q, startAfter(cursor));
+      }
+    }
+
+    return from(getDocs(q)).pipe(
+      map(snapshot => {
+        let cis = snapshot.docs.map(doc => {
+          const data = doc.data() as ComunicacaoInterna;
+          return { ...data, id: doc.id };
         });
+
+        if (direction === 'prev') {
+          cis.reverse();
+        }
+
+        const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
+        const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+
+        return { cis, firstDoc, lastDoc };
       })
     );
   }
 
   getCisParaAprovacao(matricula: string): Observable<ComunicacaoInterna[]> {
-    const q = query(this.ciCollection, where('para', '==', matricula));
-    return (collectionData(q, { idField: 'id' }) as Observable<ComunicacaoInterna[]>).pipe(
-      map(cis => {
-        // Garante a ordenação no lado do cliente para lidar com quaisquer inconsistências
-        return cis.sort((a, b) => {
-          const dateA = a.data as any;
-          const dateB = b.data as any;
-          const timeA = dateA?.toDate ? dateA.toDate().getTime() : new Date(dateA).getTime();
-          const timeB = dateB?.toDate ? dateB.toDate().getTime() : new Date(dateB).getTime();
-          return timeB - timeA; // Descendente
+    // Este método agora usa a função paginada para manter a compatibilidade, 
+    // mas busca todos os resultados (limite alto) para quem o usa sem paginação.
+    return this.getCisParaAprovacaoPaginado(matricula, 1000, 'next').pipe(
+      map(result => result.cis)
+    );
+  }
+
+  getCisParaAprovacaoPaginado(
+    matricula: string,
+    pageSize: number,
+    direction: 'next' | 'prev',
+    cursor?: DocumentSnapshot<DocumentData>
+  ): Observable<{ cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }> {
+    const cisCollection = collection(this.firestore, 'cis');
+    const constraints: QueryConstraint[] = [
+      where('para', '==', matricula)
+      // Nenhum outro filtro de status para mostrar todos os registros do aprovador
+    ];
+
+    let q;
+    if (direction === 'prev' && cursor) {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'asc'),
+        endBefore(cursor),
+        limitToLast(pageSize)
+      );
+    } else {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'desc'),
+        limit(pageSize)
+      );
+      if (cursor && direction === 'next') {
+        q = query(q, startAfter(cursor));
+      }
+    }
+
+    return from(getDocs(q)).pipe(
+      map(snapshot => {
+        let cis = snapshot.docs.map(doc => {
+          const data = doc.data() as ComunicacaoInterna;
+          return { ...data, id: doc.id };
         });
+
+        if (direction === 'prev') {
+          cis.reverse();
+        }
+
+        const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
+        const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+
+        return { cis, firstDoc, lastDoc };
       })
     );
   }
@@ -126,60 +205,116 @@ export class CiService {
     return updateDoc(ciDocRef, dataToUpdate);
   }
 
-  getCisParaLancamento(pageSize: number, pageDirection: 'next' | 'prev', cursor?: DocumentSnapshot<DocumentData>): Observable<PaginatedCisResult> {
+  getCisParaLancamento(): Observable<ComunicacaoInterna[]> {
+    return this.getCisParaLancamentoPaginado(1000, 'next').pipe(
+      map(result => result.cis)
+    );
+  }
+
+  getCisParaLancamentoPaginado(
+    pageSize: number,
+    direction: 'next' | 'prev',
+    cursor?: DocumentSnapshot<DocumentData>
+  ): Observable<{ cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }> {
+    const cisCollection = collection(this.firestore, 'cis');
     const constraints: QueryConstraint[] = [
-      orderBy('data', 'desc')
+      // Nenhum filtro aplicado para mostrar todos os registros
     ];
 
-    if (pageDirection === 'next') {
-      if (cursor) {
-        constraints.push(startAfter(cursor));
+    let q;
+    if (direction === 'prev' && cursor) {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'asc'),
+        endBefore(cursor),
+        limitToLast(pageSize)
+      );
+    } else {
+      // Handles 'next' and the initial load
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'desc'),
+        limit(pageSize)
+      );
+      if (cursor && direction === 'next') {
+        q = query(q, startAfter(cursor));
       }
-      constraints.push(limit(pageSize));
-    } else { // prev
-      if (cursor) {
-        constraints.push(endBefore(cursor));
-      }
-      constraints.push(limitToLast(pageSize));
     }
-
-    const q = query(this.ciCollection, ...constraints);
 
     return from(getDocs(q)).pipe(
       map(snapshot => {
-        const cis = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id } as ComunicacaoInterna));
-        const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
-        const firstDoc = snapshot.docs[0] || null;
-        return { cis, lastDoc, firstDoc };
+        let cis = snapshot.docs.map(doc => {
+          const data = doc.data() as ComunicacaoInterna;
+          return { ...data, id: doc.id };
+        });
+
+        if (direction === 'prev') {
+          cis.reverse();
+        }
+
+        const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
+        const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+
+        return { cis, firstDoc, lastDoc };
       })
     );
   }
 
-  getCisParaApuracao(pageSize: number, pageDirection: 'next' | 'prev', cursor?: DocumentSnapshot<DocumentData>): Observable<PaginatedCisResult> {
+  getCisParaApuracao(): Observable<ComunicacaoInterna[]> {
+    return this.getCisParaApuracaoPaginado(1000, 'next').pipe(
+      map(result => result.cis)
+    );
+  }
+
+  getCisParaApuracaoPaginado(
+    pageSize: number,
+    direction: 'next' | 'prev',
+    cursor?: DocumentSnapshot<DocumentData>
+  ): Observable<{ cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }> {
+    const cisCollection = collection(this.firestore, 'cis');
     const constraints: QueryConstraint[] = [
-      orderBy('data', 'desc')
+      // Nenhum filtro aplicado para mostrar todos os registros
     ];
 
-    if (pageDirection === 'next') {
-      if (cursor) {
-        constraints.push(startAfter(cursor));
+    let q;
+    if (direction === 'prev' && cursor) {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'asc'),
+        endBefore(cursor),
+        limitToLast(pageSize)
+      );
+    } else {
+      // Handles 'next' and the initial load
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'desc'),
+        limit(pageSize)
+      );
+      if (cursor && direction === 'next') {
+        q = query(q, startAfter(cursor));
       }
-      constraints.push(limit(pageSize));
-    } else { // prev
-      if (cursor) {
-        constraints.push(endBefore(cursor));
-      }
-      constraints.push(limitToLast(pageSize));
     }
-
-    const q = query(this.ciCollection, ...constraints);
 
     return from(getDocs(q)).pipe(
       map(snapshot => {
-        const cis = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id } as ComunicacaoInterna));
-        const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
-        const firstDoc = snapshot.docs[0] || null;
-        return { cis, lastDoc, firstDoc };
+        let cis = snapshot.docs.map(doc => {
+          const data = doc.data() as ComunicacaoInterna;
+          return { ...data, id: doc.id };
+        });
+
+        if (direction === 'prev') {
+          cis.reverse();
+        }
+
+        const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
+        const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+
+        return { cis, firstDoc, lastDoc };
       })
     );
   }

@@ -1,2 +1,3 @@
-o componente alterar senha, do jeito que está, possibilita um usuario mudar a senha de outro e entrar no sistema,
-preciso que ele so possa mudar a senha dele proprio
+Deu certo, agora vamos tentar descobrir porque que o 
+estor 63 não consegue visualizar as duas cis direcionadas 
+para ele, verifique o print anexo e veja que os dos registros estão para ele aprovar

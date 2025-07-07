@@ -161,7 +161,7 @@
   
     .header {
       flex-direction: row;
-      align-items: stretch; // Garante que o título e os botões tenham a mesma altura.
+      align-items: center; // Centraliza os itens verticalmente.
       justify-content: space-between;
   
       p {
@@ -225,5 +225,35 @@
     align-items: center;
     margin-top: 20px;
     gap: 15px;
+
+    .btn {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
+    }
+
+    .btn-secondary {
+      color: #fff;
+      background-color: #6c757d;
+      border-color: #6c757d;
+
+      &:not(:disabled):hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+      }
+    }
+
+    span {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #495057;
+    }
   }
   

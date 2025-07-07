@@ -161,7 +161,7 @@
   
     .header {
       flex-direction: row;
-      align-items: stretch; // Garante que o título e os botões tenham a mesma altura.
+      align-items: center; // Centraliza os itens verticalmente.
       justify-content: space-between;
   
       p {

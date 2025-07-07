@@ -4,52 +4,86 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
-
+import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-ci-listar-aprovacao',
   standalone: true,
   imports: [CommonModule, RouterLink, DatePipe],
   templateUrl: './ci-listar-aprovacao.component.html',
-  styleUrl: './ci-listar-aprovacao.component.scss'
+  styleUrls: ['./ci-listar-aprovacao.component.scss']
 })
-
 export class CiListarAprovacaoComponent implements OnInit {
+  cis: ComunicacaoInterna[] = [];
   matricula: string | null = null;
-  cis$!: Observable<ComunicacaoInterna[]>;
+
+  // Paginação
+  pageSize = 10;
+  lastDoc: DocumentSnapshot<DocumentData> | null = null;
+  firstDoc: DocumentSnapshot<DocumentData> | null = null;
+  pageNumber = 1;
+  isLoading = false;
+  isLastPage = false;
 
   constructor(
-    @Inject(CiService) private ciService: CiService,
+    private ciService: CiService,
+    private funcionarioService: FuncionarioService,
     private router: Router,
-    private route: ActivatedRoute,
-    @Inject(FuncionarioService) private funcionarioService: FuncionarioService
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
     this.matricula = this.funcionarioService.getMatriculaLogada();
     if (this.matricula) {
-      this.cis$ = this.ciService.getCisParaAprovacao(this.matricula).pipe(
-        map((cis: ComunicacaoInterna[]) => cis.map((ci: ComunicacaoInterna) => {
-          const data = ci.data as any;
-
-          // Prioridade 1: Timestamp do Firestore
-          if (data && typeof data.toDate === 'function') {
-            return { ...ci, data: data.toDate() };
-          }
-
-          // Prioridade 2: String ou número que pode ser convertido para uma data válida
-          const parsedDate = new Date(data);
-          if (data && !isNaN(parsedDate.getTime())) {
-            return { ...ci, data: parsedDate };
-          }
-
-          // Fallback: Manter o valor original (provavelmente uma string inválida)
-          return { ...ci, data: data as any };
-        }))
-      );
+      this.loadCis('next');
     }
   }
 
+  loadCis(direction: 'next' | 'prev'): void {
+    if (this.isLoading || !this.matricula) return;
+    this.isLoading = true;
+
+    const cursor = direction === 'next' ? this.lastDoc : this.firstDoc;
+
+    this.ciService.getCisParaAprovacaoPaginado(this.matricula, this.pageSize, direction, cursor ?? undefined)
+      .subscribe({
+        next: (result: { cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }) => {
+          this.cis = result.cis.map((ci: ComunicacaoInterna) => {
+            const data = ci.data as any;
+            if (data && typeof data.toDate === 'function') {
+              return { ...ci, data: data.toDate() };
+            }
+            const parsedDate = new Date(data);
+            if (data && !isNaN(parsedDate.getTime())) {
+              return { ...ci, data: parsedDate };
+            }
+            return ci;
+          });
+
+          this.firstDoc = result.firstDoc;
+          this.lastDoc = result.lastDoc;
+          
+          this.isLastPage = result.cis.length < this.pageSize;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Falha ao carregar CIs para aprovação:', err);
+          this.isLoading = false;
+        }
+      });
+  }
+
+  nextPage(): void {
+    if (this.isLastPage) return;
+    this.pageNumber++;
+    this.loadCis('next');
+  }
+
+  previousPage(): void {
+    if (this.pageNumber === 1) return;
+    this.pageNumber--;
+    this.loadCis('prev');
+  }
 
   gerarPdfEEnviar(id: string | undefined): void {
     if (!id) return;
@@ -57,12 +91,10 @@ export class CiListarAprovacaoComponent implements OnInit {
     const isMobile = window.innerWidth <= 768;
 
     if (isMobile) {
-      // Em dispositivos móveis, navega com um parâmetro especial para gerar o PDF sem mostrar a tela.
       this.router.navigate(['/ci-visualizar-aprovacao', this.matricula, id], {
         queryParams: { acao: 'gerarPDF', origem: 'mobile' }
       });
     } else {
-      // Em desktop, navega normalmente para mostrar o modal de confirmação.
       this.router.navigate(['/ci-visualizar-aprovacao', this.matricula, id], {
         queryParams: { acao: 'gerarPDF' }
       });
