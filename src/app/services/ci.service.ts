@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, addDoc, collectionData, doc, updateDoc, deleteDoc, docData, query, where, orderBy, CollectionReference, DocumentData, DocumentSnapshot, QueryConstraint, endBefore, getDocs, limit, limitToLast, startAfter } from '@angular/fire/firestore';
-import { Observable, filter, map, from } from 'rxjs';
+import { Observable, filter, map, from, of } from 'rxjs';
 
 // Interface para CIs que ainda não foram salvas (sem id)
 export interface NewComunicacaoInterna {
@@ -63,7 +63,7 @@ export class CiService {
   }
 
   getCisParaAprovacao(matricula: string): Observable<ComunicacaoInterna[]> {
-    const q = query(this.ciCollection, where('destinatario_matricula', '==', matricula), orderBy('data', 'desc'));
+    const q = query(this.ciCollection, where('para', '==', matricula));
     return (collectionData(q, { idField: 'id' }) as Observable<ComunicacaoInterna[]>).pipe(
       map(cis => {
         // Garante a ordenação no lado do cliente para lidar com quaisquer inconsistências

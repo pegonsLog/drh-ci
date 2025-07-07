@@ -4,7 +4,7 @@ import { FuncionarioAlterarComponent } from './componentes/autenticacao/funciona
 import { FuncionarioListarComponent } from './componentes/autenticacao/funcionario/funcionario-listar/funcionario-listar.component';
 import { FuncionarioNovoComponent } from './componentes/autenticacao/funcionario/funcionario-novo/funcionario-novo.component';
 import { LoginComponent } from './componentes/autenticacao/login/login.component';
-import { CiAlterarAprovacaoComponent } from './componentes/consulta/ci/ci-aprovacao/ci-alterar-aprovacao/ci-alterar-aprovacao.component';
+
 import { CiListarAprovacaoComponent } from './componentes/consulta/ci/ci-aprovacao/ci-listar-aprovacao/ci-listar-aprovacao.component';
 import { CiVisualizarAprovacaoComponent } from './componentes/consulta/ci/ci-aprovacao/ci-visualizar-aprovacao/ci-visualizar-aprovacao.component';
 import { CiListarApuracaoComponent } from './componentes/consulta/ci/ci-apurador/ci-listar-apuracao/ci-listar-apuracao.component';
@@ -34,7 +34,7 @@ export const routes: Routes = [
     { path: 'ci-nova/:matricula', component: CiNovaComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-alterar/:matricula/:id', component: CiAlterarComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-listar/:matricula', component: CiListarComponent, canActivate: [funcionarioGuard] },
-    { path: 'ci-alterar-aprovacao/:matricula/:id', component: CiAlterarAprovacaoComponent, canActivate: [funcionarioGuard] },
+
     { path: 'ci-listar-aprovacao/:matricula', component: CiListarAprovacaoComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-listar-lancamento/:matricula', component: CiListarLancamentoComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-listar-apuracao/:matricula', component: CiListarApuracaoComponent, canActivate: [funcionarioGuard] },

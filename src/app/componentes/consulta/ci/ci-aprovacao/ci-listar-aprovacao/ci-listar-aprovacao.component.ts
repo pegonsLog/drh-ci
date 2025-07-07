@@ -50,11 +50,6 @@ export class CiListarAprovacaoComponent implements OnInit {
     }
   }
 
-  editarCi(id: string | undefined): void {
-    if (id) {
-      this.router.navigate(['/ci-alterar-aprovacao', this.matricula, id]);
-    }
-  }
 
   gerarPdfEEnviar(id: string | undefined): void {
     if (!id) return;
@@ -63,12 +58,12 @@ export class CiListarAprovacaoComponent implements OnInit {
 
     if (isMobile) {
       // Em dispositivos móveis, navega com um parâmetro especial para gerar o PDF sem mostrar a tela.
-      this.router.navigate(['/ci-visualizar', this.matricula, id], {
+      this.router.navigate(['/ci-visualizar-aprovacao', this.matricula, id], {
         queryParams: { acao: 'gerarPDF', origem: 'mobile' }
       });
     } else {
       // Em desktop, navega normalmente para mostrar o modal de confirmação.
-      this.router.navigate(['/ci-visualizar', this.matricula, id], {
+      this.router.navigate(['/ci-visualizar-aprovacao', this.matricula, id], {
         queryParams: { acao: 'gerarPDF' }
       });
     }

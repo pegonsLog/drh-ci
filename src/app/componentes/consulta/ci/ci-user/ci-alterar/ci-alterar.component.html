@@ -27,6 +27,7 @@
       </div>
     </div>
 
+    <!-- Campo de Status Lançamento oculto conforme solicitado
     <div class="form-group">
       <label for="lancamentoStatus">Status Lançamento:</label>
       <select id="lancamentoStatus" formControlName="lancamentoStatus" class="form-select">
@@ -34,6 +35,7 @@
         <option value="lancado">Lançado</option>
       </select>
     </div>
+    -->
     <div class="button-group">
       <button type="submit" [disabled]="ciForm.invalid || ciForm.pristine">Salvar Alterações</button>
       <button class="btn-voltar" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">Voltar para a Lista</button>
