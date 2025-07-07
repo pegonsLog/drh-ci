@@ -6,8 +6,7 @@
       </div>
     </div>
   
-    <div *ngIf="cis$ | async as cis; else loading">
-      <!-- Show table only if there is data -->
+    <div *ngIf="!isLoading; else loading">
       <div *ngIf="cis.length > 0; else noCis" class="table-container">
         <table>
           <thead>
@@ -16,8 +15,9 @@
               <th>De</th>
               <th>Para</th>
               <th>Comunicação</th>
-              <th>Status</th>
-              <th>Lançamento</th>
+
+              <th>Status Aprovação</th>
+              <th>Status Lançamento</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -34,32 +34,42 @@
               <td>{{ ci.de }}</td>
               <td>{{ ci.para }}</td>
               <td>{{ ci.comunicacao | slice:0:50 }}...</td>
+
               <td class="status-cell">
                 <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
-                  {{ (ci.aprovacaoStatus || 'pendente') | titlecase }}
+                  {{ (ci.aprovacaoStatus === 'aprovado') ? 'Aprovado' : (ci.aprovacaoStatus === 'reprovado') ? 'Reprovado' : 'Pendente' }}
+                </span>
+              </td>
+
+              <td class="status-cell">
+                <span [ngClass]="ci.lancamentoStatus || 'nao_lancado'">
+                  {{ (ci.lancamentoStatus || 'nao_lancado') === 'nao_lancado' ? 'Não Lançado' : 'Lançado' }}
                 </span>
               </td>
               <td class="actions-cell">
                 <div class="action-icons-wrapper">
-                  <a [routerLink]="['/ci-visualizar', ci.id]" [queryParams]="{ copia: 'false' }">
+                                                      <a [routerLink]="['/ci-visualizar-apuracao-lancamento', ci.id]" [queryParams]="{ origem: 'lancamento' }">
                     <i class="material-icons icon-view" title="Visualizar">visibility</i>
                   </a>
                   <i class="material-icons icon-email btn-gerar-pdf-mobile" (click)="gerarPdfEEnviar(ci.id)" title="Gerar PDF e Enviar">email</i>
-                  <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <div class="pagination-controls">
+          <button (click)="previousPage()" [disabled]="pageNumber === 1" class="btn btn-secondary">Anterior</button>
+          <span>Página {{ pageNumber }}</span>
+          <button (click)="nextPage()" [disabled]="isLastPage" class="btn btn-secondary">Próximo</button>
+        </div>
       </div>
-  
-      <!-- Template for when there is no data -->
+
       <ng-template #noCis>
         <p class="message">Nenhuma CI encontrada.</p>
       </ng-template>
     </div>
-  
-    <!-- Template for loading state -->
+
     <ng-template #loading>
       <p class="message">Carregando CI's...</p>
     </ng-template>

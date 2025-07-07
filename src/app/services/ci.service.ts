@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, doc, updateDoc, deleteDoc, docData, query, where, orderBy, CollectionReference } from '@angular/fire/firestore';
-import { Observable, filter, map } from 'rxjs';
+import { Firestore, collection, addDoc, collectionData, doc, updateDoc, deleteDoc, docData, query, where, orderBy, CollectionReference, DocumentData, DocumentSnapshot, QueryConstraint, endBefore, getDocs, limit, limitToLast, startAfter } from '@angular/fire/firestore';
+import { Observable, filter, map, from } from 'rxjs';
 
 // Interface para CIs que ainda não foram salvas (sem id)
 export interface NewComunicacaoInterna {
@@ -19,6 +19,12 @@ export interface NewComunicacaoInterna {
 // Interface para CIs que vêm do banco (com id obrigatório)
 export interface ComunicacaoInterna extends NewComunicacaoInterna {
   id: string;
+}
+
+export interface PaginatedCisResult {
+  cis: ComunicacaoInterna[];
+  lastDoc: DocumentSnapshot<DocumentData> | null;
+  firstDoc: DocumentSnapshot<DocumentData> | null;
 }
 
 @Injectable({
@@ -101,6 +107,11 @@ export class CiService {
       dataToUpdate.dataAprovacao = dataAprovacao;
     }
 
+    // Se a CI for aprovada, define o status de lançamento como 'nao_lancado'
+    if (status === 'aprovado') {
+      dataToUpdate.lancamentoStatus = 'nao_lancado';
+    }
+
     return updateDoc(ciDocRef, dataToUpdate);
   }
 
@@ -115,18 +126,61 @@ export class CiService {
     return updateDoc(ciDocRef, dataToUpdate);
   }
 
-  getCisParaLancamento(): Observable<ComunicacaoInterna[]> {
-    const q = query(this.ciCollection, orderBy('lancado', 'asc'), orderBy('data', 'desc'));
-    return collectionData(q, { idField: 'id' }) as Observable<ComunicacaoInterna[]>;
+  getCisParaLancamento(pageSize: number, pageDirection: 'next' | 'prev', cursor?: DocumentSnapshot<DocumentData>): Observable<PaginatedCisResult> {
+    const constraints: QueryConstraint[] = [
+      orderBy('data', 'desc')
+    ];
+
+    if (pageDirection === 'next') {
+      if (cursor) {
+        constraints.push(startAfter(cursor));
+      }
+      constraints.push(limit(pageSize));
+    } else { // prev
+      if (cursor) {
+        constraints.push(endBefore(cursor));
+      }
+      constraints.push(limitToLast(pageSize));
+    }
+
+    const q = query(this.ciCollection, ...constraints);
+
+    return from(getDocs(q)).pipe(
+      map(snapshot => {
+        const cis = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id } as ComunicacaoInterna));
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+        const firstDoc = snapshot.docs[0] || null;
+        return { cis, lastDoc, firstDoc };
+      })
+    );
   }
 
-  getCisParaApuracao(): Observable<ComunicacaoInterna[]> {
-    const q = query(
-      this.ciCollection,
-      where('aprovacaoStatus', '==', 'aprovado'),
-      where('lancamentoStatus', '==', 'nao_lancado'),
+  getCisParaApuracao(pageSize: number, pageDirection: 'next' | 'prev', cursor?: DocumentSnapshot<DocumentData>): Observable<PaginatedCisResult> {
+    const constraints: QueryConstraint[] = [
       orderBy('data', 'desc')
+    ];
+
+    if (pageDirection === 'next') {
+      if (cursor) {
+        constraints.push(startAfter(cursor));
+      }
+      constraints.push(limit(pageSize));
+    } else { // prev
+      if (cursor) {
+        constraints.push(endBefore(cursor));
+      }
+      constraints.push(limitToLast(pageSize));
+    }
+
+    const q = query(this.ciCollection, ...constraints);
+
+    return from(getDocs(q)).pipe(
+      map(snapshot => {
+        const cis = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id } as ComunicacaoInterna));
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+        const firstDoc = snapshot.docs[0] || null;
+        return { cis, lastDoc, firstDoc };
+      })
     );
-    return collectionData(q, { idField: 'id' }) as Observable<ComunicacaoInterna[]>;
   }
 }

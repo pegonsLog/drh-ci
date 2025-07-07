@@ -18,6 +18,7 @@ import { CiAlterarAprovacaoComponent } from './componentes/consulta/ci/ci-altera
 import { CiListarAprovacaoComponent } from './componentes/consulta/ci/ci-listar-aprovacao/ci-listar-aprovacao.component';
 import { CiListarLancamentoComponent } from './componentes/consulta/ci/ci-listar-lancamento/ci-listar-lancamento.component';
 import { CiListarApuracaoComponent } from './componentes/consulta/ci/ci-listar-apuracao/ci-listar-apuracao.component';
+import { CiVisualizarApuracaoLancamentoComponent } from './componentes/consulta/ci/ci-visualizar-apuracao-lancamento/ci-visualizar-apuracao-lancamento.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -33,9 +34,10 @@ export const routes: Routes = [
     { path: 'ci-listar/:matricula', component: CiListarComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-alterar-aprovacao/:matricula/:id', component: CiAlterarAprovacaoComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-listar-aprovacao/:matricula', component: CiListarAprovacaoComponent, canActivate: [funcionarioGuard] },
-    { path: 'ci-listar-lancamento', component: CiListarLancamentoComponent, canActivate: [funcionarioGuard] },
+    { path: 'ci-listar-lancamento/:matricula', component: CiListarLancamentoComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-listar-apuracao/:matricula', component: CiListarApuracaoComponent, canActivate: [funcionarioGuard] },
     { path: 'ci-visualizar/:matricula/:id', component: CiVisualizarComponent, canActivate: [funcionarioGuard] },
+    { path: 'ci-visualizar-apuracao-lancamento/:id', component: CiVisualizarApuracaoLancamentoComponent, canActivate: [funcionarioGuard] },
     { path: 'funcionario-listar/:matricula', component: FuncionarioListarComponent, canActivate: [adminGuard] },
     { path: 'funcionario-novo/:matricula', component: FuncionarioNovoComponent, canActivate: [adminGuard] },
     { path: 'funcionario-alterar/:matricula/:id', component: FuncionarioAlterarComponent, canActivate: [adminGuard] },

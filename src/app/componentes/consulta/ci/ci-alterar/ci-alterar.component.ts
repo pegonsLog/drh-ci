@@ -31,7 +31,8 @@ export class CiAlterarComponent implements OnInit {
     this.ciForm = this.fb.group({
       de: [{ value: '', disabled: true }, Validators.required],
       para: ['', Validators.required], // Este controle agora armazenará a matrícula do destinatário
-      comunicacao: ['', Validators.required]
+      comunicacao: ['', Validators.required],
+      lancamentoStatus: ['', Validators.required]
     });
     this.funcionarios$ = this.funcionarioService.getFuncionarios();
   }
@@ -53,7 +54,8 @@ export class CiAlterarComponent implements OnInit {
       this.ciForm.patchValue({
         de: ci.de,
         para: ci.destinatario_matricula, // Povoa o form com a matrícula do destinatário
-        comunicacao: ci.comunicacao
+        comunicacao: ci.comunicacao,
+        lancamentoStatus: ci.lancamentoStatus || 'nao_lancado'
       });
     });
   }
@@ -64,7 +66,7 @@ export class CiAlterarComponent implements OnInit {
 
       this.funcionarios$.pipe(take(1)).subscribe(funcionarios => {
         const destinatarioMatricula = formValue.para;
-        const destinatario = funcionarios.find(f => f.matricula === destinatarioMatricula);
+        const destinatario = funcionarios.find(f => f.matricula.toString() === destinatarioMatricula.toString());
 
         if (!destinatario) {
           console.error('Destinatário não encontrado');
@@ -77,6 +79,7 @@ export class CiAlterarComponent implements OnInit {
           comunicacao: formValue.comunicacao,
           para: destinatario.funcionario, // Nome do funcionário
           destinatario_matricula: destinatario.matricula, // Matrícula do funcionário
+          lancamentoStatus: formValue.lancamentoStatus,
         };
 
         delete ciAtualizada.aprovacaoStatus; // Remove o status de aprovação

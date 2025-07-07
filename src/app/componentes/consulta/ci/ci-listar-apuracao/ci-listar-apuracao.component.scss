@@ -207,5 +207,15 @@
     &.reprovado {
       background-color: #dc3545; // Vermelho
     }
+
+    &.nao_lancado {
+      background-color: #6c757d; // Cinza
+      color: white;
+    }
+
+    &.lancado {
+      background-color: #17a2b8; // Ciano
+      color: white;
+    }
   }
   

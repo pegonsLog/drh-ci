@@ -48,11 +48,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   get canAccessLancamento(): boolean {
-    return this.userProfile === 'apurador' || this.userProfile === 'adm';
+    return this.userProfile === 'lancador' || this.userProfile === 'apurador' || this.userProfile === 'adm';
   }
 
   get canAccessApuracao(): boolean {
-    return this.userProfile === 'apurador' || this.userProfile === 'adm';
+    return this.userProfile === 'apurador' || this.userProfile === 'lancador' || this.userProfile === 'adm';
   }
 
   loginAndNavigate(route: string): void {
@@ -92,7 +92,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               return;
             }
 
-            const routesWithMatricula = ['ci-listar-aprovacao', 'ci-listar-apuracao'];
+            const routesWithMatricula = ['ci-listar-aprovacao', 'ci-listar-apuracao', 'ci-listar-lancamento'];
 
             if (route === 'ci-painel') {
               this.router.navigate(['/painel', matriculaLogada]);

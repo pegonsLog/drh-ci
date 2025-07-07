@@ -22,7 +22,8 @@
             <th>De</th>
             <th>Para</th>
             <th>Comunicação</th>
-            <th>Status</th>
+            <th>Status Aprovação</th>
+            <th>Status Lançamento</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -42,6 +43,11 @@
             <td class="status-cell">
               <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
                 {{ (ci.aprovacaoStatus || 'pendente') | titlecase }}
+              </span>
+            </td>
+            <td class="status-cell">
+              <span [ngClass]="ci.lancamentoStatus || 'nao_lancado'">
+                {{ (ci.lancamentoStatus || 'nao_lancado') === 'nao_lancado' ? 'Não Lançado' : 'Lançado' }}
               </span>
             </td>
             <td class="actions-cell">

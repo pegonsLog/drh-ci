@@ -6,7 +6,7 @@
     </div>
   </div>
 
-  <div *ngIf="cis$ | async as cis; else loading">
+  <div *ngIf="!isLoading; else loading">
     <div *ngIf="cis.length > 0; else noCis" class="table-container">
       <table>
         <thead>
@@ -15,7 +15,9 @@
             <th>De</th>
             <th>Para</th>
             <th>Comunicação</th>
-            <th>Status</th>
+
+            <th>Status Aprovação</th>
+            <th>Status Lançamento</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -32,14 +34,20 @@
             <td>{{ ci.de }}</td>
             <td>{{ ci.para }}</td>
             <td>{{ ci.comunicacao | slice:0:50 }}...</td>
+
             <td class="status-cell">
               <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
                 {{ (ci.aprovacaoStatus || 'pendente') | titlecase }}
               </span>
             </td>
+            <td class="status-cell">
+              <span [ngClass]="ci.lancamentoStatus || 'nao_lancado'">
+                {{ (ci.lancamentoStatus || 'nao_lancado') | titlecase | replace:'_':' ' }}
+              </span>
+            </td>
             <td class="actions-cell">
               <div class="action-icons-wrapper">
-                <a [routerLink]="['/ci-visualizar', matricula, ci.id]">
+                                                <a [routerLink]="['/ci-visualizar-apuracao-lancamento', ci.id]" [queryParams]="{ origem: 'apuracao' }">
                   <i class="material-icons icon-view" title="Visualizar">visibility</i>
                 </a>
               </div>
@@ -47,6 +55,12 @@
           </tr>
         </tbody>
       </table>
+
+      <div class="pagination-controls">
+        <button (click)="previousPage()" [disabled]="pageNumber === 1" class="btn btn-secondary">Anterior</button>
+        <span>Página {{ pageNumber }}</span>
+        <button (click)="nextPage()" [disabled]="isLastPage" class="btn btn-secondary">Próximo</button>
+      </div>
     </div>
 
     <ng-template #noCis>
