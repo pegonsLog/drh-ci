@@ -4,12 +4,14 @@ import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { ReplacePipe } from '../../../../../pipes/replace.pipe';
+import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
+
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-ci-listar-apuracao',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, ReplacePipe],
+    imports: [CommonModule, RouterLink, DatePipe, FormsModule, StatusFormatPipe],
   templateUrl: './ci-listar-apuracao.component.html',
   styleUrls: ['./ci-listar-apuracao.component.scss']
 })

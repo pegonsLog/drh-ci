@@ -2,8 +2,6 @@
   <div class="header">
     <p>LISTA DE CI'S - APURAÇÃO</p>
     <div class="button-group">
-      <a class="btn-escala" *ngIf="matriculaLogada" [routerLink]="['/escala-gestor', matriculaLogada]">Escalas</a>
-      <a class="btn-usuario" *ngIf="perfilUsuario === 'adm'" [routerLink]="['/funcionarios']">Usuários</a>
       <a class="btn-voltar" (click)="logout()">Sair</a>
     </div>
   </div>
@@ -38,12 +36,12 @@
 
             <td class="status-cell">
               <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
-                {{ (ci.aprovacaoStatus || 'pendente') | titlecase }}
+                {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
               </span>
             </td>
             <td class="status-cell">
               <span [ngClass]="ci.lancamentoStatus || 'nao_lancado'">
-                {{ (ci.lancamentoStatus || 'nao_lancado') | titlecase | replace:'_':' ' }}
+                {{ (ci.lancamentoStatus || 'nao_lancado') | statusFormat }}
               </span>
             </td>
             <td class="actions-cell">

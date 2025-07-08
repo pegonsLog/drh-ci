@@ -7,7 +7,7 @@
   <div class="header">
     <p>LISTA DE CI'S MAT: {{ matricula }}</p>
     <div class="button-group">
-      <a class="btn-voltar" [routerLink]="['/painel', matricula]">Voltar ao Painel</a>
+      <a class="btn-voltar" [routerLink]="['/painel', matricula]">Painel</a>
       <a class="new-ci-button" [routerLink]="['/ci-nova', matricula]">Nova CI</a>
     </div>
   </div>
@@ -42,7 +42,7 @@
               <td>{{ ci.comunicacao | slice:0:50 }}...</td>
               <td class="status-cell">
                 <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
-                  {{ (ci.aprovacaoStatus || 'pendente') | titlecase }}
+                  {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
                 </span>
               </td>
               <td class="status-cell">

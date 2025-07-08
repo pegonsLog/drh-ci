@@ -54,6 +54,7 @@
   }
 
   .btn-voltar {
+    text-transform: none;
     background-color: #6c757d; // Gray
     &:hover { background-color: #5a6268; }
   }
@@ -205,7 +206,7 @@ table {
     background-color: #28a745; // Verde
   }
 
-  &.reprovado {
+  &.nao_aprovado {
     background-color: #dc3545; // Vermelho
   }
 

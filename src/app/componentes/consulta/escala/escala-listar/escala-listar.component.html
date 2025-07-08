@@ -2,7 +2,8 @@
   <div class="header">
     <p>ESCALAS</p>
     <div class="header-actions">
-      <a class="btn-voltar" [routerLink]="['/painel', matriculaUsuario]">Voltar ao Painel</a>
+      <a class="btn-voltar" [routerLink]="['/painel', matriculaUsuario]">Painel</a>
+      <button class="btn btn-lancamento" *ngIf="isAdm" (click)="abrirCiListarLancamento()">Lançamento</button>
       <button class="new-escala-button" *ngIf="isAdm" (click)="abrirNovaEscala()">Nova Escala</button>
     </div>
   </div>

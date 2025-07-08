@@ -16,8 +16,8 @@
         <label class="form-check-label" for="aprovadoRadioFloat">Aprovar</label>
       </div>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="aprovacao-float" id="reprovadoRadioFloat" value="reprovado" [(ngModel)]="respostaAprovacao">
-        <label class="form-check-label" for="reprovadoRadioFloat">Reprovar</label>
+        <input class="form-check-input" type="radio" name="aprovacao-float" id="naoAprovadoRadioFloat" value="nao_aprovado" [(ngModel)]="respostaAprovacao">
+        <label class="form-check-label" for="naoAprovadoRadioFloat">Não Aprovar</label>
       </div>
       <button (click)="salvarAprovacao()" [disabled]="!respostaAprovacao" class="btn btn-primary mt-2">Salvar Resposta</button>
     </div>
@@ -59,10 +59,17 @@
         </div>
         <div class="form-body-wrapper">
           <div class="form-body" [innerHTML]="ci.comunicacao"></div>
-          <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
-            <div class="stamp-text">De acordo</div>
-            <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
-            <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+          <div class="stamps-container">
+            <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
+              <div class="stamp-text">De acordo</div>
+              <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+              <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+            </div>
+            <div *ngIf="ci.lancamentoStatus === 'lancado'" class="lancado-stamp">
+              <div class="stamp-text">Lançado</div>
+              <div class="stamp-signature">{{ lancador?.funcionario }}</div>
+              <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+            </div>
           </div>
         </div>
         <div class="form-footer">
@@ -96,10 +103,17 @@
         </div>
         <div class="form-body-wrapper">
           <div class="form-body" [innerHTML]="ci.comunicacao"></div>
-          <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
-            <div class="stamp-text">De acordo</div>
-            <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
-            <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+          <div class="stamps-container">
+            <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
+              <div class="stamp-text">De acordo</div>
+              <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+              <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+            </div>
+            <div *ngIf="ci.lancamentoStatus === 'lancado'" class="lancado-stamp">
+              <div class="stamp-text">Lançado</div>
+              <div class="stamp-signature">{{ lancador?.funcionario }}</div>
+              <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+            </div>
           </div>
         </div>
         <div class="form-footer">
@@ -113,7 +127,6 @@
         </div>
       </div>
     </div>
-
   </div>
  </div>
 </ng-container>

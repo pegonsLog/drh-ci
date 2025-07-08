@@ -24,9 +24,11 @@ export class CiVisualizarLancamentoComponent implements OnInit {
   ci: ComunicacaoInterna | null = null;
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
+  lancador: Funcionario | null = null;
   matriculaLogado: string | null = null;
   dataExibicao: string | null = null;
   dataAprovacaoExibicao: string | null = null;
+  dataLancamentoExibicao: string | null = null;
   perfilUsuario$: Observable<string | null>;
 
   constructor(
@@ -60,16 +62,22 @@ export class CiVisualizarLancamentoComponent implements OnInit {
               this.dataAprovacaoExibicao = (ci.dataAprovacao as any).toDate ? (ci.dataAprovacao as any).toDate().toLocaleDateString('pt-BR') : new Date(ci.dataAprovacao).toLocaleDateString('pt-BR');
             }
 
+            if (ci.dataLancamento) {
+              this.dataLancamentoExibicao = (ci.dataLancamento as any).toDate ? (ci.dataLancamento as any).toDate().toLocaleDateString('pt-BR') : new Date(ci.dataLancamento).toLocaleDateString('pt-BR');
+            }
+
             const remetente$ = this.funcionarioService.getFuncionarioByMatricula(String(ci.matricula));
             const destinatario$ = ci.destinatario_matricula ? this.funcionarioService.getFuncionarioByMatricula(ci.destinatario_matricula) : of({ funcionario: ci.para } as Funcionario);
+            const lancador$ = ci.lancador_matricula ? this.funcionarioService.getFuncionarioByMatricula(ci.lancador_matricula) : of(null);
 
-            return forkJoin({ remetente: remetente$, destinatario: destinatario$ });
+            return forkJoin({ remetente: remetente$, destinatario: destinatario$, lancador: lancador$ });
           }
-          return of({ remetente: null, destinatario: null });
+          return of({ remetente: null, destinatario: null, lancador: null });
         })
-      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null }) => {
+      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null }) => {
         this.remetente = data.remetente;
         this.destinatario = data.destinatario;
+        this.lancador = data.lancador;
       });
     }
   }
@@ -100,14 +108,20 @@ export class CiVisualizarLancamentoComponent implements OnInit {
     }
 
     const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
+    const lancadorMatricula = this.respostaLancamento === 'lancado' ? this.matriculaLogado : undefined;
 
-    this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento)
+    this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento, lancadorMatricula ?? undefined)
       .then(() => {
         alert('Status de lançamento atualizado com sucesso!');
         if (this.ci) {
           this.ci.lancamentoStatus = this.respostaLancamento!;
           if (dataLancamento) {
             this.ci.dataLancamento = dataLancamento;
+            this.dataLancamentoExibicao = new Date(dataLancamento).toLocaleDateString('pt-BR');
+          }
+          if (lancadorMatricula) {
+            this.ci.lancador_matricula = lancadorMatricula;
+            this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
           }
         }
         this.voltar();

@@ -1,3 +1,3 @@
-Deu certo, agora vamos tentar descobrir porque que o 
-estor 63 não consegue visualizar as duas cis direcionadas 
-para ele, verifique o print anexo e veja que os dos registros estão para ele aprovar
+como vc fez no componente ci-visualizar-lancamento e no ci-visualizar-aprovacao, e no ci-visualizar, 
+faça o mesmo para o ci-visualizar-apuracao, coloque os dois carimbos com as datas e nomes do lancamento e aprovação, extatamente igual 
+aos componentes mencionados acima.

@@ -10,10 +10,11 @@ export interface NewComunicacaoInterna {
   comunicacao: string;
   matricula: string;
   destinatario_matricula?: string;
-  aprovacaoStatus: 'aprovado' | 'reprovado' | 'pendente';
+  aprovacaoStatus: 'aprovado' | 'nao_aprovado' | 'pendente';
   dataAprovacao?: any;
   lancamentoStatus: 'nao_lancado' | 'lancado';
   dataLancamento?: any;
+  lancador_matricula?: string;
 }
 
 // Interface para CIs que vêm do banco (com id obrigatório)
@@ -113,8 +114,7 @@ export class CiService {
   ): Observable<{ cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }> {
     const cisCollection = collection(this.firestore, 'cis');
     const constraints: QueryConstraint[] = [
-      where('para', '==', matricula)
-      // Nenhum outro filtro de status para mostrar todos os registros do aprovador
+      where('destinatario_matricula', '==', matricula)
     ];
 
     let q;
@@ -178,7 +178,7 @@ export class CiService {
     return deleteDoc(ciDocRef);
   }
 
-  updateAprovacaoStatus(id: string, status: 'aprovado' | 'reprovado' | 'pendente', dataAprovacao?: any) {
+  updateAprovacaoStatus(id: string, status: 'aprovado' | 'nao_aprovado' | 'pendente', dataAprovacao?: any) {
     const ciDocRef = doc(this.firestore, `cis/${id}`);
     const dataToUpdate: any = { aprovacaoStatus: status };
 
@@ -186,20 +186,19 @@ export class CiService {
       dataToUpdate.dataAprovacao = dataAprovacao;
     }
 
-    // Se a CI for aprovada, define o status de lançamento como 'nao_lancado'
-    if (status === 'aprovado') {
-      dataToUpdate.lancamentoStatus = 'nao_lancado';
-    }
-
     return updateDoc(ciDocRef, dataToUpdate);
   }
 
-  updateLancamentoStatus(id: string, status: 'lancado' | 'nao_lancado', dataLancamento?: any) {
+  updateLancamentoStatus(id: string, status: 'lancado' | 'nao_lancado', dataLancamento?: any, lancadorMatricula?: string) {
     const ciDocRef = doc(this.firestore, `cis/${id}`);
     const dataToUpdate: any = { lancamentoStatus: status };
 
     if (dataLancamento) {
       dataToUpdate.dataLancamento = dataLancamento;
+    }
+
+    if (lancadorMatricula) {
+      dataToUpdate.lancador_matricula = lancadorMatricula;
     }
 
     return updateDoc(ciDocRef, dataToUpdate);

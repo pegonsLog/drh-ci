@@ -20,6 +20,7 @@ import { PfComponent } from "../consulta/pf/pf.component";
   styleUrls: ['./painel.component.scss']
 })
 export class PainelComponent implements OnInit {
+
   matricula: string | null = null;
   funcionarioNome: string = '';
   perfilUsuario: string | null = null;
@@ -59,4 +60,8 @@ export class PainelComponent implements OnInit {
   navegarParaEscalaListar(): void {
     this.router.navigate(['/escala-listar']);
   }
+
+  navegarParaCiListarLancamento() {
+    this.router.navigate(['/ci-listar-lancamento', this.matricula]);
+    }
 }

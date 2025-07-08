@@ -2,8 +2,8 @@
     <div class="header">
       <p>LISTA DE CI'S - LANÇAMENTO</p>
       <div class="button-group">
-        <a class="btn-escala" *ngIf="matriculaLogada" [routerLink]="['/escala-gestor', matriculaLogada]">Escalas</a>
-        <a class="btn-usuario" *ngIf="perfilUsuario === 'adm'" [routerLink]="['/funcionarios']">Usuários</a>
+        <a class="btn-escala" *ngIf="matriculaLogada" [routerLink]="['/escala-listar']">Escala</a>
+        <a class="btn-usuario" *ngIf="perfilUsuario === 'adm'" [routerLink]="['/funcionario-listar', matriculaLogada]">Usuário</a>
         <a class="btn-voltar" (click)="logout()">Sair</a>
       </div>
     </div>
@@ -39,7 +39,7 @@
 
               <td class="status-cell">
                 <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
-                  {{ (ci.aprovacaoStatus === 'aprovado') ? 'Aprovado' : (ci.aprovacaoStatus === 'reprovado') ? 'Reprovado' : 'Pendente' }}
+                  {{ (ci.aprovacaoStatus === 'aprovado') ? 'Aprovado' : (ci.aprovacaoStatus === 'nao_aprovado') ? 'Não Aprovado' : 'Pendente' }}
                 </span>
               </td>
 

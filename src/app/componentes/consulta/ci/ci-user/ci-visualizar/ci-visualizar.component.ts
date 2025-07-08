@@ -20,9 +20,11 @@ export class CiVisualizarComponent implements OnInit {
   ci: ComunicacaoInterna | null = null;
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
+  lancador: Funcionario | null = null;
   matriculaLogado: string | null = null;
   dataExibicao: string | null = null;
   dataAprovacaoExibicao: string | null = null;
+  dataLancamentoExibicao: string | null = null;
   perfilUsuario$: Observable<string | null>;
 
   constructor(
@@ -85,6 +87,19 @@ export class CiVisualizarComponent implements OnInit {
               }
             }
 
+            // Lógica para formatar a data de lançamento
+            if (ci.dataLancamento) {
+              if (typeof (ci.dataLancamento as any).toDate === 'function') {
+                this.dataLancamentoExibicao = (ci.dataLancamento as any).toDate().toLocaleDateString('pt-BR');
+              } else {
+                try {
+                  this.dataLancamentoExibicao = new Date(ci.dataLancamento).toLocaleDateString('pt-BR');
+                } catch (e) {
+                  this.dataLancamentoExibicao = 'Data inválida';
+                }
+              }
+            }
+
             const remetente$ = this.funcionarioService.getFuncionarioByMatricula(String(ci.matricula));
             let destinatario$: Observable<Funcionario | null>;
             if (ci.destinatario_matricula) {
@@ -94,16 +109,25 @@ export class CiVisualizarComponent implements OnInit {
               destinatario$ = of(destinatarioTemp as Funcionario);
             }
 
+            let lancador$: Observable<Funcionario | null>;
+            if (ci.lancador_matricula) {
+              lancador$ = this.funcionarioService.getFuncionarioByMatricula(ci.lancador_matricula);
+            } else {
+              lancador$ = of(null);
+            }
+
             return forkJoin({
               remetente: remetente$,
-              destinatario: destinatario$
+              destinatario: destinatario$,
+              lancador: lancador$
             });
           }
-          return of({ remetente: null, destinatario: null });
+          return of({ remetente: null, destinatario: null, lancador: null });
         })
-      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null }) => {
+      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null }) => {
         this.remetente = data.remetente;
-                this.destinatario = data.destinatario;
+        this.destinatario = data.destinatario;
+        this.lancador = data.lancador;
       });
     }
   }

@@ -83,6 +83,7 @@
     }
 
     .btn-voltar {
+      text-transform: none;
       background-color: #6c757d; // Cinza para Voltar
       &:hover {
         background-color: #5a6268;

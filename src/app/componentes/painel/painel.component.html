@@ -5,6 +5,7 @@
       <button class="btn btn-ci" (click)="navegarParaCiListar()">CI'S</button>
       <button class="btn btn-escala" (click)="navegarParaEscalaListar()">Escala</button>
       <button class="btn btn-funcionarios" *ngIf="perfilUsuario === 'adm'" (click)="navegarParaFuncionarioListar()">Usuário</button>
+      <button class="btn btn-lancamento" *ngIf="perfilUsuario === 'adm'" (click)="navegarParaCiListarLancamento()">Lançamento</button>
       <button class="btn btn-logout" (click)="logout()">Sair</button>
     </div>
   </header>

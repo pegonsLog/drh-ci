@@ -1,17 +1,19 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FuncionarioService } from '../../../../../services/funcionario.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
-import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
-import { ConfirmacaoImpressaoModalComponent } from '../../../../confirmacao-impressao-modal/confirmacao-impressao-modal.component';
-import { RouterModule } from '@angular/router';
 import { DocumentData, DocumentSnapshot } from 'firebase/firestore';
+
+import { FuncionarioService } from '../../../../../services/funcionario.service';
+import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
+import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
+import { ConfirmacaoImpressaoModalComponent } from '../../../../confirmacao-impressao-modal/confirmacao-impressao-modal.component';
 
 @Component({
   selector: 'app-ci-listar',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterLink, DatePipe, ConfirmacaoImpressaoModalComponent],
+  imports: [CommonModule, RouterModule, RouterLink, DatePipe, FormsModule, StatusFormatPipe, ConfirmacaoImpressaoModalComponent],
   templateUrl: './ci-listar.component.html',
   styleUrls: ['./ci-listar.component.scss']
 })

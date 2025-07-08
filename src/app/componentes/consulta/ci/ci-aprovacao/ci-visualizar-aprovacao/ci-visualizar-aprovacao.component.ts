@@ -17,14 +17,16 @@ import { FormsModule } from '@angular/forms';
 export class CiVisualizarAprovacaoComponent implements OnInit {
   imprimirComCopia = true;
   isDestinatario = false;
-  respostaAprovacao: 'aprovado' | 'reprovado' | 'pendente' | null = null;
+  respostaAprovacao: 'aprovado' | 'nao_aprovado' | 'pendente' | null = null;
   respostaLancamento: 'lancado' | 'nao_lancado' | null = null;
   ci: ComunicacaoInterna | null = null;
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
+  lancador: Funcionario | null = null;
   matriculaLogado: string | null = null;
   dataExibicao: string | null = null;
   dataAprovacaoExibicao: string | null = null;
+  dataLancamentoExibicao: string | null = null;
   perfilUsuario$: Observable<string | null>;
 
   constructor(
@@ -85,6 +87,18 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
               }
             }
 
+            if (ci.dataLancamento) {
+              if (typeof (ci.dataLancamento as any).toDate === 'function') {
+                this.dataLancamentoExibicao = (ci.dataLancamento as any).toDate().toLocaleDateString('pt-BR');
+              } else {
+                try {
+                  this.dataLancamentoExibicao = new Date(ci.dataLancamento).toLocaleDateString('pt-BR');
+                } catch (e) {
+                  this.dataLancamentoExibicao = 'Data inválida';
+                }
+              }
+            }
+
             const remetente$ = this.funcionarioService.getFuncionarioByMatricula(String(ci.matricula));
             let destinatario$: Observable<Funcionario | null>;
             if (ci.destinatario_matricula) {
@@ -94,16 +108,25 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
               destinatario$ = of(destinatarioTemp as Funcionario);
             }
 
+            let lancador$: Observable<Funcionario | null>;
+            if (ci.lancador_matricula) {
+              lancador$ = this.funcionarioService.getFuncionarioByMatricula(ci.lancador_matricula);
+            } else {
+              lancador$ = of(null);
+            }
+
             return forkJoin({
               remetente: remetente$,
-              destinatario: destinatario$
+              destinatario: destinatario$,
+              lancador: lancador$
             });
           }
-          return of({ remetente: null, destinatario: null });
+          return of({ remetente: null, destinatario: null, lancador: null });
         })
-      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null }) => {
+      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null }) => {
         this.remetente = data.remetente;
         this.destinatario = data.destinatario;
+        this.lancador = data.lancador;
       });
     }
   }
@@ -151,14 +174,20 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
     }
 
     const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
+    const lancadorMatricula = this.respostaLancamento === 'lancado' ? this.matriculaLogado : undefined;
 
-    this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento)
+    this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento, lancadorMatricula ?? undefined)
       .then(() => {
         alert('Status de lançamento atualizado com sucesso!');
         if (this.ci) {
           this.ci.lancamentoStatus = this.respostaLancamento!;
           if (dataLancamento) {
             this.ci.dataLancamento = dataLancamento;
+            this.dataLancamentoExibicao = new Date(dataLancamento).toLocaleDateString('pt-BR');
+          }
+          if (lancadorMatricula) {
+            this.ci.lancador_matricula = lancadorMatricula;
+            this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
           }
         }
         this.voltarParaLista();

@@ -52,7 +52,15 @@
     &:hover { background-color: #218838; }
   }
 
+  .btn-lancamento {
+    background-color: #b47510;
+    color: white;
+    &:hover { background-color: #9b660f; }
+    font-family: 'Montserrat', sans-serif;
+  }
+
   .btn-voltar {
+    text-transform: none;
     background-color: #6c757d; // Gray
     &:hover { background-color: #5a6268; }
   }

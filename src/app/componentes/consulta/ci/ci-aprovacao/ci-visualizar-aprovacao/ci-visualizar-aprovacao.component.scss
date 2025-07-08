@@ -52,28 +52,49 @@
   flex-grow: 1;
 }
 
-.aprovado-stamp {
+.stamps-container {
   position: absolute;
-  bottom: 24px; 
-  right: 24px; 
-  border: 2px solid #000;
-  padding: 8px 16px;
+  bottom: 120px;
+  right: 30px;
+  display: flex;
+  gap: 20px; /* Espaço entre os carimbos */
+  align-items: center;
+}
+
+.aprovado-stamp, .lancado-stamp {
+  border: 3px solid;
+  padding: 10px;
+  border-radius: 10px;
+  transform: rotate(-15deg);
+  font-size: 1.2rem;
+  font-weight: bold;
   text-align: center;
+  opacity: 0.8;
+  position: relative; /* Posição relativa ao container */
 
   .stamp-text {
-    font-weight: bold;
-    font-size: 1.1em;
+    font-size: 1.5rem;
   }
 
   .stamp-signature {
-    font-size: 0.9em;
-    margin-top: 4px;
+    font-size: 0.9rem;
+    margin-top: 5px;
   }
 
   .stamp-date {
-    font-size: 0.8em;
-    margin-top: 4px;
+    font-size: 0.8rem;
+    margin-top: 3px;
   }
+}
+
+.aprovado-stamp {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.lancado-stamp {
+  border-color: #007bff;
+  color: #007bff;
 }
 
 .header-title, .header-logo {

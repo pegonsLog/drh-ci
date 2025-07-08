@@ -2,7 +2,8 @@
   <div class="header">
     <p>LISTA DE FUNCIONÁRIOS</p>
     <div class="button-group">
-      <a class="btn-voltar" [routerLink]="['/painel', matricula]">Voltar ao Painel</a>
+      <a class="btn-voltar" [routerLink]="['/painel', matricula]">Painel</a>
+      <button class="btn btn-lancamento" *ngIf="perfilUsuario === 'adm'" (click)="navegarParaCiListarLancamento()">Lançamento</button>
       <a class="new-funcionario-button" *ngIf="perfilUsuario === 'adm'" [routerLink]="['/funcionario-novo', matricula]">Novo Funcionário</a>
     </div>
   </div>

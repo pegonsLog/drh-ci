@@ -55,6 +55,7 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
   font-weight: 600;
+  text-transform: capitalize;
 }
 
 .btn-ci {
@@ -64,6 +65,11 @@
 }
 .btn-escala {
   background-color: #7628a7;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+.btn-lancamento {
+  background-color: #b47510;
   color: white;
   font-family: 'Montserrat', sans-serif;
 }

@@ -12,6 +12,7 @@ import { Funcionario, FuncionarioService } from '../../../../services/funcionari
   styleUrls: ['./funcionario-listar.component.scss']
 })
 export class FuncionarioListarComponent implements OnInit {
+
   matricula: string | null = null;
   funcionarios$!: Observable<Funcionario[]>;
   perfilUsuario: string | null = null;
@@ -50,4 +51,7 @@ export class FuncionarioListarComponent implements OnInit {
         });
     }
   }
+  navegarParaCiListarLancamento() {
+    this.router.navigate(['/ci-listar-lancamento', this.matricula]);
+    }
 }

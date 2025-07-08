@@ -47,7 +47,7 @@
     width: 100%;
   }
 
-  .btn-voltar, .new-escala-button {
+  .btn-voltar, .new-escala-button, .btn-lancamento {
     flex-grow: 1;
     padding: 0.8rem 1rem;
     border: none;
@@ -61,8 +61,16 @@
   }
 
   .btn-voltar {
+    text-transform: none;
     background-color: #6c757d;
     &:hover { background-color: #5a6268; }
+  }
+
+  .btn-lancamento {
+    background-color: #b47510;
+    color: white;
+    &:hover { background-color: #9b660f; }
+    font-family: 'Montserrat', sans-serif;
   }
 
   .new-escala-button {

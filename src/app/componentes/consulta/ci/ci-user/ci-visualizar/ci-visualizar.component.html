@@ -27,10 +27,17 @@
         </div>
         <div class="form-body-wrapper">
           <div class="form-body" [innerHTML]="ci.comunicacao"></div>
-          <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
-            <div class="stamp-text">De acordo</div>
-            <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
-            <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+          <div class="stamps-container">
+            <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
+              <div class="stamp-text">De acordo</div>
+              <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+              <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+            </div>
+            <div *ngIf="ci.lancamentoStatus === 'lancado'" class="lancado-stamp">
+              <div class="stamp-text">Lançado</div>
+              <div class="stamp-signature">{{ lancador?.funcionario }}</div>
+              <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+            </div>
           </div>
         </div>
         <div class="form-footer">
@@ -64,10 +71,17 @@
         </div>
         <div class="form-body-wrapper">
           <div class="form-body" [innerHTML]="ci.comunicacao"></div>
-          <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
-            <div class="stamp-text">De acordo</div>
-            <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
-            <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+          <div class="stamps-container">
+            <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
+              <div class="stamp-text">De acordo</div>
+              <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+              <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+            </div>
+            <div *ngIf="ci.lancamentoStatus === 'lancado'" class="lancado-stamp">
+              <div class="stamp-text">Lançado</div>
+              <div class="stamp-signature">{{ lancador?.funcionario }}</div>
+              <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+            </div>
           </div>
         </div>
         <div class="form-footer">

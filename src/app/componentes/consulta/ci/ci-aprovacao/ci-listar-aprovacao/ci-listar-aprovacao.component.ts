@@ -1,15 +1,17 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
 import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
+import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
 
 @Component({
   selector: 'app-ci-listar-aprovacao',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe],
+    imports: [CommonModule, RouterLink, RouterModule, FormsModule, DatePipe, StatusFormatPipe],
   templateUrl: './ci-listar-aprovacao.component.html',
   styleUrls: ['./ci-listar-aprovacao.component.scss']
 })

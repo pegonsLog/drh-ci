@@ -15,6 +15,7 @@ import { FuncionarioService } from '../../../../services/funcionario.service';
   styleUrl: './escala-listar.component.scss'
 })
 export class EscalaListarComponent implements OnInit {
+
   escalas$!: Observable<Escala[]>;
 
   // Para o modal de exclusão
@@ -98,4 +99,8 @@ export class EscalaListarComponent implements OnInit {
         });
     }
   }
+
+  abrirCiListarLancamento() {
+    this.router.navigate(['/ci-listar-lancamento', this.matriculaUsuario]);
+    }
 }

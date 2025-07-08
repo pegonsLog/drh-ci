@@ -35,7 +35,7 @@
               <td>{{ ci.comunicacao | slice:0:50 }}...</td>
               <td class="status-cell">
                 <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
-                  {{ (ci.aprovacaoStatus || 'pendente') | titlecase }}
+                  {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
                 </span>
               </td>
               <td class="actions-cell">
