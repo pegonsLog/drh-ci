@@ -97,6 +97,12 @@
   color: #007bff;
 }
 
+.aprovado-gerente-stamp {
+  @extend .aprovado-stamp;
+  border-color: #0dcaf0; // Cor info para o gerente
+  color: #0dcaf0;
+}
+
 .header-title, .header-logo {
   display: flex;
   align-items: center;
@@ -384,6 +390,21 @@
     &:hover {
       background-color: #157347;
       border-color: #146c43;
+    }
+  }
+}
+
+.floating-aprovacao-gerente {
+  @extend .floating-aprovacao; // Herda todos os estilos da aprovação
+  top: 410px; // Posição ajustada para ficar abaixo da seção de lançamento
+
+  .btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+
+    &:hover {
+      background-color: #31d2f2;
+      border-color: #25cff2;
     }
   }
 }

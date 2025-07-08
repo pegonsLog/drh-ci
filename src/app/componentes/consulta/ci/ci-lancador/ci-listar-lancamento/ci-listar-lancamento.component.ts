@@ -4,11 +4,13 @@ import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
 
 @Component({
   selector: 'app-ci-listar-lancamento',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink],
+  imports: [CommonModule, RouterLink, DatePipe, FormsModule, StatusFormatPipe],
   templateUrl: './ci-listar-lancamento.component.html',
   styleUrls: ['./ci-listar-lancamento.component.scss']
 })
@@ -73,22 +75,6 @@ export class CiListarLancamentoComponent implements OnInit {
     if (this.pageNumber === 1) return;
     this.pageNumber--;
     this.loadCis('prev');
-  }
-
-  gerarPdfEEnviar(id: string | undefined): void {
-    if (!id || !this.matriculaLogada) return;
-
-    const isMobile = window.innerWidth <= 768;
-
-    if (isMobile) {
-      this.router.navigate(['/ci-visualizar', this.matriculaLogada, id], {
-        queryParams: { acao: 'gerarPDF', origem: 'mobile' }
-      });
-    } else {
-      this.router.navigate(['/ci-visualizar', this.matriculaLogada, id], {
-        queryParams: { acao: 'gerarPDF' }
-      });
-    }
   }
 
   logout(): void {

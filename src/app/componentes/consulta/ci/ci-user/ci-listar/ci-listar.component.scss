@@ -135,7 +135,13 @@ table {
   }
 
   &.icon-delete {
-    color: #dc3545; // Vermelho
+    color: #dc3545; // Vermelho para a ação de excluir
+
+    &.disabled {
+      color: #ccc; // Cinza para indicar desativado
+      cursor: not-allowed;
+    }
+
     &:hover {
       color: #c82333;
     }

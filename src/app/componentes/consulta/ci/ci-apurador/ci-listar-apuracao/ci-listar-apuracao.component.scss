@@ -97,10 +97,15 @@
     justify-content: flex-start;
     gap: 1rem;
   
-    i, a {
+      i, a {
       text-decoration: none !important;
       border: none !important;
       cursor: pointer;
+    }
+
+    a {
+      display: inline-flex; // Garante que o link se comporte como um container flex
+      align-items: center; // Alinha o ícone dentro do link verticalmente
     }
   }
   

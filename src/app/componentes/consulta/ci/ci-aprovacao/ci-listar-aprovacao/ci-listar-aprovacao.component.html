@@ -16,7 +16,8 @@
               <th>De</th>
               <th>Para</th>
               <th>Comunicação</th>
-              <th>Status</th>
+                            <th>Status</th>
+              <th>Aprovação Gerente</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -33,17 +34,21 @@
               <td>{{ ci.de }}</td>
               <td>{{ ci.para }}</td>
               <td>{{ ci.comunicacao | slice:0:50 }}...</td>
-              <td class="status-cell">
+                            <td class="status-cell">
                 <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
                   {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
+                </span>
+              </td>
+              <td class="status-cell">
+                <span [ngClass]="ci.aprovacao_gerente || 'pendente'">
+                  {{ (ci.aprovacao_gerente || 'pendente') | statusFormat }}
                 </span>
               </td>
               <td class="actions-cell">
                 <div class="action-icons-wrapper">
                   <a [routerLink]="['/ci-visualizar-aprovacao', matricula, ci.id]" [queryParams]="{ copia: 'false' }">
                     <i class="material-icons icon-view" title="Visualizar">visibility</i>
-                  </a>
-                  <i class="material-icons icon-email btn-gerar-pdf-mobile" (click)="gerarPdfEEnviar(ci.id)" title="Gerar PDF e Enviar">email</i>
+                  </a>                 
                 </div>
               </td>
             </tr>

@@ -37,6 +37,21 @@
       <button (click)="salvarLancamento()" [disabled]="!respostaLancamento" class="btn btn-success mt-2">Salvar Lançamento</button>
     </div>
   </div>
+
+  <!-- Bloco flutuante de aprovação do Gerente -->
+  <div *ngIf="(perfilUsuario$ | async) === 'gerente' && ci.aprovacao_gerente === 'pendente'" class="floating-aprovacao-gerente">
+    <div class="radio-group d-flex flex-column gap-2 align-items-start">
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="aprovadoGerenteRadioFloat" value="aprovado" [(ngModel)]="respostaAprovacaoGerente">
+        <label class="form-check-label" for="aprovadoGerenteRadioFloat">Aprovar</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="naoAprovadoGerenteRadioFloat" value="nao_aprovado" [(ngModel)]="respostaAprovacaoGerente">
+        <label class="form-check-label" for="naoAprovadoGerenteRadioFloat">Não Aprovar</label>
+      </div>
+      <button (click)="salvarAprovacaoGerente()" [disabled]="!respostaAprovacaoGerente || respostaAprovacaoGerente === 'pendente'" class="btn btn-info mt-2">Salvar Aprovação Gerente</button>
+    </div>
+  </div>
 <div class="ci-visualizar-container">
   <!-- Container da CI para impressão/PDF -->
   <div #ciContainer class="ci-sheet-container" [class.sem-copia]="!imprimirComCopia">
@@ -69,6 +84,11 @@
               <div class="stamp-text">Lançado</div>
               <div class="stamp-signature">{{ lancador?.funcionario }}</div>
               <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+            </div>
+            <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="aprovado-gerente-stamp">
+              <div class="stamp-text">Aprovado Gerente</div>
+              <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+              <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
             </div>
           </div>
         </div>
@@ -113,6 +133,11 @@
               <div class="stamp-text">Lançado</div>
               <div class="stamp-signature">{{ lancador?.funcionario }}</div>
               <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+            </div>
+            <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="aprovado-gerente-stamp">
+              <div class="stamp-text">Aprovado Gerente</div>
+              <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
+              <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
             </div>
           </div>
         </div>

@@ -23,7 +23,8 @@
               <th>Para</th>
               <th>Comunicação</th>
               <th>Aprovação</th>
-              <th>Lançamento</th>
+                            <th>Lançamento</th>
+              <th>Aprovação Gerente</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -45,16 +46,24 @@
                   {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
                 </span>
               </td>
-              <td class="status-cell">
+                            <td class="status-cell">
                 <span [ngClass]="ci.lancamentoStatus || 'nao_lancado'">
                   {{ (ci.lancamentoStatus || 'nao_lancado') === 'nao_lancado' ? 'Não Lançado' : 'Lançado' }}
+                </span>
+              </td>
+              <td class="status-cell">
+                <span [ngClass]="ci.aprovacao_gerente || 'pendente'">
+                  {{ (ci.aprovacao_gerente || 'pendente') | statusFormat }}
                 </span>
               </td>
               <td class="actions-cell">
                 <div class="action-icons-wrapper">
                   <i class="material-icons icon-view" (click)="abrirModalImpressao(ci.id)" title="Visualizar">visibility</i>
                   <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
-                  <i class="material-icons icon-delete" (click)="excluirCi(ci.id)" title="Excluir">delete</i>
+                                    <i class="material-icons icon-delete"
+                     [class.disabled]="ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado'"
+                     (click)="!(ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado') && excluirCi(ci.id)"
+                     [title]="(ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado') ? 'Ação não permitida' : 'Excluir'">delete</i>
                 </div>
               </td>
             </tr>

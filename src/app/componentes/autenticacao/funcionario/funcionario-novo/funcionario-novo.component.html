@@ -27,6 +27,7 @@
         <option value="gestor">Gestor</option>
         <option value="apurador">Apurador</option>
         <option value="lancador">Lancador</option>
+        <option value="gerente">Gerente</option>
       </select>
       <div *ngIf="funcionarioForm.get('perfil')?.invalid && funcionarioForm.get('perfil')?.touched" class="error-message">
         <small *ngIf="funcionarioForm.get('perfil')?.errors?.['required']">O perfil é obrigatório.</small>

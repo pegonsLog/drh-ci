@@ -87,22 +87,6 @@ export class CiListarAprovacaoComponent implements OnInit {
     this.loadCis('prev');
   }
 
-  gerarPdfEEnviar(id: string | undefined): void {
-    if (!id) return;
-
-    const isMobile = window.innerWidth <= 768;
-
-    if (isMobile) {
-      this.router.navigate(['/ci-visualizar-aprovacao', this.matricula, id], {
-        queryParams: { acao: 'gerarPDF', origem: 'mobile' }
-      });
-    } else {
-      this.router.navigate(['/ci-visualizar-aprovacao', this.matricula, id], {
-        queryParams: { acao: 'gerarPDF' }
-      });
-    }
-  }
-
   logout(): void {
     this.funcionarioService.logout();
     this.router.navigate(['/login']);

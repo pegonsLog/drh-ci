@@ -64,4 +64,8 @@ export class PainelComponent implements OnInit {
   navegarParaCiListarLancamento() {
     this.router.navigate(['/ci-listar-lancamento', this.matricula]);
     }
+
+  navegarParaCiListarAprovacao() {
+    this.router.navigate(['/ci-listar-aprovacao', this.matricula]);
+  }
 }

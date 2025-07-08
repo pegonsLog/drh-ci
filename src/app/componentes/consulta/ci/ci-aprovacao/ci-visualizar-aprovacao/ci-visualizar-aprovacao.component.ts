@@ -19,6 +19,7 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
   isDestinatario = false;
   respostaAprovacao: 'aprovado' | 'nao_aprovado' | 'pendente' | null = null;
   respostaLancamento: 'lancado' | 'nao_lancado' | null = null;
+  respostaAprovacaoGerente: 'aprovado' | 'nao_aprovado' | 'pendente' | null = null;
   ci: ComunicacaoInterna | null = null;
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
@@ -27,6 +28,7 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
   dataExibicao: string | null = null;
   dataAprovacaoExibicao: string | null = null;
   dataLancamentoExibicao: string | null = null;
+  dataAprovacaoGerenteExibicao: string | null = null;
   perfilUsuario$: Observable<string | null>;
 
   constructor(
@@ -59,6 +61,7 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
               this.ci.aprovacaoStatus = 'pendente';
             }
             this.respostaAprovacao = this.ci.aprovacaoStatus;
+            this.respostaAprovacaoGerente = this.ci.aprovacao_gerente || 'pendente';
             this.isDestinatario = this.matriculaLogado === this.ci.destinatario_matricula;
 
             if (ci.data) {
@@ -95,6 +98,18 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
                   this.dataLancamentoExibicao = new Date(ci.dataLancamento).toLocaleDateString('pt-BR');
                 } catch (e) {
                   this.dataLancamentoExibicao = 'Data inválida';
+                }
+              }
+            }
+
+            if (ci.data_aprovacao_gerente) {
+              if (typeof (ci.data_aprovacao_gerente as any).toDate === 'function') {
+                this.dataAprovacaoGerenteExibicao = (ci.data_aprovacao_gerente as any).toDate().toLocaleDateString('pt-BR');
+              } else {
+                try {
+                  this.dataAprovacaoGerenteExibicao = new Date(ci.data_aprovacao_gerente).toLocaleDateString('pt-BR');
+                } catch (e) {
+                  this.dataAprovacaoGerenteExibicao = 'Data inválida';
                 }
               }
             }
@@ -195,6 +210,31 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
       .catch((err: any) => {
         console.error('Erro ao salvar status de lançamento:', err);
         alert('Falha ao salvar o status de lançamento. Tente novamente.');
+      });
+  }
+
+  salvarAprovacaoGerente(): void {
+    if (!this.ci || !this.respostaAprovacaoGerente) {
+      return;
+    }
+
+    const dataAprovacaoGerente = this.respostaAprovacaoGerente === 'aprovado' ? new Date() : undefined;
+
+    this.ciService.updateAprovacaoGerenteStatus(this.ci.id, this.respostaAprovacaoGerente, dataAprovacaoGerente)
+      .then(() => {
+        alert('Resposta do gerente salva com sucesso!');
+        if (this.ci) {
+          this.ci.aprovacao_gerente = this.respostaAprovacaoGerente!;
+          if (dataAprovacaoGerente) {
+            this.ci.data_aprovacao_gerente = dataAprovacaoGerente;
+            this.dataAprovacaoGerenteExibicao = new Date(dataAprovacaoGerente).toLocaleDateString('pt-BR');
+          }
+        }
+        this.voltarParaLista();
+      })
+      .catch((err: any) => {
+        console.error('Erro ao salvar resposta do gerente:', err);
+        alert('Falha ao salvar a resposta do gerente. Tente novamente.');
       });
   }
 }

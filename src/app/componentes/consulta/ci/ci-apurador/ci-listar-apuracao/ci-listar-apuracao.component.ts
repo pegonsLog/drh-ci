@@ -88,5 +88,18 @@ export class CiListarApuracaoComponent implements OnInit {
     this.funcionarioService.logout();
     this.router.navigate(['/login']);
   }
+
+  excluirCi(id: string | undefined): void {
+    if (id && confirm('Tem certeza que deseja excluir esta comunicação?')) {
+      this.ciService.deleteCi(id)
+        .then(() => {
+          this.cis = this.cis.filter(ci => ci.id !== id);
+        })
+        .catch(err => {
+          console.error('Erro ao excluir CI:', err);
+          alert('Ocorreu um erro ao excluir a comunicação.');
+        });
+    }
+  }
 }
 

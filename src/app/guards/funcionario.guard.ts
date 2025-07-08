@@ -22,7 +22,17 @@ export const funcionarioGuard: CanActivateFn = (route, state) => {
       }
 
       const url = state.url;
-      const userProfile = (funcionario as any).perfil;
+      const userProfile = (funcionario as any).perfil?.toLowerCase();
+
+      // Rota de Aprovação
+      if (url.startsWith('/ci-listar-aprovacao')) {
+        const allowedProfiles = ['adm', 'gestor', 'gerente'];
+        if (userProfile && allowedProfiles.includes(userProfile)) {
+          return true;
+        }
+        router.navigate(['/painel', matricula]);
+        return false;
+      }
 
       // Rota de Lançamento
       if (url.startsWith('/ci-listar-lancamento')) {

@@ -16,7 +16,8 @@
             <th>Para</th>
             <th>Comunicação</th>
             <th>Aprovação</th>
-            <th>Lançamento</th>
+                        <th>Lançamento</th>
+            <th>Aprovação Gerente</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -39,16 +40,22 @@
                 {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
               </span>
             </td>
-            <td class="status-cell">
+                        <td class="status-cell">
               <span [ngClass]="ci.lancamentoStatus || 'nao_lancado'">
                 {{ (ci.lancamentoStatus || 'nao_lancado') | statusFormat }}
               </span>
             </td>
+            <td class="status-cell">
+              <span [ngClass]="ci.aprovacao_gerente || 'pendente'">
+                {{ (ci.aprovacao_gerente || 'pendente') | statusFormat }}
+              </span>
+            </td>
             <td class="actions-cell">
               <div class="action-icons-wrapper">
-                                                <a [routerLink]="['/ci-visualizar-apuracao', ci.id]" [queryParams]="{ origem: 'apuracao' }">
+                                                                <a [routerLink]="['/ci-visualizar-apuracao', ci.id]" [queryParams]="{ origem: 'apuracao' }">
                   <i class="material-icons icon-view" title="Visualizar">visibility</i>
                 </a>
+                <i class="material-icons icon-delete" (click)="excluirCi(ci.id)" title="Excluir">delete</i>
               </div>
             </td>
           </tr>

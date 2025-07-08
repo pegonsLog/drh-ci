@@ -77,7 +77,7 @@ export class CiAlterarComponent implements OnInit {
         const ciAtualizada: Partial<ComunicacaoInterna> = {
           ...this.originalCi,
           comunicacao: formValue.comunicacao,
-          para: String(destinatario.matricula), // Salva a MATRÍCULA como string
+          para: destinatario.funcionario, // Salva o NOME do funcionário
           destinatario_matricula: String(destinatario.matricula), // Garante que a matrícula seja salva como string
           lancamentoStatus: formValue.lancamentoStatus,
         };

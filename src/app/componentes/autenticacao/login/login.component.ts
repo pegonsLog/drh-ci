@@ -44,15 +44,18 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   get canAccessAprovacao(): boolean {
-    return this.userProfile === 'gestor' || this.userProfile === 'adm';
+    const userProfileLower = this.userProfile?.toLowerCase();
+    return userProfileLower === 'gestor' || userProfileLower === 'adm' || userProfileLower === 'gerente';
   }
 
   get canAccessLancamento(): boolean {
-    return this.userProfile === 'lancador' || this.userProfile === 'apurador' || this.userProfile === 'adm';
+    const userProfileLower = this.userProfile?.toLowerCase();
+    return userProfileLower === 'lancador' || userProfileLower === 'apurador' || userProfileLower === 'adm';
   }
 
   get canAccessApuracao(): boolean {
-    return this.userProfile === 'apurador' || this.userProfile === 'lancador' || this.userProfile === 'adm';
+    const userProfileLower = this.userProfile?.toLowerCase();
+    return userProfileLower === 'apurador' || userProfileLower === 'lancador' || userProfileLower === 'adm';
   }
 
   loginAndNavigate(route: string): void {

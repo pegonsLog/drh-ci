@@ -15,6 +15,8 @@ export interface NewComunicacaoInterna {
   lancamentoStatus: 'nao_lancado' | 'lancado';
   dataLancamento?: any;
   lancador_matricula?: string;
+  aprovacao_gerente?:  'aprovado' | 'nao_aprovado' | 'pendente';
+  data_aprovacao_gerente?: any;
 }
 
 // Interface para CIs que vêm do banco (com id obrigatório)
@@ -199,6 +201,17 @@ export class CiService {
 
     if (lancadorMatricula) {
       dataToUpdate.lancador_matricula = lancadorMatricula;
+    }
+
+    return updateDoc(ciDocRef, dataToUpdate);
+  }
+
+  updateAprovacaoGerenteStatus(id: string, status: 'aprovado' | 'nao_aprovado' | 'pendente', dataAprovacaoGerente?: any) {
+    const ciDocRef = doc(this.firestore, `cis/${id}`);
+    const dataToUpdate: any = { aprovacao_gerente: status };
+
+    if (dataAprovacaoGerente) {
+      dataToUpdate.data_aprovacao_gerente = dataAprovacaoGerente;
     }
 
     return updateDoc(ciDocRef, dataToUpdate);
