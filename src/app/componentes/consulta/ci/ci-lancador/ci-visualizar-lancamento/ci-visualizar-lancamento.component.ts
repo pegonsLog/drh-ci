@@ -27,10 +27,12 @@ export class CiVisualizarLancamentoComponent implements OnInit {
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
   lancador: Funcionario | null = null;
+  gerenteAprovador: Funcionario | null = null;
   matriculaLogado: string | null = null;
   dataExibicao: string | null = null;
   dataAprovacaoExibicao: string | null = null;
   dataLancamentoExibicao: string | null = null;
+  dataAprovacaoGerenteExibicao: string | null = null;
   perfilUsuario$: Observable<string | null>;
 
   // Controle do Modal de Confirmação de Ação
@@ -73,18 +75,24 @@ export class CiVisualizarLancamentoComponent implements OnInit {
               this.dataLancamentoExibicao = (ci.dataLancamento as any).toDate ? (ci.dataLancamento as any).toDate().toLocaleDateString('pt-BR') : new Date(ci.dataLancamento).toLocaleDateString('pt-BR');
             }
 
+            if (ci.data_aprovacao_gerente) {
+              this.dataAprovacaoGerenteExibicao = (ci.data_aprovacao_gerente as any).toDate ? (ci.data_aprovacao_gerente as any).toDate().toLocaleDateString('pt-BR') : new Date(ci.data_aprovacao_gerente).toLocaleDateString('pt-BR');
+            }
+
             const remetente$ = this.funcionarioService.getFuncionarioByMatricula(String(ci.matricula));
             const destinatario$ = ci.destinatario_matricula ? this.funcionarioService.getFuncionarioByMatricula(ci.destinatario_matricula) : of({ funcionario: ci.para } as Funcionario);
             const lancador$ = ci.lancador_matricula ? this.funcionarioService.getFuncionarioByMatricula(ci.lancador_matricula) : of(null);
+            const gerenteAprovador$ = ci.gerente_aprovador_matricula ? this.funcionarioService.getFuncionarioByMatricula(ci.gerente_aprovador_matricula) : of(null);
 
-            return forkJoin({ remetente: remetente$, destinatario: destinatario$, lancador: lancador$ });
+            return forkJoin({ remetente: remetente$, destinatario: destinatario$, lancador: lancador$, gerenteAprovador: gerenteAprovador$ });
           }
-          return of({ remetente: null, destinatario: null, lancador: null });
+          return of({ remetente: null, destinatario: null, lancador: null, gerenteAprovador: null });
         })
-      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null }) => {
+      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null, gerenteAprovador: Funcionario | null }) => {
         this.remetente = data.remetente;
         this.destinatario = data.destinatario;
         this.lancador = data.lancador;
+        this.gerenteAprovador = data.gerenteAprovador;
       });
     }
   }

@@ -95,7 +95,7 @@
     align-items: center;
   }
 
-  .aprovado-stamp, .lancado-stamp {
+  .aprovado-stamp, .lancado-stamp, .aprovado-gerente-stamp {
     border: 3px solid;
     padding: 10px;
     border-radius: 10px;
@@ -105,16 +105,21 @@
     text-align: center;
     opacity: 0.8;
     position: relative; 
+    min-width: 150px; 
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     .stamp-text {
-      font-size: 1.5rem;
+      font-size: 1rem;
     }
 
     .stamp-signature {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       margin-top: 5px;
     }
-
+    
     .stamp-date {
       font-size: 0.8rem;
       margin-top: 3px;
@@ -129,6 +134,11 @@
   .lancado-stamp {
     border-color: #007bff;
     color: #007bff;
+  }
+
+  .aprovado-gerente-stamp {
+    border-color: #0dcaf0; 
+    color: #0dcaf0;
   }
 }
 

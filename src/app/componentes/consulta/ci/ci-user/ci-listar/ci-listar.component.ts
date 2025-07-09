@@ -181,14 +181,23 @@ export class CiListarComponent implements OnInit {
   processarDecisaoExclusao(decisao: boolean): void {
     this.mostrarModalExclusao = false;
     if (decisao && this.ciParaExcluirId) {
-      this.ciService.deleteCi(this.ciParaExcluirId)
+      const idParaExcluir = this.ciParaExcluirId;
+      this.ciService.deleteCi(idParaExcluir)
         .then(() => {
-          // Recarrega a lista para refletir a exclusão
-          this.loadCis('next'); 
+          // Remove a CI da lista local para atualizar a UI instantaneamente.
+          this.cis = this.cis.filter(ci => ci.id !== idParaExcluir);
+
+          // Se a página atual ficar vazia e não for a primeira página, volte para a anterior.
+          if (this.cis.length === 0 && this.pageNumber > 1) {
+            this.previousPage();
+          } else if (this.cis.length === 0 && this.pageNumber === 1) {
+            // Se a primeira página ficar vazia, recarregue para mostrar o estado vazio.
+            this.isLastPage = true;
+          }
         })
         .catch(err => {
           console.error("Erro ao excluir a CI:", err);
-          // Idealmente, mostrar um erro para o usuário aqui
+          // Idealmente, mostrar uma mensagem de erro para o usuário aqui.
         });
     }
     this.ciParaExcluirId = null;

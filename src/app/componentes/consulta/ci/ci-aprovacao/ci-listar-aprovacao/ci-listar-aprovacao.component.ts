@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/route
 import { Observable, map } from 'rxjs';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
-import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
+
 import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
 
 @Component({
@@ -16,14 +16,13 @@ import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
   styleUrls: ['./ci-listar-aprovacao.component.scss']
 })
 export class CiListarAprovacaoComponent implements OnInit {
-  cis: ComunicacaoInterna[] = [];
+  allCis: ComunicacaoInterna[] = []; // Armazena todas as CIs
+  cis: ComunicacaoInterna[] = []; // Armazena as CIs da página atual
   matricula: string | null = null;
   perfil: string | null = null;
 
-  // Paginação
+  // Paginação no lado do cliente
   pageSize = 10;
-  lastDoc: DocumentSnapshot<DocumentData> | null = null;
-  firstDoc: DocumentSnapshot<DocumentData> | null = null;
   pageNumber = 1;
   isLoading = false;
   isLastPage = false;
@@ -37,58 +36,74 @@ export class CiListarAprovacaoComponent implements OnInit {
 
   ngOnInit(): void {
     this.matricula = this.funcionarioService.getMatriculaLogada();
-    if (this.matricula) {
-      this.loadCis('next');
-    }
     this.funcionarioService.perfilUsuario$.subscribe(perfil => {
       this.perfil = perfil;
+      // Recarregar os dados se o perfil for carregado após a matrícula
+      if (this.matricula) {
+        this.loadCis();
+      }
     });
+    if (this.matricula && !this.perfil) {
+        this.loadCis();
+    }
   }
 
-  loadCis(direction: 'next' | 'prev'): void {
+  loadCis(): void {
     if (this.isLoading || !this.matricula) return;
     this.isLoading = true;
 
-    const cursor = direction === 'next' ? this.lastDoc : this.firstDoc;
+    // Espera o perfil ser definido antes de fazer a chamada
+    if (!this.perfil) {
+        setTimeout(() => this.loadCis(), 100); // Tenta novamente em 100ms
+        return;
+    }
 
-    this.ciService.getCisParaAprovacaoPaginado(this.matricula, this.pageSize, direction, cursor ?? undefined)
-      .subscribe({
-        next: (result: { cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }) => {
-          this.cis = result.cis.map((ci: ComunicacaoInterna) => {
-            const data = ci.data as any;
-            if (data && typeof data.toDate === 'function') {
-              return { ...ci, data: data.toDate() };
-            }
-            const parsedDate = new Date(data);
-            if (data && !isNaN(parsedDate.getTime())) {
-              return { ...ci, data: parsedDate };
-            }
-            return ci;
-          });
+    const isAdm = this.perfil === 'adm';
+    const ciObservable = isAdm 
+      ? this.ciService.getAllCisParaAprovacao() 
+      : this.ciService.getCisParaAprovacao(this.matricula);
 
-          this.firstDoc = result.firstDoc;
-          this.lastDoc = result.lastDoc;
-          
-          this.isLastPage = result.cis.length < this.pageSize;
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Falha ao carregar CIs para aprovação:', err);
-          this.isLoading = false;
-        }
-      });
+    ciObservable.subscribe({
+      next: (cis) => {
+        this.allCis = cis.map((ci: ComunicacaoInterna) => {
+          const data = ci.data as any;
+          if (data && typeof data.toDate === 'function') {
+            return { ...ci, data: data.toDate() };
+          }
+          const parsedDate = new Date(data);
+          if (data && !isNaN(parsedDate.getTime())) {
+            return { ...ci, data: parsedDate };
+          }
+          return ci;
+        });
+        this.pageNumber = 1;
+        this.updatePage();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Falha ao carregar CIs para aprovação:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  updatePage(): void {
+    const startIndex = (this.pageNumber - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.cis = this.allCis.slice(startIndex, endIndex);
+    this.isLastPage = endIndex >= this.allCis.length;
   }
 
   nextPage(): void {
     if (this.isLastPage) return;
     this.pageNumber++;
-    this.loadCis('next');
+    this.updatePage();
   }
 
   previousPage(): void {
     if (this.pageNumber === 1) return;
     this.pageNumber--;
-    this.loadCis('prev');
+    this.updatePage();
   }
 
   logout(): void {

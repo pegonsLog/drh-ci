@@ -218,7 +218,8 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
     const acao = () => {
       if (!this.ci || !this.respostaAprovacaoGerente) return;
       const dataAprovacaoGerente = this.respostaAprovacaoGerente === 'aprovado' ? new Date() : undefined;
-      this.ciService.updateAprovacaoGerenteStatus(this.ci.id, this.respostaAprovacaoGerente, dataAprovacaoGerente)
+      const gerenteMatricula = this.respostaAprovacaoGerente === 'aprovado' ? this.matriculaLogado : undefined;
+      this.ciService.updateAprovacaoGerenteStatus(this.ci.id, this.respostaAprovacaoGerente, dataAprovacaoGerente, gerenteMatricula ?? undefined)
         .then(() => {
           if (this.ci) {
             this.ci.aprovacao_gerente = this.respostaAprovacaoGerente!;

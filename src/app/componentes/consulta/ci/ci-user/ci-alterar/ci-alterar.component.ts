@@ -32,7 +32,8 @@ export class CiAlterarComponent implements OnInit {
       de: [{ value: '', disabled: true }, Validators.required],
       para: ['', Validators.required], // Este controle agora armazenará a matrícula do destinatário
       comunicacao: ['', Validators.required],
-      lancamentoStatus: ['', Validators.required]
+      lancamentoStatus: ['', Validators.required],
+      'destinatario_matricula-cc': ['']
     });
     this.funcionarios$ = this.funcionarioService.getFuncionarios();
   }
@@ -55,7 +56,8 @@ export class CiAlterarComponent implements OnInit {
         de: ci.de,
         para: ci.destinatario_matricula, // Povoa o form com a matrícula do destinatário
         comunicacao: ci.comunicacao,
-        lancamentoStatus: ci.lancamentoStatus || 'nao_lancado'
+        lancamentoStatus: ci.lancamentoStatus || 'nao_lancado',
+        'destinatario_matricula-cc': ci['destinatario_matricula-cc'] || ''
       });
     });
   }
@@ -80,6 +82,7 @@ export class CiAlterarComponent implements OnInit {
           para: destinatario.funcionario, // Salva o NOME do funcionário
           destinatario_matricula: String(destinatario.matricula), // Garante que a matrícula seja salva como string
           lancamentoStatus: formValue.lancamentoStatus,
+          'destinatario_matricula-cc': formValue['destinatario_matricula-cc'] ? String(formValue['destinatario_matricula-cc']) : undefined,
         };
 
         delete ciAtualizada.aprovacaoStatus; // Remove o status de aprovação

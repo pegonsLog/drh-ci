@@ -25,6 +25,16 @@
     </div>
 
     <div class="form-group">
+      <label for="destinatario_matricula-cc">Com Cópia para (Opcional):</label>
+      <select id="destinatario_matricula-cc" formControlName="destinatario_matricula-cc" class="form-select">
+        <option [value]="null">Selecione um destinatário (opcional)</option>
+        <option *ngFor="let funcionario of funcionarios" [value]="funcionario.matricula">
+          {{ funcionario.funcionario }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
       <label for="comunicacao">Comunicação:</label>
       <textarea id="comunicacao" formControlName="comunicacao" rows="10" placeholder="Digite sua mensagem aqui..." class="form-control"></textarea>
       <div *ngIf="ciForm.get('comunicacao')?.invalid && (ciForm.get('comunicacao')?.dirty || ciForm.get('comunicacao')?.touched)" class="error-message">

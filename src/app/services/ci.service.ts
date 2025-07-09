@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, addDoc, collectionData, doc, updateDoc, deleteDoc, docData, query, where, orderBy, CollectionReference, DocumentData, DocumentSnapshot, QueryConstraint, endBefore, getDocs, limit, limitToLast, startAfter } from '@angular/fire/firestore';
-import { Observable, filter, map, from, of } from 'rxjs';
+import { Observable, filter, map, from, of, forkJoin, switchMap } from 'rxjs';
 
 // Interface para CIs que ainda não foram salvas (sem id)
 export interface NewComunicacaoInterna {
@@ -10,6 +10,7 @@ export interface NewComunicacaoInterna {
   comunicacao: string;
   matricula: string;
   destinatario_matricula?: string;
+  'destinatario_matricula-cc'?: string;
   aprovacaoStatus: 'aprovado' | 'nao_aprovado' | 'pendente';
   dataAprovacao?: any;
   lancamentoStatus: 'nao_lancado' | 'lancado';
@@ -17,6 +18,7 @@ export interface NewComunicacaoInterna {
   lancador_matricula?: string;
   aprovacao_gerente?:  'aprovado' | 'nao_aprovado' | 'pendente';
   data_aprovacao_gerente?: any;
+  gerente_aprovador_matricula?: string;
 }
 
 // Interface para CIs que vêm do banco (com id obrigatório)
@@ -100,61 +102,59 @@ export class CiService {
     );
   }
 
+
+
+  // Este método foi simplificado para buscar TODAS as CIs para aprovação sem paginação no lado do serviço.
+  // A paginação será tratada no componente.
   getCisParaAprovacao(matricula: string): Observable<ComunicacaoInterna[]> {
-    // Este método agora usa a função paginada para manter a compatibilidade, 
-    // mas busca todos os resultados (limite alto) para quem o usa sem paginação.
-    return this.getCisParaAprovacaoPaginado(matricula, 1000, 'next').pipe(
-      map(result => result.cis)
+    const cisCollection = collection(this.firestore, 'cis');
+
+    // Query para CIs onde o usuário é o destinatário principal
+    const query1 = query(cisCollection,
+      where('destinatario_matricula', '==', matricula)
+    );
+
+    // Query para CIs onde o usuário é o destinatário em cópia
+    const query2 = query(cisCollection,
+      where('destinatario_matricula-cc', '==', matricula)
+    );
+
+    const promise1 = getDocs(query1);
+    const promise2 = getDocs(query2);
+
+    return from(Promise.all([promise1, promise2])).pipe(
+      map(([snapshot1, snapshot2]) => {
+        const ciMap = new Map<string, ComunicacaoInterna>();
+
+        snapshot1.docs.forEach(doc => {
+          const data = doc.data() as ComunicacaoInterna;
+          ciMap.set(doc.id, { ...data, id: doc.id });
+        });
+
+        snapshot2.docs.forEach(doc => {
+          const data = doc.data() as ComunicacaoInterna;
+          ciMap.set(doc.id, { ...data, id: doc.id });
+        });
+
+        let combinedCis = Array.from(ciMap.values());
+        
+        combinedCis.sort((a, b) => {
+          const timeA = a.data?.toMillis ? a.data.toMillis() : 0;
+          const timeB = b.data?.toMillis ? b.data.toMillis() : 0;
+          return timeB - timeA; // Ordena por data descendente
+        });
+
+        return combinedCis;
+      })
     );
   }
 
-  getCisParaAprovacaoPaginado(
-    matricula: string,
-    pageSize: number,
-    direction: 'next' | 'prev',
-    cursor?: DocumentSnapshot<DocumentData>
-  ): Observable<{ cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }> {
+  getAllCisParaAprovacao(): Observable<ComunicacaoInterna[]> {
     const cisCollection = collection(this.firestore, 'cis');
-    const constraints: QueryConstraint[] = [
-      where('destinatario_matricula', '==', matricula)
-    ];
-
-    let q;
-    if (direction === 'prev' && cursor) {
-      q = query(
-        cisCollection,
-        ...constraints,
-        orderBy('data', 'asc'),
-        endBefore(cursor),
-        limitToLast(pageSize)
-      );
-    } else {
-      q = query(
-        cisCollection,
-        ...constraints,
-        orderBy('data', 'desc'),
-        limit(pageSize)
-      );
-      if (cursor && direction === 'next') {
-        q = query(q, startAfter(cursor));
-      }
-    }
-
+    const q = query(cisCollection, orderBy('data', 'desc'));
     return from(getDocs(q)).pipe(
       map(snapshot => {
-        let cis = snapshot.docs.map(doc => {
-          const data = doc.data() as ComunicacaoInterna;
-          return { ...data, id: doc.id };
-        });
-
-        if (direction === 'prev') {
-          cis.reverse();
-        }
-
-        const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
-        const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
-
-        return { cis, firstDoc, lastDoc };
+        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as ComunicacaoInterna));
       })
     );
   }
@@ -206,12 +206,16 @@ export class CiService {
     return updateDoc(ciDocRef, dataToUpdate);
   }
 
-  updateAprovacaoGerenteStatus(id: string, status: 'aprovado' | 'nao_aprovado' | 'pendente', dataAprovacaoGerente?: any) {
+  updateAprovacaoGerenteStatus(id: string, status: 'aprovado' | 'nao_aprovado' | 'pendente', dataAprovacaoGerente?: any, gerenteMatricula?: string) {
     const ciDocRef = doc(this.firestore, `cis/${id}`);
     const dataToUpdate: any = { aprovacao_gerente: status };
 
     if (dataAprovacaoGerente) {
       dataToUpdate.data_aprovacao_gerente = dataAprovacaoGerente;
+    }
+
+    if (gerenteMatricula) {
+      dataToUpdate.gerente_aprovador_matricula = gerenteMatricula;
     }
 
     return updateDoc(ciDocRef, dataToUpdate);

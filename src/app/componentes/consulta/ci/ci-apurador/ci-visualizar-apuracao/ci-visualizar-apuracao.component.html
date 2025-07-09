@@ -42,16 +42,21 @@
           <div class="form-body-wrapper">
             <div class="form-body" [innerHTML]="ci.comunicacao"></div>
             <div class="stamps-container">
-              <div *ngIf="ci.aprovacaoStatus === 'aprovado' && destinatario" class="de-acordo-stamp">
+              <div *ngIf="ci.aprovacaoStatus === 'aprovado' && destinatario" class="aprovado-stamp">
                 <div class="stamp-text">De acordo</div>
                 <div class="stamp-signature">{{ destinatario.funcionario }}</div>
                 <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
               </div>
 
-              <div *ngIf="ci.lancamentoStatus === 'lancado' && lancador" class="lancado-stamp">
+              <div *ngIf="ci.lancamentoStatus === 'lancado'" class="lancado-stamp">
                 <div class="stamp-text">Lançado</div>
-                <div class="stamp-signature">{{ lancador.funcionario }}</div>
+                <div class="stamp-signature">{{ lancador?.funcionario }}</div>
                 <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+              </div>
+              <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="aprovado-gerente-stamp">
+                <div class="stamp-text">Aprovado pelo Gerente</div>
+                <div class="stamp-signature">{{ gerenteAprovador?.funcionario }}</div>
+                <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
               </div>
             </div>
           </div>

@@ -30,6 +30,7 @@ export class CiNovaComponent implements OnInit {
       matricula: [{value: '', disabled: true}, Validators.required],
       de: [{value: '', disabled: true}, Validators.required],
       destinatario_matricula: ['', Validators.required],
+      'destinatario_matricula-cc': [''],
       comunicacao: ['', Validators.required]
     });
   }
@@ -75,7 +76,8 @@ export class CiNovaComponent implements OnInit {
         lancamentoStatus: 'nao_lancado', // Define o status de lançamento inicial
         // Garante que ambas as matrículas sejam salvas como STRINGS
         matricula: formValue.matricula.toString(),
-        destinatario_matricula: destinatarioMatriculaValue.toString()
+        destinatario_matricula: destinatarioMatriculaValue.toString(),
+        'destinatario_matricula-cc': formValue['destinatario_matricula-cc'] ? formValue['destinatario_matricula-cc'].toString() : undefined
       };
 
       this.ciService.addCi(novaCi)
