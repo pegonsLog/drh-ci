@@ -53,49 +53,57 @@
 }
 
 .stamps-container {
-  position: absolute;
-  bottom: 120px;
-  right: 30px;
-  display: flex;
-  gap: 20px; /* Espaço entre os carimbos */
-  align-items: center;
-}
-
-.aprovado-stamp, .lancado-stamp {
-  border: 3px solid;
-  padding: 10px;
-  border-radius: 10px;
-  transform: rotate(-15deg);
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-align: center;
-  opacity: 0.8;
-  position: relative; /* Posição relativa ao container */
-
-  .stamp-text {
-    font-size: 1.5rem;
+    position: absolute;
+    bottom: 30px; /* Desce os carimbos */
+    right: 30px;
+    display: flex;
+    gap: 20px; /* Espaço entre os carimbos */
+    align-items: center;
   }
 
-  .stamp-signature {
-    font-size: 0.9rem;
-    margin-top: 5px;
+  .aprovado-stamp, .lancado-stamp, .aprovado-gerente-stamp {
+    border: 1px solid; // Borda mais fina
+    padding: 4px; // Menor preenchimento
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    position: relative;
+    min-width: 130px; // Largura menor
+    height: 70px; // Altura menor
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .stamp-text {
+      font-size: 0.8rem; // Fonte menor
+      font-weight: 900;
+    }
+
+    .stamp-signature {
+      font-size: 0.7rem; // Fonte menor
+      margin-top: 4px;
+    }
+    
+    .stamp-date {
+      font-size: 0.7rem; // Fonte menor
+      margin-top: 2px;
+    }
   }
 
-  .stamp-date {
-    font-size: 0.8rem;
-    margin-top: 3px;
+  .aprovado-stamp {
+    border-color: black;
+    color: black;
   }
-}
 
-.aprovado-stamp {
-  border-color: #28a745;
-  color: #28a745;
-}
+  .lancado-stamp {
+    border-color: black;
+    color: black;
+  }
 
-.lancado-stamp {
-  border-color: #007bff;
-  color: #007bff;
-}
+  .aprovado-gerente-stamp {
+    border-color: black;
+    color: black;
+  }
 
 .header-title, .header-logo {
   display: flex;

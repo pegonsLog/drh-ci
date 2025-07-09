@@ -21,10 +21,12 @@ export class CiVisualizarComponent implements OnInit {
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
   lancador: Funcionario | null = null;
+  gerenteAprovador: Funcionario | null = null;
   matriculaLogado: string | null = null;
   dataExibicao: string | null = null;
   dataAprovacaoExibicao: string | null = null;
   dataLancamentoExibicao: string | null = null;
+  dataAprovacaoGerenteExibicao: string | null = null;
   perfilUsuario$: Observable<string | null>;
 
   constructor(
@@ -56,6 +58,9 @@ export class CiVisualizarComponent implements OnInit {
             // Define o status padrão para CIs antigas que não têm o campo
             if (!this.ci.aprovacaoStatus) {
               this.ci.aprovacaoStatus = 'pendente';
+            }
+            if (!this.ci.aprovacao_gerente) {
+              this.ci.aprovacao_gerente = 'pendente';
             }
 
 
@@ -100,6 +105,19 @@ export class CiVisualizarComponent implements OnInit {
               }
             }
 
+            // Lógica para formatar a data de aprovação do gerente
+            if (ci.data_aprovacao_gerente) {
+              if (typeof (ci.data_aprovacao_gerente as any).toDate === 'function') {
+                this.dataAprovacaoGerenteExibicao = (ci.data_aprovacao_gerente as any).toDate().toLocaleDateString('pt-BR');
+              } else {
+                try {
+                  this.dataAprovacaoGerenteExibicao = new Date(ci.data_aprovacao_gerente).toLocaleDateString('pt-BR');
+                } catch (e) {
+                  this.dataAprovacaoGerenteExibicao = 'Data inválida';
+                }
+              }
+            }
+
             const remetente$ = this.funcionarioService.getFuncionarioByMatricula(String(ci.matricula));
             let destinatario$: Observable<Funcionario | null>;
             if (ci.destinatario_matricula) {
@@ -116,18 +134,27 @@ export class CiVisualizarComponent implements OnInit {
               lancador$ = of(null);
             }
 
+            let gerenteAprovador$: Observable<Funcionario | null>;
+            if (ci.gerente_aprovador_matricula) {
+              gerenteAprovador$ = this.funcionarioService.getFuncionarioByMatricula(ci.gerente_aprovador_matricula);
+            } else {
+              gerenteAprovador$ = of(null);
+            }
+
             return forkJoin({
               remetente: remetente$,
               destinatario: destinatario$,
-              lancador: lancador$
+              lancador: lancador$,
+              gerenteAprovador: gerenteAprovador$
             });
           }
-          return of({ remetente: null, destinatario: null, lancador: null });
+          return of({ remetente: null, destinatario: null, lancador: null, gerenteAprovador: null });
         })
-      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null }) => {
+      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null, gerenteAprovador: Funcionario | null }) => {
         this.remetente = data.remetente;
         this.destinatario = data.destinatario;
         this.lancador = data.lancador;
+        this.gerenteAprovador = data.gerenteAprovador;
       });
     }
   }

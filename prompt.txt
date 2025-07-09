@@ -1,3 +1,1 @@
-como vc fez no componente ci-visualizar-lancamento e no ci-visualizar-aprovacao, e no ci-visualizar, 
-faça o mesmo para o ci-visualizar-apuracao, coloque os dois carimbos com as datas e nomes do lancamento e aprovação, extatamente igual 
-aos componentes mencionados acima.
+no ci-listar-aprovacao, mostre a paginação conforme ci-listar-apuracao, não modifique mais nada pois o codigo esta funcionando

@@ -38,6 +38,11 @@
               <div class="stamp-signature">{{ lancador?.funcionario }}</div>
               <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
             </div>
+            <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="aprovado-gerente-stamp">
+              <div class="stamp-text">De acordo Gerente</div>
+              <div class="stamp-signature">{{ gerenteAprovador?.funcionario }}</div>
+              <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
+            </div>
           </div>
         </div>
         <div class="form-footer">
@@ -81,6 +86,11 @@
               <div class="stamp-text">Lançado</div>
               <div class="stamp-signature">{{ lancador?.funcionario }}</div>
               <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+            </div>
+            <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="aprovado-gerente-stamp">
+              <div class="stamp-text">De acordo Gerente</div>
+              <div class="stamp-signature">{{ gerenteAprovador?.funcionario }}</div>
+              <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
             </div>
           </div>
         </div>

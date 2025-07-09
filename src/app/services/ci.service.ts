@@ -284,6 +284,62 @@ export class CiService {
     );
   }
 
+  getCisParaAprovacaoPaginado(
+    matricula: string,
+    isAdm: boolean,
+    pageSize: number,
+    direction: 'next' | 'prev',
+    cursor?: DocumentSnapshot<DocumentData>
+  ): Observable<PaginatedCisResult> {
+    const cisCollection = collection(this.firestore, 'cis');
+    let constraints: QueryConstraint[] = [];
+
+    if (!isAdm) {
+      // Firestore não suporta queries 'OR' em campos diferentes ('destinatario_matricula' e 'destinatario_matricula-cc').
+      // A abordagem aqui é buscar por destinatário principal. A paginação em 'cc' exigiria uma estrutura de dados diferente.
+      constraints.push(where('destinatario_matricula', '==', matricula));
+    }
+
+    let q;
+    if (direction === 'prev' && cursor) {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'asc'),
+        endBefore(cursor),
+        limitToLast(pageSize)
+      );
+    } else {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'desc'),
+        limit(pageSize)
+      );
+      if (cursor && direction === 'next') {
+        q = query(q, startAfter(cursor));
+      }
+    }
+
+    return from(getDocs(q)).pipe(
+      map(snapshot => {
+        let cis = snapshot.docs.map(doc => {
+          const data = doc.data() as ComunicacaoInterna;
+          return { ...data, id: doc.id };
+        });
+
+        if (direction === 'prev') {
+          cis.reverse();
+        }
+
+        const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
+        const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+
+        return { cis, firstDoc, lastDoc };
+      })
+    );
+  }
+
   getCisParaApuracaoPaginado(
     pageSize: number,
     direction: 'next' | 'prev',

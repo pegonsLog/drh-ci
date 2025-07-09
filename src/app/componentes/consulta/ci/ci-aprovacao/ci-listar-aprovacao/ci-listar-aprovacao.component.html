@@ -55,6 +55,12 @@
           </tbody>
         </table>
       </div>
+
+      <div class="pagination-controls">
+        <button (click)="previousPage()" [disabled]="pageNumber === 1 || isLoading" class="btn btn-secondary">Anterior</button>
+        <span>Página {{ pageNumber }}</span>
+        <button (click)="nextPage()" [disabled]="isLastPage || isLoading" class="btn btn-secondary">Próximo</button>
+      </div>
     </div>
 
     <ng-template #noCis>

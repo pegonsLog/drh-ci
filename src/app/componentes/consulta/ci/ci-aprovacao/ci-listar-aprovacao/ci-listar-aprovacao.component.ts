@@ -2,6 +2,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
+import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { Observable, map } from 'rxjs';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
@@ -16,16 +17,17 @@ import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
   styleUrls: ['./ci-listar-aprovacao.component.scss']
 })
 export class CiListarAprovacaoComponent implements OnInit {
-  allCis: ComunicacaoInterna[] = []; // Armazena todas as CIs
-  cis: ComunicacaoInterna[] = []; // Armazena as CIs da página atual
+  cis: ComunicacaoInterna[] = [];
   matricula: string | null = null;
   perfil: string | null = null;
 
-  // Paginação no lado do cliente
+  // Paginação no lado do servidor
   pageSize = 10;
   pageNumber = 1;
   isLoading = false;
   isLastPage = false;
+  firstDoc: DocumentSnapshot<DocumentData> | null = null;
+  lastDoc: DocumentSnapshot<DocumentData> | null = null;
 
   constructor(
     private ciService: CiService,
@@ -44,40 +46,30 @@ export class CiListarAprovacaoComponent implements OnInit {
       }
     });
     if (this.matricula && !this.perfil) {
-        this.loadCis();
+        // A chamada inicial agora acontece dentro do subscribe do perfil
     }
   }
 
-  loadCis(): void {
-    if (this.isLoading || !this.matricula) return;
+  loadCis(direction: 'next' | 'prev' = 'next'): void {
+    if (this.isLoading || !this.matricula || !this.perfil) return;
     this.isLoading = true;
 
-    // Espera o perfil ser definido antes de fazer a chamada
-    if (!this.perfil) {
-        setTimeout(() => this.loadCis(), 100); // Tenta novamente em 100ms
-        return;
-    }
-
     const isAdm = this.perfil === 'adm';
-    const ciObservable = isAdm 
-      ? this.ciService.getAllCisParaAprovacao() 
-      : this.ciService.getCisParaAprovacao(this.matricula);
+    const cursor = direction === 'next' ? this.lastDoc : this.firstDoc;
 
-    ciObservable.subscribe({
-      next: (cis) => {
-        this.allCis = cis.map((ci: ComunicacaoInterna) => {
+    this.ciService.getCisParaAprovacaoPaginado(this.matricula, isAdm, this.pageSize, direction, cursor ?? undefined).subscribe({
+      next: (result) => {
+        this.cis = result.cis.map((ci: ComunicacaoInterna) => {
           const data = ci.data as any;
           if (data && typeof data.toDate === 'function') {
             return { ...ci, data: data.toDate() };
           }
-          const parsedDate = new Date(data);
-          if (data && !isNaN(parsedDate.getTime())) {
-            return { ...ci, data: parsedDate };
-          }
           return ci;
         });
-        this.pageNumber = 1;
-        this.updatePage();
+
+        this.firstDoc = result.firstDoc;
+        this.lastDoc = result.lastDoc;
+        this.isLastPage = result.cis.length < this.pageSize;
         this.isLoading = false;
       },
       error: (err) => {
@@ -87,23 +79,18 @@ export class CiListarAprovacaoComponent implements OnInit {
     });
   }
 
-  updatePage(): void {
-    const startIndex = (this.pageNumber - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.cis = this.allCis.slice(startIndex, endIndex);
-    this.isLastPage = endIndex >= this.allCis.length;
-  }
+
 
   nextPage(): void {
     if (this.isLastPage) return;
     this.pageNumber++;
-    this.updatePage();
+    this.loadCis('next');
   }
 
   previousPage(): void {
     if (this.pageNumber === 1) return;
     this.pageNumber--;
-    this.updatePage();
+    this.loadCis('prev');
   }
 
   logout(): void {
