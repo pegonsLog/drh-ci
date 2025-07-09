@@ -9,17 +9,20 @@ import { FuncionarioService } from '../../../../../services/funcionario.service'
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
 import { ConfirmacaoImpressaoModalComponent } from '../../../../confirmacao-impressao-modal/confirmacao-impressao-modal.component';
+import { ConfirmacaoExclusaoModalComponent } from '../../../../confirmacao-exclusao-modal/confirmacao-exclusao-modal.component';
 
 @Component({
   selector: 'app-ci-listar',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterLink, DatePipe, FormsModule, StatusFormatPipe, ConfirmacaoImpressaoModalComponent],
+  imports: [CommonModule, RouterModule, RouterLink, DatePipe, FormsModule, StatusFormatPipe, ConfirmacaoImpressaoModalComponent, ConfirmacaoExclusaoModalComponent],
   templateUrl: './ci-listar.component.html',
   styleUrls: ['./ci-listar.component.scss']
 })
 export class CiListarComponent implements OnInit {
   mostrarModal = false;
+  mostrarModalExclusao = false;
   ciSelecionadaId: string | null = null;
+  ciParaExcluirId: string | null = null;
   matricula: string | null = null;
   perfilUsuario$: Observable<string | null>;
 
@@ -170,13 +173,30 @@ export class CiListarComponent implements OnInit {
   }
 
 
-  excluirCi(id: string | undefined): void {
-    if (id && confirm('Tem certeza que deseja excluir esta comunicação?')) {
-      this.ciService.deleteCi(id)
-        .then(() => {})
+  abrirModalExclusao(ciId: string): void {
+    this.ciParaExcluirId = ciId;
+    this.mostrarModalExclusao = true;
+  }
+
+  processarDecisaoExclusao(decisao: boolean): void {
+    this.mostrarModalExclusao = false;
+    if (decisao && this.ciParaExcluirId) {
+      this.ciService.deleteCi(this.ciParaExcluirId)
+        .then(() => {
+          // Recarrega a lista para refletir a exclusão
+          this.loadCis('next'); 
+        })
         .catch(err => {
-        // Idealmente, mostrar um erro para o usuário aqui
-      });
+          console.error("Erro ao excluir a CI:", err);
+          // Idealmente, mostrar um erro para o usuário aqui
+        });
+    }
+    this.ciParaExcluirId = null;
+  }
+
+  excluirCi(id: string | undefined): void {
+    if (id) {
+      this.abrirModalExclusao(id);
     }
   }
 }

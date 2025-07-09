@@ -1,3 +1,9 @@
+<app-confirmacao-acao-modal
+  *ngIf="mostrarModalAcao"
+  [mensagem]="mensagemModalAcao"
+  (decisao)="processarDecisaoAcao($event)">
+</app-confirmacao-acao-modal>
+
 <ng-container *ngIf="ci">
   <div class="floating-buttons">
     <button (click)="voltar()" class="btn-voltar">Voltar</button>

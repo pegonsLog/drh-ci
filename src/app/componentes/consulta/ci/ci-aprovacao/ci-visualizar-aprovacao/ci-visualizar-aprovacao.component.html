@@ -1,3 +1,9 @@
+<app-confirmacao-acao-modal
+  *ngIf="mostrarModalAcao"
+  [mensagem]="mensagemModalAcao"
+  (decisao)="processarDecisaoAcao($event)">
+</app-confirmacao-acao-modal>
+
 <ng-container *ngIf="ci">
   <div class="floating-buttons">
     <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
@@ -5,7 +11,7 @@
     <button (click)="sair()" class="btn-sair">Sair</button>
   </div>
   <!-- Bloco flutuante de aprovação -->
-  <div *ngIf="((perfilUsuario$ | async) === 'gestor' && isDestinatario) || (perfilUsuario$ | async) === 'adm'" class="floating-aprovacao">
+  <div *ngIf="(perfil === 'gestor' && isDestinatario) || perfil === 'adm'" class="floating-aprovacao">
     <div class="radio-group d-flex flex-column gap-2 align-items-start">
       <div class="form-check">
         <input class="form-check-input" type="radio" name="aprovacao-float" id="pendenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacao">
@@ -24,7 +30,7 @@
   </div>
 
   <!-- Bloco flutuante de lançamento -->
-    <div *ngIf="(perfilUsuario$ | async) === 'adm'" class="floating-lancamento">
+    <div *ngIf="perfil === 'adm'" class="floating-lancamento">
     <div class="radio-group d-flex flex-column gap-2 align-items-start">
       <div class="form-check">
         <input class="form-check-input" type="radio" name="lancamento-float" id="naoLancadoRadioFloat" value="nao_lancado" [(ngModel)]="respostaLancamento">
@@ -39,7 +45,7 @@
   </div>
 
   <!-- Bloco flutuante de aprovação do Gerente -->
-  <div *ngIf="(perfilUsuario$ | async) === 'gerente' && ci.aprovacao_gerente === 'pendente'" class="floating-aprovacao-gerente">
+  <div *ngIf="(perfil === 'gerente' || perfil === 'adm') && (ci.aprovacao_gerente === 'pendente' || ci.aprovacao_gerente === undefined)" class="floating-aprovacao-gerente">
     <div class="radio-group d-flex flex-column gap-2 align-items-start">
       <div class="form-check">
         <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="aprovadoGerenteRadioFloat" value="aprovado" [(ngModel)]="respostaAprovacaoGerente">
@@ -54,7 +60,7 @@
   </div>
 <div class="ci-visualizar-container">
   <!-- Container da CI para impressão/PDF -->
-  <div #ciContainer class="ci-sheet-container" [class.sem-copia]="!imprimirComCopia">
+  <div #ciContainer class="ci-sheet-container">
     <!-- Cópia 1 (Original) -->
     <div class="ci-form-wrapper">
       <div class="ci-form">
@@ -76,7 +82,7 @@
           <div class="form-body" [innerHTML]="ci.comunicacao"></div>
           <div class="stamps-container">
             <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
-              <div class="stamp-text">De acordo</div>
+              <div class="stamp-text">De acordo Coord./Superv.</div>
               <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
               <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
             </div>
@@ -86,7 +92,7 @@
               <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
             </div>
             <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="aprovado-gerente-stamp">
-              <div class="stamp-text">Aprovado Gerente</div>
+              <div class="stamp-text">De acordo Gerente</div>
               <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
               <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
             </div>
@@ -104,54 +110,7 @@
       </div>
     </div>
 
-    <!-- Cópia 2 (Cópia) -->
-    <div *ngIf="imprimirComCopia" class="ci-form-wrapper">
-      <div class="ci-form">
-        <div class="form-header">
-          <div class="header-title">COMUNICAÇÃO INTERNA</div>
-          <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
-        </div>
-        <div class="form-to-from">
-          <div class="address-section">
-            <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
-            <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
-          </div>
-          <div class="area-section">
-            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
-            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
-          </div>
-        </div>
-        <div class="form-body-wrapper">
-          <div class="form-body" [innerHTML]="ci.comunicacao"></div>
-          <div class="stamps-container">
-            <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
-              <div class="stamp-text">De acordo</div>
-              <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
-              <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
-            </div>
-            <div *ngIf="ci.lancamentoStatus === 'lancado'" class="lancado-stamp">
-              <div class="stamp-text">Lançado</div>
-              <div class="stamp-signature">{{ lancador?.funcionario }}</div>
-              <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
-            </div>
-            <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="aprovado-gerente-stamp">
-              <div class="stamp-text">Aprovado Gerente</div>
-              <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
-              <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="form-footer">
-          <div class="footer-box">
-            <span>Belo Horizonte, {{ dataExibicao }}</span>
-            <label class="footer-label">Data</label>
-          </div>
-          <div class="footer-box">
-            <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </div>
  </div>
 </ng-container>

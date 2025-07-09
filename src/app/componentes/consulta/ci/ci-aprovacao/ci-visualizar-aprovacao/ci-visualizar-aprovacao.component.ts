@@ -6,16 +6,17 @@ import { forkJoin, of, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ConfirmacaoAcaoModalComponent } from '../../../../confirmacao-acao-modal/confirmacao-acao-modal.component';
 
 @Component({
   selector: 'app-ci-visualizar-aprovacao',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmacaoAcaoModalComponent],
   templateUrl: './ci-visualizar-aprovacao.component.html',
   styleUrls: ['./ci-visualizar-aprovacao.component.scss']
 })
 export class CiVisualizarAprovacaoComponent implements OnInit {
-  imprimirComCopia = true;
+
   isDestinatario = false;
   respostaAprovacao: 'aprovado' | 'nao_aprovado' | 'pendente' | null = null;
   respostaLancamento: 'lancado' | 'nao_lancado' | null = null;
@@ -29,25 +30,23 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
   dataAprovacaoExibicao: string | null = null;
   dataLancamentoExibicao: string | null = null;
   dataAprovacaoGerenteExibicao: string | null = null;
-  perfilUsuario$: Observable<string | null>;
+  perfil: string | null = null;
+
+  // Controle do Modal de Confirmação de Ação
+  mostrarModalAcao = false;
+  mensagemModalAcao = '';
+  private acaoPendente: (() => void) | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     @Inject(CiService) private ciService: CiService,
     @Inject(FuncionarioService) private funcionarioService: FuncionarioService
-  ) {
-    this.perfilUsuario$ = this.funcionarioService.perfilUsuario$;
-  }
+  ) {}
+
 
   ngOnInit(): void {
-    const copiaParam = this.route.snapshot.queryParamMap.get('copia');
-
-    if (copiaParam === 'false') {
-      this.imprimirComCopia = false;
-    } else {
-      this.imprimirComCopia = true;
-    }
+    this.perfil = this.route.snapshot.queryParamMap.get('perfil');
 
     this.matriculaLogado = this.funcionarioService.getMatriculaLogada();
     const ciId = this.route.snapshot.paramMap.get('id');
@@ -159,82 +158,79 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
     window.print();
   }
 
-  salvarAprovacao(): void {
-    if (!this.ci || !this.respostaAprovacao) {
-      return;
+  abrirModalConfirmacao(acao: () => void, mensagem: string): void {
+    this.acaoPendente = acao;
+    this.mensagemModalAcao = mensagem;
+    this.mostrarModalAcao = true;
+  }
+
+  processarDecisaoAcao(confirmado: boolean): void {
+    this.mostrarModalAcao = false;
+    if (confirmado && this.acaoPendente) {
+      this.acaoPendente();
     }
+    this.acaoPendente = null;
+  }
 
-    const dataAprovacao = this.respostaAprovacao === 'aprovado' ? new Date() : undefined;
-
-    this.ciService.updateAprovacaoStatus(this.ci.id, this.respostaAprovacao, dataAprovacao)
-      .then(() => {
-        alert('Resposta salva com sucesso!');
-        if (this.ci) {
-          this.ci.aprovacaoStatus = this.respostaAprovacao!;
-          if (dataAprovacao) {
-            this.ci.dataAprovacao = dataAprovacao;
+  salvarAprovacao(): void {
+    const acao = () => {
+      if (!this.ci || !this.respostaAprovacao) return;
+      const dataAprovacao = this.respostaAprovacao === 'aprovado' ? new Date() : undefined;
+      this.ciService.updateAprovacaoStatus(this.ci.id, this.respostaAprovacao, dataAprovacao)
+        .then(() => {
+          if (this.ci) {
+            this.ci.aprovacaoStatus = this.respostaAprovacao!;
+            if (dataAprovacao) this.ci.dataAprovacao = dataAprovacao;
           }
-        }
-        this.voltarParaLista();
-      })
-      .catch((err: any) => {
-        console.error('Erro ao salvar resposta:', err);
-        alert('Falha ao salvar a resposta. Tente novamente.');
-      });
+          this.voltarParaLista();
+        })
+        .catch(err => console.error('Erro ao salvar resposta:', err));
+    };
+    this.abrirModalConfirmacao(acao, `Tem certeza que deseja ${this.respostaAprovacao === 'aprovado' ? 'aprovar' : 'reprovar'} esta CI?`);
   }
 
   salvarLancamento(): void {
-    if (!this.ci || !this.respostaLancamento) {
-      return;
-    }
-
-    const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
-    const lancadorMatricula = this.respostaLancamento === 'lancado' ? this.matriculaLogado : undefined;
-
-    this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento, lancadorMatricula ?? undefined)
-      .then(() => {
-        alert('Status de lançamento atualizado com sucesso!');
-        if (this.ci) {
-          this.ci.lancamentoStatus = this.respostaLancamento!;
-          if (dataLancamento) {
-            this.ci.dataLancamento = dataLancamento;
-            this.dataLancamentoExibicao = new Date(dataLancamento).toLocaleDateString('pt-BR');
+    const acao = () => {
+      if (!this.ci || !this.respostaLancamento) return;
+      const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
+      const lancadorMatricula = this.respostaLancamento === 'lancado' ? this.matriculaLogado : undefined;
+      this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento, lancadorMatricula ?? undefined)
+        .then(() => {
+          if (this.ci) {
+            this.ci.lancamentoStatus = this.respostaLancamento!;
+            if (dataLancamento) {
+              this.ci.dataLancamento = dataLancamento;
+              this.dataLancamentoExibicao = new Date(dataLancamento).toLocaleDateString('pt-BR');
+            }
+            if (lancadorMatricula) {
+              this.ci.lancador_matricula = lancadorMatricula;
+              this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
+            }
           }
-          if (lancadorMatricula) {
-            this.ci.lancador_matricula = lancadorMatricula;
-            this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
-          }
-        }
-        this.voltarParaLista();
-      })
-      .catch((err: any) => {
-        console.error('Erro ao salvar status de lançamento:', err);
-        alert('Falha ao salvar o status de lançamento. Tente novamente.');
-      });
+          this.voltarParaLista();
+        })
+        .catch(err => console.error('Erro ao salvar status de lançamento:', err));
+    };
+    this.abrirModalConfirmacao(acao, `Tem certeza que deseja confirmar o ${this.respostaLancamento}?`);
   }
 
   salvarAprovacaoGerente(): void {
-    if (!this.ci || !this.respostaAprovacaoGerente) {
-      return;
-    }
-
-    const dataAprovacaoGerente = this.respostaAprovacaoGerente === 'aprovado' ? new Date() : undefined;
-
-    this.ciService.updateAprovacaoGerenteStatus(this.ci.id, this.respostaAprovacaoGerente, dataAprovacaoGerente)
-      .then(() => {
-        alert('Resposta do gerente salva com sucesso!');
-        if (this.ci) {
-          this.ci.aprovacao_gerente = this.respostaAprovacaoGerente!;
-          if (dataAprovacaoGerente) {
-            this.ci.data_aprovacao_gerente = dataAprovacaoGerente;
-            this.dataAprovacaoGerenteExibicao = new Date(dataAprovacaoGerente).toLocaleDateString('pt-BR');
+    const acao = () => {
+      if (!this.ci || !this.respostaAprovacaoGerente) return;
+      const dataAprovacaoGerente = this.respostaAprovacaoGerente === 'aprovado' ? new Date() : undefined;
+      this.ciService.updateAprovacaoGerenteStatus(this.ci.id, this.respostaAprovacaoGerente, dataAprovacaoGerente)
+        .then(() => {
+          if (this.ci) {
+            this.ci.aprovacao_gerente = this.respostaAprovacaoGerente!;
+            if (dataAprovacaoGerente) {
+              this.ci.data_aprovacao_gerente = dataAprovacaoGerente;
+              this.dataAprovacaoGerenteExibicao = new Date(dataAprovacaoGerente).toLocaleDateString('pt-BR');
+            }
           }
-        }
-        this.voltarParaLista();
-      })
-      .catch((err: any) => {
-        console.error('Erro ao salvar resposta do gerente:', err);
-        alert('Falha ao salvar a resposta do gerente. Tente novamente.');
-      });
+          this.voltarParaLista();
+        })
+        .catch(err => console.error('Erro ao salvar resposta do gerente:', err));
+    };
+    this.abrirModalConfirmacao(acao, `Tem certeza que deseja registrar o 'De acordo' do Gerente?`);
   }
 }

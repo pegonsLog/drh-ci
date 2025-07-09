@@ -6,6 +6,7 @@ import { forkJoin, of, Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ConfirmacaoAcaoModalComponent } from '../../../../confirmacao-acao-modal/confirmacao-acao-modal.component';
 
 @Component({
   selector: 'app-ci-visualizar-lancamento',
@@ -16,7 +17,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NgIf,
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ConfirmacaoAcaoModalComponent
   ]
 })
 export class CiVisualizarLancamentoComponent implements OnInit {
@@ -30,6 +32,11 @@ export class CiVisualizarLancamentoComponent implements OnInit {
   dataAprovacaoExibicao: string | null = null;
   dataLancamentoExibicao: string | null = null;
   perfilUsuario$: Observable<string | null>;
+
+  // Controle do Modal de Confirmação de Ação
+  mostrarModalAcao = false;
+  mensagemModalAcao = '';
+  private acaoPendente: (() => void) | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -102,33 +109,49 @@ export class CiVisualizarLancamentoComponent implements OnInit {
     window.print();
   }
 
-  salvarLancamento(): void {
-    if (!this.ci || !this.respostaLancamento) {
-      return;
+  abrirModalConfirmacao(acao: () => void, mensagem: string): void {
+    this.acaoPendente = acao;
+    this.mensagemModalAcao = mensagem;
+    this.mostrarModalAcao = true;
+  }
+
+  processarDecisaoAcao(confirmado: boolean): void {
+    this.mostrarModalAcao = false;
+    if (confirmado && this.acaoPendente) {
+      this.acaoPendente();
     }
+    this.acaoPendente = null;
+  }
 
-    const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
-    const lancadorMatricula = this.respostaLancamento === 'lancado' ? this.matriculaLogado : undefined;
+  salvarLancamento(): void {
+    const acao = () => {
+      if (!this.ci || !this.respostaLancamento) return;
 
-    this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento, lancadorMatricula ?? undefined)
-      .then(() => {
-        alert('Status de lançamento atualizado com sucesso!');
-        if (this.ci) {
-          this.ci.lancamentoStatus = this.respostaLancamento!;
-          if (dataLancamento) {
-            this.ci.dataLancamento = dataLancamento;
-            this.dataLancamentoExibicao = new Date(dataLancamento).toLocaleDateString('pt-BR');
+      const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
+      const lancadorMatricula = this.respostaLancamento === 'lancado' ? this.matriculaLogado : undefined;
+
+      this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento, lancadorMatricula ?? undefined)
+        .then(() => {
+          if (this.ci) {
+            this.ci.lancamentoStatus = this.respostaLancamento!;
+            if (dataLancamento) {
+              this.ci.dataLancamento = dataLancamento;
+              this.dataLancamentoExibicao = new Date(dataLancamento).toLocaleDateString('pt-BR');
+            }
+            if (lancadorMatricula) {
+              this.ci.lancador_matricula = lancadorMatricula;
+              this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
+            }
           }
-          if (lancadorMatricula) {
-            this.ci.lancador_matricula = lancadorMatricula;
-            this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
-          }
-        }
-        this.voltar();
-      })
-      .catch((err: any) => {
-        console.error('Erro ao salvar status de lançamento:', err);
-        alert('Falha ao salvar o status de lançamento. Tente novamente.');
-      });
+          this.voltar();
+        })
+        .catch(err => {
+          console.error('Erro ao salvar status de lançamento:', err);
+          alert('Falha ao salvar o status de lançamento. Tente novamente.');
+        });
+    };
+
+    const mensagem = `Tem certeza que deseja salvar o status como '${this.respostaLancamento === 'lancado' ? 'Lançado' : 'Não Lançado'}'?`;
+    this.abrirModalConfirmacao(acao, mensagem);
   }
 }

@@ -3,6 +3,11 @@
   (decisao)="processarEscolhaDeImpressao($event)">
 </app-confirmacao-impressao-modal>
 
+<app-confirmacao-exclusao-modal
+  *ngIf="mostrarModalExclusao"
+  (decisao)="processarDecisaoExclusao($event)">
+</app-confirmacao-exclusao-modal>
+
 <div class="ci-list-container">
   <div class="header">
     <p>LISTA DE CI'S MAT: {{ matricula }}</p>
@@ -62,7 +67,7 @@
                   <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
                                     <i class="material-icons icon-delete"
                      [class.disabled]="ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado'"
-                     (click)="!(ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado') && excluirCi(ci.id)"
+                     (click)="!(ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado') && abrirModalExclusao(ci.id)"
                      [title]="(ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado') ? 'Ação não permitida' : 'Excluir'">delete</i>
                 </div>
               </td>

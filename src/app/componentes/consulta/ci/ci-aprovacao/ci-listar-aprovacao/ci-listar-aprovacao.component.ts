@@ -18,6 +18,7 @@ import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
 export class CiListarAprovacaoComponent implements OnInit {
   cis: ComunicacaoInterna[] = [];
   matricula: string | null = null;
+  perfil: string | null = null;
 
   // Paginação
   pageSize = 10;
@@ -29,7 +30,7 @@ export class CiListarAprovacaoComponent implements OnInit {
 
   constructor(
     private ciService: CiService,
-    private funcionarioService: FuncionarioService,
+    public funcionarioService: FuncionarioService, // Tornar público para uso no template
     private router: Router,
     private route: ActivatedRoute
   ) { }
@@ -39,6 +40,9 @@ export class CiListarAprovacaoComponent implements OnInit {
     if (this.matricula) {
       this.loadCis('next');
     }
+    this.funcionarioService.perfilUsuario$.subscribe(perfil => {
+      this.perfil = perfil;
+    });
   }
 
   loadCis(direction: 'next' | 'prev'): void {
