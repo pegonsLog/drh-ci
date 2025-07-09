@@ -54,7 +54,7 @@
 
 .stamps-container {
   position: absolute;
-  bottom: 120px;
+  bottom: 30px; /* Desce os carimbos */
   right: 30px;
   display: flex;
   gap: 20px; /* Espaço entre os carimbos */
@@ -62,17 +62,15 @@
 }
 
 .aprovado-stamp, .lancado-stamp, .aprovado-gerente-stamp {
-  border: 3px solid;
-  padding: 10px;
-  border-radius: 10px;
-  transform: rotate(-15deg);
-  font-size: 1.2rem;
+  border: 2px solid;
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 1rem;
   font-weight: bold;
   text-align: center;
-  opacity: 0.8;
-  position: relative; /* Posição relativa ao container */
-  min-width: 150px; /* Garante a mesma largura mínima */
-  height: 100px;
+  position: relative;
+  min-width: 150px;
+  height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -93,18 +91,18 @@
 }
 
 .aprovado-stamp {
-  border-color: #28a745;
-  color: #28a745;
+  border-color: #1e7e34; /* Verde mais escuro */
+  color: #1e7e34;
 }
 
 .lancado-stamp {
-  border-color: #007bff;
-  color: #007bff;
+  border-color: #0056b3; /* Azul mais escuro */
+  color: #0056b3;
 }
 
 .aprovado-gerente-stamp {
-  border-color: #0dcaf0; // Cor info para o gerente
-  color: #0dcaf0;
+  border-color: #0a8a9e; /* Ciano mais escuro */
+  color: #0a8a9e;
 }
 
 .header-title, .header-logo {
@@ -252,7 +250,10 @@
 
 // Mixin para os estilos de impressão/PDF, evitando duplicação de código
 @mixin print-layout {
-  .floating-buttons {
+  .floating-buttons,
+  .floating-aprovacao,
+  .floating-lancamento,
+  .floating-aprovacao-gerente {
     display: none !important;
   }
 

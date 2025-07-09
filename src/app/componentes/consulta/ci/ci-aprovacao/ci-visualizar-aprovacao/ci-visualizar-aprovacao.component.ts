@@ -7,11 +7,12 @@ import { switchMap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmacaoAcaoModalComponent } from '../../../../confirmacao-acao-modal/confirmacao-acao-modal.component';
+import { SafeHtmlPipe } from '../../../../../pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-ci-visualizar-aprovacao',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmacaoAcaoModalComponent],
+  imports: [CommonModule, FormsModule, ConfirmacaoAcaoModalComponent, SafeHtmlPipe],
   templateUrl: './ci-visualizar-aprovacao.component.html',
   styleUrls: ['./ci-visualizar-aprovacao.component.scss']
 })
@@ -25,6 +26,7 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
   lancador: Funcionario | null = null;
+  gerenteAprovador: Funcionario | null = null;
   matriculaLogado: string | null = null;
   dataExibicao: string | null = null;
   dataAprovacaoExibicao: string | null = null;
@@ -46,7 +48,7 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.perfil = this.route.snapshot.queryParamMap.get('perfil');
+    this.perfil = sessionStorage.getItem('perfil');
 
     this.matriculaLogado = this.funcionarioService.getMatriculaLogada();
     const ciId = this.route.snapshot.paramMap.get('id');
@@ -59,9 +61,14 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
             if (!this.ci.aprovacaoStatus) {
               this.ci.aprovacaoStatus = 'pendente';
             }
+            if (!this.ci.aprovacao_gerente) {
+              this.ci.aprovacao_gerente = 'pendente';
+            }
             this.respostaAprovacao = this.ci.aprovacaoStatus;
             this.respostaAprovacaoGerente = this.ci.aprovacao_gerente || 'pendente';
             this.isDestinatario = this.matriculaLogado === this.ci.destinatario_matricula;
+
+            
 
             if (ci.data) {
               if (typeof (ci.data as any).toDate === 'function') {
@@ -129,18 +136,27 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
               lancador$ = of(null);
             }
 
+            let gerenteAprovador$: Observable<Funcionario | null>;
+            if (ci.gerente_aprovador_matricula) {
+              gerenteAprovador$ = this.funcionarioService.getFuncionarioByMatricula(ci.gerente_aprovador_matricula);
+            } else {
+              gerenteAprovador$ = of(null);
+            }
+
             return forkJoin({
               remetente: remetente$,
               destinatario: destinatario$,
-              lancador: lancador$
+              lancador: lancador$,
+              gerenteAprovador: gerenteAprovador$
             });
           }
-          return of({ remetente: null, destinatario: null, lancador: null });
+          return of({ remetente: null, destinatario: null, lancador: null, gerenteAprovador: null });
         })
-      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null }) => {
+      ).subscribe((data: { remetente: Funcionario | null, destinatario: Funcionario | null, lancador: Funcionario | null, gerenteAprovador: Funcionario | null }) => {
         this.remetente = data.remetente;
         this.destinatario = data.destinatario;
         this.lancador = data.lancador;
+        this.gerenteAprovador = data.gerenteAprovador;
       });
     }
   }
