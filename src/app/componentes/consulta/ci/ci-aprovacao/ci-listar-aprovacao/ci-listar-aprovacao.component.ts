@@ -54,10 +54,9 @@ export class CiListarAprovacaoComponent implements OnInit {
     if (this.isLoading || !this.matricula || !this.perfil) return;
     this.isLoading = true;
 
-    const isAdm = this.perfil === 'adm';
     const cursor = direction === 'next' ? this.lastDoc : this.firstDoc;
 
-    this.ciService.getCisParaAprovacaoPaginado(this.matricula, isAdm, this.pageSize, direction, cursor ?? undefined).subscribe({
+    this.ciService.getCisParaAprovacaoPaginado(this.matricula, this.perfil, this.pageSize, direction, cursor ?? undefined).subscribe({
       next: (result) => {
         this.cis = result.cis.map((ci: ComunicacaoInterna) => {
           const data = ci.data as any;

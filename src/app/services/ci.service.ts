@@ -286,7 +286,7 @@ export class CiService {
 
   getCisParaAprovacaoPaginado(
     matricula: string,
-    isAdm: boolean,
+    perfil: string,
     pageSize: number,
     direction: 'next' | 'prev',
     cursor?: DocumentSnapshot<DocumentData>
@@ -294,11 +294,15 @@ export class CiService {
     const cisCollection = collection(this.firestore, 'cis');
     let constraints: QueryConstraint[] = [];
 
-    if (!isAdm) {
-      // Firestore não suporta queries 'OR' em campos diferentes ('destinatario_matricula' e 'destinatario_matricula-cc').
-      // A abordagem aqui é buscar por destinatário principal. A paginação em 'cc' exigiria uma estrutura de dados diferente.
+    if (perfil === 'gestor') {
+      constraints.push(where('destinatario_matricula', '==', matricula));
+    } else if (perfil === 'gerente') {
+      constraints.push(where('destinatario_matricula-cc', '==', matricula));
+    } else if (perfil !== 'adm') {
+      // Fallback para outros perfis não-adm (se houver), ou caso 'gestor' seja o padrão
       constraints.push(where('destinatario_matricula', '==', matricula));
     }
+    // Se o perfil for 'adm', nenhum filtro de matrícula é adicionado, buscando todas as CIs.
 
     let q;
     if (direction === 'prev' && cursor) {

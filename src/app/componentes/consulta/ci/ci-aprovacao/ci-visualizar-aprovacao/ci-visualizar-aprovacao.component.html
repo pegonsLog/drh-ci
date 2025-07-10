@@ -25,6 +25,10 @@
         <input class="form-check-input" type="radio" name="aprovacao-float" id="naoAprovadoRadioFloat" value="nao_aprovado" [(ngModel)]="respostaAprovacao">
         <label class="form-check-label" for="naoAprovadoRadioFloat">Não Aprovar</label>
       </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="aprovacao-float" id="pendenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacao">
+        <label class="form-check-label" for="pendenteRadioFloat">Pendente</label>
+      </div>
       <button (click)="salvarAprovacao()" [disabled]="!respostaAprovacao" class="btn btn-primary mt-2">Salvar Resposta</button>
     </div>
   </div>
@@ -40,7 +44,11 @@
         <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="naoAprovadoGerenteRadioFloat" value="nao_aprovado" [(ngModel)]="respostaAprovacaoGerente">
         <label class="form-check-label" for="naoAprovadoGerenteRadioFloat">Não Aprovar</label>
       </div>
-      <button (click)="salvarAprovacaoGerente()" [disabled]="!respostaAprovacaoGerente || respostaAprovacaoGerente === 'pendente'" class="btn btn-info mt-2">Salvar Aprovação Gerente</button>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="pendenteGerenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacaoGerente">
+        <label class="form-check-label" for="pendenteGerenteRadioFloat">Pendente</label>
+      </div>
+      <button (click)="salvarAprovacaoGerente()" [disabled]="!respostaAprovacaoGerente" class="btn btn-info mt-2">Salvar Aprovação Gerente</button>
     </div>
   </div>
 
