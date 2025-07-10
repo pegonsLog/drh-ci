@@ -43,6 +43,17 @@
       </div>
     </div>
 
+    <!-- Seção de Assinatura -->
+    <div class="card mt-4 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Assinatura Digital <small class="text-muted">(Opcional)</small></h5>
+        <div class="mb-3">
+          <label for="assinaturaFile" class="form-label">Carregar assinatura:</label>
+          <input class="form-control" type="file" id="assinaturaFile" (change)="onFileSelected($event)" accept="image/png, image/jpeg">
+        </div>
+      </div>
+    </div>
+
     <div class="form-group">
       <label for="senha">Senha:</label>
       <input id="senha" type="password" formControlName="senha" placeholder="Mínimo 6 caracteres">

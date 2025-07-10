@@ -53,57 +53,78 @@
 }
 
 .stamps-container {
-    position: absolute;
-    bottom: 30px; /* Desce os carimbos */
-    right: 30px;
-    display: flex;
-    gap: 20px; /* Espaço entre os carimbos */
-    align-items: center;
+  position: absolute;
+  bottom: 0px;
+  right: 30px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-left: 20px;
+}
+
+.stamp-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.aprovado-stamp, .lancado-stamp, .aprovado-gerente-stamp {
+  border: 1px solid black;
+  padding: 4px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+  position: relative;
+  min-width: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  .stamp-text {
+    font-size: 0.8rem;
+    font-weight: 900;
+    line-height: 1.2;
   }
 
-  .aprovado-stamp, .lancado-stamp, .aprovado-gerente-stamp {
-    border: 1px solid; // Borda mais fina
-    padding: 4px; // Menor preenchimento
-    border-radius: 5px;
-    font-weight: bold;
-    text-align: center;
-    position: relative;
-    min-width: 130px; // Largura menor
-    height: 70px; // Altura menor
+  .stamp-employee-name {
+    font-size: 0.75rem;
+    font-weight: normal;
+  }
+
+  .stamp-date {
+    font-size: 0.7rem;
+    font-weight: normal;
+  }
+
+  .stamp-signature {
+    margin-top: 5px;
+    width: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    align-items: center;
 
-    .stamp-text {
-      font-size: 0.8rem; // Fonte menor
-      font-weight: 900;
-    }
-
-    .stamp-signature {
-      font-size: 0.7rem; // Fonte menor
-      margin-top: 4px;
-    }
-    
-    .stamp-date {
-      font-size: 0.7rem; // Fonte menor
-      margin-top: 2px;
+    .signature-image {
+      max-width: 80%;
+      max-height: 40px;
+      object-fit: contain;
     }
   }
+}
 
-  .aprovado-stamp {
-    border-color: black;
-    color: black;
-  }
+.aprovado-stamp {
+  border-color: black;
+  color: black;
+}
 
-  .lancado-stamp {
-    border-color: black;
-    color: black;
-  }
+.lancado-stamp {
+  border-color: black;
+  color: black;
+}
 
-  .aprovado-gerente-stamp {
-    border-color: black;
-    color: black;
-  }
+.aprovado-gerente-stamp {
+  border-color: black;
+  color: black;
+}
 
 .header-title, .header-logo {
   display: flex;

@@ -50,20 +50,40 @@
           <div class="form-body-wrapper">
             <div class="form-body" [innerHTML]="ci.comunicacao"></div>
             <div class="stamps-container">
-              <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="aprovado-stamp">
-                <div class="stamp-text">De acordo</div>
-                <div class="stamp-signature">{{ destinatario?.funcionario }}</div>
-                <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+              <!-- Carimbo de Aprovação do Coordenador/Supervisor -->
+              <div *ngIf="ci.aprovacaoStatus === 'aprovado'" class="stamp-wrapper">
+                <div class="aprovado-stamp">
+                  <div class="stamp-text">De acordo</div>
+                  <div class="stamp-employee-name">{{ destinatario?.funcionario }}</div>
+                  <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="destinatario?.assinaturaDigitalUrl" [src]="destinatario?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
+                </div>
               </div>
-              <div *ngIf="ci.lancamentoStatus === 'lancado'" class="lancado-stamp">
-                <div class="stamp-text">Lançado</div>
-                <div class="stamp-signature">{{ lancador?.funcionario }}</div>
-                <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+
+              <!-- Carimbo de Lançamento -->
+              <div *ngIf="ci.lancamentoStatus === 'lancado'" class="stamp-wrapper">
+                <div class="lancado-stamp">
+                  <div class="stamp-text">Lançado</div>
+                  <div class="stamp-employee-name">{{ lancador?.funcionario }}</div>
+                  <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="lancador?.assinaturaDigitalUrl" [src]="lancador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
+                </div>
               </div>
-              <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="aprovado-gerente-stamp">
-                <div class="stamp-text">Aprovado pelo Gerente</div>
-                <div class="stamp-signature">{{ gerenteAprovador?.funcionario }}</div>
-                <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
+
+              <!-- Carimbo de Aprovação do Gerente -->
+              <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="stamp-wrapper">
+                <div class="aprovado-gerente-stamp">
+                  <div class="stamp-text">Aprovado pelo Gerente</div>
+                  <div class="stamp-employee-name">{{ gerenteAprovador?.funcionario }}</div>
+                  <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="gerenteAprovador?.assinaturaDigitalUrl" [src]="gerenteAprovador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
+                </div>
               </div>
             </div>
           </div>

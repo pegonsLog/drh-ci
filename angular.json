@@ -56,7 +56,8 @@
                 "glob": "**/*",
                 "input": "src/app/assets",
                 "output": "/assets/"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
@@ -90,6 +91,7 @@
                 }
               ],
               "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json",
               "allowedCommonJsDependencies": [
                 "gcp-metadata",
                 "html2canvas",

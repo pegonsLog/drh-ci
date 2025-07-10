@@ -13,6 +13,9 @@ import { FuncionarioService } from '../../../../services/funcionario.service';
   styleUrls: ['./funcionario-alterar.component.scss']
 })
 export class FuncionarioAlterarComponent implements OnInit {
+  assinaturaDigitalUrl: string | null = null;
+  selectedFile: File | null = null;
+  isUploading = false;
   funcionarioForm: FormGroup;
   funcionarioId: string | null = null;
   matriculaLogado: string | null = null;
@@ -50,6 +53,46 @@ export class FuncionarioAlterarComponent implements OnInit {
     ).subscribe(funcionario => {
       if (funcionario) {
         this.funcionarioForm.patchValue(funcionario);
+        this.assinaturaDigitalUrl = funcionario.assinaturaDigitalUrl || null;
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      this.selectedFile = target.files[0];
+    }
+  }
+
+  onUploadAssinatura(): void {
+    if (!this.selectedFile || !this.funcionarioId) {
+      return;
+    }
+    this.isUploading = true;
+
+    this.funcionarioService.uploadAssinatura(this.funcionarioId, this.selectedFile).pipe(
+      switchMap(url => {
+        if (!url) {
+          throw new Error('Falha no upload da imagem.');
+        }
+        this.assinaturaDigitalUrl = url; // Update preview
+        return this.funcionarioService.updateFuncionario(this.funcionarioId!, { assinaturaDigitalUrl: url });
+      })
+    ).subscribe({
+      next: (success) => {
+        if (success) {
+          alert('Assinatura atualizada com sucesso!');
+        } else {
+          alert('Erro ao salvar a referência da assinatura.');
+        }
+        this.isUploading = false;
+        this.selectedFile = null;
+      },
+      error: (err) => {
+        console.error(err);
+        alert(err.message || 'Ocorreu um erro ao atualizar a assinatura.');
+        this.isUploading = false;
       }
     });
   }

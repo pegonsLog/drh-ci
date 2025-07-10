@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, updateDoc, getDoc, addDoc, deleteDoc, orderBy } from '@angular/fire/firestore';
+import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 import { BehaviorSubject, forkJoin, from, Observable, of } from 'rxjs';
 
 export interface Funcionario {
@@ -9,6 +10,7 @@ export interface Funcionario {
   perfil: string;
   email?: string;
   senha?: string;
+  assinaturaDigitalUrl?: string;
 
 }
 import { map, switchMap, catchError } from 'rxjs/operators';
@@ -21,7 +23,7 @@ export class FuncionarioService {
   private perfilUsuario = new BehaviorSubject<string | null>(sessionStorage.getItem('perfil'));
   perfilUsuario$ = this.perfilUsuario.asObservable();
 
-  constructor(private firestore: Firestore) { }
+  constructor(private firestore: Firestore, private storage: Storage) { }
 
   login(matricula: string, senha: string): Observable<{ success: boolean, matricula?: string }> {
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
@@ -261,6 +263,25 @@ export class FuncionarioService {
       catchError(error => {
         console.error('Erro ao excluir funcionário:', error);
         return of(false);
+      })
+    );
+  }
+
+  getAssinaturaUrl(matricula: string): Observable<string | null> {
+    return this.getFuncionarioByMatricula(matricula).pipe(
+      map(funcionario => funcionario?.assinaturaDigitalUrl || null)
+    );
+  }
+
+  uploadAssinatura(funcionarioId: string, file: File): Observable<string | null> {
+    const filePath = `assinaturas/${funcionarioId}_${new Date().getTime()}`;
+    const storageRef = ref(this.storage, filePath);
+
+    return from(uploadBytes(storageRef, file)).pipe(
+      switchMap(uploadResult => from(getDownloadURL(uploadResult.ref))),
+      catchError(error => {
+        console.error('Erro ao fazer upload da assinatura:', error);
+        return of(null);
       })
     );
   }

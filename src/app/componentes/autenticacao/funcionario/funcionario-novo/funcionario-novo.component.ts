@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FuncionarioService } from '../../../../services/funcionario.service';
+import { switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-funcionario-novo',
@@ -12,6 +13,8 @@ import { FuncionarioService } from '../../../../services/funcionario.service';
   styleUrls: ['./funcionario-novo.component.scss']
 })
 export class FuncionarioNovoComponent implements OnInit {
+  selectedFile: File | null = null;
+  isUploading = false;
   funcionarioForm: FormGroup;
   matriculaLogado: string | null = null;
 
@@ -30,6 +33,13 @@ export class FuncionarioNovoComponent implements OnInit {
     });
   }
 
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      this.selectedFile = target.files[0];
+    }
+  }
+
   ngOnInit(): void {
     this.matriculaLogado = this.route.snapshot.paramMap.get('matricula');
         this.funcionarioService.perfilUsuario$.subscribe((perfil: string | null) => {
@@ -41,8 +51,32 @@ export class FuncionarioNovoComponent implements OnInit {
 
   onSubmit(): void {
     if (this.funcionarioForm.valid) {
-            this.funcionarioService.addFuncionario(this.funcionarioForm.value).subscribe((id: string | null) => {
+      this.isUploading = true;
+      this.funcionarioService.addFuncionario(this.funcionarioForm.value).pipe(
+        switchMap((id: string | null) => {
+          if (id && this.selectedFile) {
+            // Se tem um arquivo, faz o upload e depois atualiza o funcionário
+            return this.funcionarioService.uploadAssinatura(id, this.selectedFile).pipe(
+              switchMap(url => {
+                if (!url) {
+                  // Mesmo que o upload falhe, o funcionário foi criado. O usuário pode tentar de novo.
+                  console.error('Upload da assinatura falhou, mas o funcionário foi criado.');
+                  return of(id); // Retorna o ID para navegação
+                }
+                // Atualiza o funcionário com a URL da assinatura
+                return this.funcionarioService.updateFuncionario(id, { assinaturaDigitalUrl: url }).pipe(
+                  switchMap(() => of(id)) // Continua com o ID do funcionário
+                );
+              })
+            );
+          }
+          // Se não tem arquivo, apenas retorna o ID do funcionário criado
+          return of(id);
+        })
+      ).subscribe((id: string | null) => {
+        this.isUploading = false;
         if (id) {
+          alert('Funcionário criado com sucesso!');
           if (this.matriculaLogado) {
             this.router.navigate(['/funcionario-listar', this.matriculaLogado]);
           }
