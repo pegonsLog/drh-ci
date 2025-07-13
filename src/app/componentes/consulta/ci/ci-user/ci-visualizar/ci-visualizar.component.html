@@ -2,150 +2,155 @@
 
 
 <div class="ci-visualizar-container">
-  <!-- Container da CI para impressão/PDF -->
-  <div #ciContainer class="ci-sheet-container" [class.sem-copia]="!imprimirComCopia">
-    <!-- Cópia 1 (Original) -->
-    <div class="ci-form-wrapper">
-      <div class="ci-form">
-        <div class="form-header">
-          <div class="header-title">COMUNICAÇÃO INTERNA</div>
-          <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
-        </div>
-        <div class="form-to-from">
-          <div class="address-section">
-            <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
-            <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
+  <div class="ci-content-wrapper">
+    <!-- Container da CI para impressão/PDF -->
+    <div #ciContainer class="ci-sheet-container" [class.sem-copia]="!imprimirComCopia">
+      <!-- Cópia 1 (Original) -->
+      <div class="ci-form-wrapper">
+        <div class="ci-form">
+          <div class="form-header">
+            <div class="header-title">COMUNICAÇÃO INTERNA</div>
+            <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
           </div>
-          <div class="area-section">
-            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
-            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+          <div class="form-to-from">
+            <div class="address-section">
+              <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
+              <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
+            </div>
+            <div class="area-section">
+              <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+              <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+            </div>
           </div>
-        </div>
-        <div class="form-body-wrapper">
-          <div class="form-body" [innerHTML]="ci.comunicacao"></div>
-          <div class="stamps-container">
-            <!-- Carimbo de Aprovação do Coordenador/Supervisor -->
-            <div *ngIf="ci.aprovacaoStatus === 'aprovado' && destinatario" class="stamp-wrapper">
-              <div class="aprovado-stamp">
-                <div class="stamp-text">De acordo</div>
-                <div class="stamp-employee-name">{{ destinatario.funcionario }}</div>
-                <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
-                <div class="stamp-signature">
-                  <img *ngIf="destinatario.assinaturaDigitalUrl" [src]="destinatario.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+          <div class="form-body-wrapper">
+            <div class="form-body" [innerHTML]="ci.comunicacao"></div>
+            <div class="stamps-container">
+              <!-- Carimbo de Aprovação do Coordenador/Supervisor -->
+              <div *ngIf="ci.aprovacaoStatus === 'aprovado' && destinatario" class="stamp-wrapper">
+                <div class="aprovado-stamp">
+                  <div class="stamp-text">De acordo</div>
+                  <div class="stamp-employee-name">{{ destinatario.funcionario }}</div>
+                  <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="destinatario.assinaturaDigitalUrl" [src]="destinatario.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Carimbo de Lançamento -->
-            <div *ngIf="ci.lancamentoStatus === 'lancado'" class="stamp-wrapper">
-              <div class="lancado-stamp">
-                <div class="stamp-text">Lançado</div>
-                <div class="stamp-employee-name">{{ lancador?.funcionario }}</div>
-                <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
-                <div class="stamp-signature">
-                  <img *ngIf="lancador?.assinaturaDigitalUrl" [src]="lancador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+              <!-- Carimbo de Lançamento -->
+              <div *ngIf="ci.lancamentoStatus === 'lancado'" class="stamp-wrapper">
+                <div class="lancado-stamp">
+                  <div class="stamp-text">Lançado</div>
+                  <div class="stamp-employee-name">{{ lancador?.funcionario }}</div>
+                  <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="lancador?.assinaturaDigitalUrl" [src]="lancador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Carimbo de Aprovação do Gerente -->
+              <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="stamp-wrapper">
+                <div class="aprovado-gerente-stamp">
+                  <div class="stamp-text">Gerência</div>
+                  <div class="stamp-employee-name">{{ gerenteAprovador?.funcionario }}</div>
+                  <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="gerenteAprovador?.assinaturaDigitalUrl" [src]="gerenteAprovador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
                 </div>
               </div>
             </div>
-
-            <!-- Carimbo de Aprovação do Gerente -->
-            <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="stamp-wrapper">
-              <div class="aprovado-gerente-stamp">
-                <div class="stamp-text">Gerência</div>
-                <div class="stamp-employee-name">{{ gerenteAprovador?.funcionario }}</div>
-                <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
-                <div class="stamp-signature">
-                  <img *ngIf="gerenteAprovador?.assinaturaDigitalUrl" [src]="gerenteAprovador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
-                </div>
-              </div>
+          </div>
+          <div class="form-footer">
+            <div class="footer-box">
+              <span>Belo Horizonte, {{ dataExibicao }}</span>
+              <label class="footer-label">Data</label>
+            </div>
+            <div class="footer-box">
+              <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
             </div>
           </div>
         </div>
-        <div class="form-footer">
-          <div class="footer-box">
-            <span>Belo Horizonte, {{ dataExibicao }}</span>
-            <label class="footer-label">Data</label>
+      </div>
+
+      <!-- Cópia 2 (Cópia) -->
+      <div *ngIf="imprimirComCopia" class="ci-form-wrapper">
+        <div class="ci-form">
+          <div class="form-header">
+            <div class="header-title">COMUNICAÇÃO INTERNA</div>
+            <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
           </div>
-          <div class="footer-box">
-            <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+          <div class="form-to-from">
+            <div class="address-section">
+              <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
+              <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
+            </div>
+            <div class="area-section">
+              <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+              <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
+            </div>
+          </div>
+          <div class="form-body-wrapper">
+            <div class="form-body" [innerHTML]="ci.comunicacao"></div>
+            <div class="stamps-container">
+              <!-- Carimbo de Aprovação do Coordenador/Supervisor -->
+              <div *ngIf="ci.aprovacaoStatus === 'aprovado' && destinatario" class="stamp-wrapper">
+                <div class="aprovado-stamp">
+                  <div class="stamp-text">De acordo</div>
+                  <div class="stamp-employee-name">{{ destinatario.funcionario }}</div>
+                  <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="destinatario.assinaturaDigitalUrl" [src]="destinatario.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Carimbo de Lançamento -->
+              <div *ngIf="ci.lancamentoStatus === 'lancado'" class="stamp-wrapper">
+                <div class="lancado-stamp">
+                  <div class="stamp-text">Lançado</div>
+                  <div class="stamp-employee-name">{{ lancador?.funcionario }}</div>
+                  <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="lancador?.assinaturaDigitalUrl" [src]="lancador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Carimbo de Aprovação do Gerente -->
+              <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="stamp-wrapper">
+                <div class="aprovado-gerente-stamp">
+                  <div class="stamp-text">Aprovado pelo Gerente</div>
+                  <div class="stamp-employee-name">{{ gerenteAprovador?.funcionario }}</div>
+                  <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
+                  <div class="stamp-signature">
+                    <img *ngIf="gerenteAprovador?.assinaturaDigitalUrl" [src]="gerenteAprovador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-footer">
+            <div class="footer-box">
+              <span>Belo Horizonte, {{ dataExibicao }}</span>
+              <label class="footer-label">Data</label>
+            </div>
+            <div class="footer-box">
+              <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Cópia 2 (Cópia) -->
-    <div *ngIf="imprimirComCopia" class="ci-form-wrapper">
-      <div class="ci-form">
-        <div class="form-header">
-          <div class="header-title">COMUNICAÇÃO INTERNA</div>
-          <div class="header-logo"><img src="assets/logo.png" alt="Logo BHTRANS"></div>
-        </div>
-        <div class="form-to-from">
-          <div class="address-section">
-            <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
-            <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
-          </div>
-          <div class="area-section">
-            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
-            <div class="area-row"><label>Área:</label> <span>GARBO</span></div>
-          </div>
-        </div>
-        <div class="form-body-wrapper">
-          <div class="form-body" [innerHTML]="ci.comunicacao"></div>
-          <div class="stamps-container">
-            <!-- Carimbo de Aprovação do Coordenador/Supervisor -->
-            <div *ngIf="ci.aprovacaoStatus === 'aprovado' && destinatario" class="stamp-wrapper">
-              <div class="aprovado-stamp">
-                <div class="stamp-text">De acordo</div>
-                <div class="stamp-employee-name">{{ destinatario.funcionario }}</div>
-                <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
-                <div class="stamp-signature">
-                  <img *ngIf="destinatario.assinaturaDigitalUrl" [src]="destinatario.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
-                </div>
-              </div>
-            </div>
-
-            <!-- Carimbo de Lançamento -->
-            <div *ngIf="ci.lancamentoStatus === 'lancado'" class="stamp-wrapper">
-              <div class="lancado-stamp">
-                <div class="stamp-text">Lançado</div>
-                <div class="stamp-employee-name">{{ lancador?.funcionario }}</div>
-                <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
-                <div class="stamp-signature">
-                  <img *ngIf="lancador?.assinaturaDigitalUrl" [src]="lancador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
-                </div>
-              </div>
-            </div>
-
-            <!-- Carimbo de Aprovação do Gerente -->
-            <div *ngIf="ci.aprovacao_gerente === 'aprovado'" class="stamp-wrapper">
-              <div class="aprovado-gerente-stamp">
-                <div class="stamp-text">Aprovado pelo Gerente</div>
-                <div class="stamp-employee-name">{{ gerenteAprovador?.funcionario }}</div>
-                <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
-                <div class="stamp-signature">
-                  <img *ngIf="gerenteAprovador?.assinaturaDigitalUrl" [src]="gerenteAprovador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="form-footer">
-          <div class="footer-box">
-            <span>Belo Horizonte, {{ dataExibicao }}</span>
-            <label class="footer-label">Data</label>
-          </div>
-          <div class="footer-box">
-            <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
-          </div>
-        </div>
+    <!-- Container para os botões de ação -->
+    <div class="actions-and-forms-container">
+      <div class="action-buttons">
+        <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
+        <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
+        <button (click)="sair()" class="btn-sair">Sair</button>
       </div>
-    </div>
-
-    <div class="action-buttons">
-      <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
-      <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
-      <button (click)="sair()" class="btn-sair">Sair</button>
     </div>
   </div>
 </div>

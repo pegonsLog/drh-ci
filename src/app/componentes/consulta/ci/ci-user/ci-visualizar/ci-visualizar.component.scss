@@ -1,8 +1,26 @@
+.ci-visualizar-container {
+  padding: 1rem;
+  background-color: #e0e0e0;
+  font-family: Arial, sans-serif;
+}
+
+.ci-content-wrapper {
+  display: flex;
+  gap: 2rem;
+}
+
+.actions-and-forms-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 280px;
+  flex-shrink: 0;
+}
+
 .action-buttons {
   display: flex;
-  justify-content: center;
   gap: 1rem;
-  margin-top: 1.5rem;
+  justify-content: flex-start;
 
   .btn-voltar, .btn-sair, .btn-imprimir {
     padding: 0.8rem 1.5rem;
@@ -16,16 +34,7 @@
 
   .btn-voltar { background-color: #6c757d; }
   .btn-sair { background-color: #dc3545; }
-  .btn-imprimir { background-color: #17a2b8; }
-}
-
-.ci-visualizar-container {
-  padding: 1cm;
-  background-color: #e0e0e0;
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  .btn-imprimir { background-color: #28a745; }
 }
 
 .ci-sheet-container {
@@ -258,19 +267,25 @@
     padding: 16px;
   }
 
+  .ci-content-wrapper {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .actions-and-forms-container {
+    width: 100%;
+  }
+
   .action-buttons {
     flex-direction: row;
+    justify-content: center;
     align-items: stretch;
     width: 100%;
-    padding: 0 16px;
+    padding: 0;
     box-sizing: border-box;
 
     .btn-voltar, .btn-sair, .btn-imprimir {
-      width: 100%;
-    }
-
-    .btn-imprimir {
-      display: none;
+      flex-grow: 1;
     }
   }
 
@@ -292,7 +307,9 @@
     padding: 16px;
   }
 
-
+  .btn-imprimir {
+    display: none;
+  }
 }
 
 // Mixin para os estilos de impressão/PDF, evitando duplicação de código
