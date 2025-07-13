@@ -5,32 +5,10 @@
 </app-confirmacao-acao-modal>
 
 <ng-container *ngIf="ci">
-  <div class="floating-buttons">
-    <button (click)="voltar()" class="btn-voltar">Voltar</button>
-    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
-    <button (click)="sair()" class="btn-sair">Sair</button>
-  </div>
-
-  <!-- Bloco flutuante de lançamento -->
-  <ng-container *ngIf="perfilUsuario$ | async as perfil">
-    <div *ngIf="perfil === 'lancador' || perfil === 'adm'" class="floating-lancamento">
-      <div class="radio-group d-flex flex-column gap-2 align-items-start">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="lancamento-float" id="naoLancadoRadioFloat" value="nao_lancado" [(ngModel)]="respostaLancamento">
-          <label class="form-check-label" for="naoLancadoRadioFloat">Não Lançado</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="lancamento-float" id="lancadoRadioFloat" value="lancado" [(ngModel)]="respostaLancamento">
-          <label class="form-check-label" for="lancadoRadioFloat">Lançado</label>
-        </div>
-        <button (click)="salvarLancamento()" [disabled]="!respostaLancamento" class="btn btn-success mt-2">Salvar Lançamento</button>
-      </div>
-    </div>
-  </ng-container>
-
   <div class="ci-visualizar-container">
-    <!-- Container da CI para impressão/PDF -->
-    <div #ciContainer class="ci-sheet-container">
+    <div class="ci-content-wrapper">
+      <!-- Container da CI para impressão/PDF -->
+      <div #ciContainer class="ci-sheet-container">
       <div class="ci-form-wrapper">
         <div class="ci-form">
           <div class="form-header">
@@ -99,5 +77,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Container para os botões de ação e formulários de aprovação -->
+    <div class="actions-and-forms-container">
+
+      <!-- Botões de ação geral -->
+      <div class="action-buttons">
+        <button (click)="voltar()" class="btn-voltar">Voltar</button>
+        <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
+        <button (click)="sair()" class="btn-sair">Sair</button>
+      </div>
+
+      <!-- Bloco de LANÇAMENTO -->
+      <ng-container *ngIf="perfilUsuario$ | async as perfil">
+        <div *ngIf="perfil === 'lancador' || perfil === 'adm'" class="lancamento-form">
+          <h5>Lançamento</h5>
+          <div class="radio-group d-flex flex-column gap-2 align-items-start">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="lancamento-float" id="naoLancadoRadioFloat" value="nao_lancado" [(ngModel)]="respostaLancamento">
+              <label class="form-check-label" for="naoLancadoRadioFloat">Não Lançado</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="lancamento-float" id="lancadoRadioFloat" value="lancado" [(ngModel)]="respostaLancamento">
+              <label class="form-check-label" for="lancadoRadioFloat">Lançado</label>
+            </div>
+            <button (click)="salvarLancamento()" [disabled]="!respostaLancamento" class="btn btn-success mt-2">Salvar Lançamento</button>
+          </div>
+        </div>
+      </ng-container>
+
+        </div>
+      </div>
   </div>
 </ng-container>

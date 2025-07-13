@@ -1,10 +1,12 @@
 .ci-visualizar-container {
-  padding: 1cm;
+  padding: 1rem;
   background-color: #e0e0e0;
   font-family: Arial, sans-serif;
+}
+
+.ci-content-wrapper {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  gap: 2rem;
 }
 
 .ci-sheet-container {
@@ -232,24 +234,27 @@
 }
 
 // Media Query para Responsividade em Dispositivos Móveis
+@media (max-width: 1200px) { // Breakpoint para tablets e desktops menores
+  .ci-content-wrapper {
+    flex-direction: column;
+  }
+
+  .actions-and-forms-container {
+    width: 100%; // Ocupa a largura total abaixo da CI
+    flex-direction: row; // Botões e formulários em linha
+    flex-wrap: wrap; // Permite que os itens quebrem para a próxima linha
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .ci-visualizar-container {
     padding: 16px;
   }
 
-  .botoes-container {
-    position: static;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-    align-items: stretch;
-  }
-
   .ci-sheet-container {
     width: 100%;
     min-height: auto;
-    flex-direction: column;
     padding: 16px;
     gap: 20px;
     box-shadow: none;
@@ -271,10 +276,7 @@
 
 // Mixin para os estilos de impressão/PDF, evitando duplicação de código
 @mixin print-layout {
-  .floating-buttons,
-  .floating-aprovacao,
-  .floating-lancamento,
-  .floating-aprovacao-gerente {
+  .actions-and-forms-container {
     display: none !important;
   }
 
@@ -346,13 +348,18 @@
   @include print-layout;
 }
 
-.floating-buttons {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  z-index: 1000;
+.actions-and-forms-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 280px; // Largura fixa para a coluna de ações
+  flex-shrink: 0;
+}
+
+.action-buttons {
   display: flex;
   gap: 1rem;
+  justify-content: flex-start;
 
   .btn-voltar, .btn-sair, .btn-imprimir {
     padding: 0.8rem 1.5rem;
@@ -369,11 +376,7 @@
   .btn-imprimir { background-color: #28a745; }
 }
 
-.floating-aprovacao {
-  position: fixed;
-  top: 90px; /* abaixo dos botões flutuantes */
-  right: 2rem;
-  z-index: 999;
+.approval-form, .gerente-approval-form, .lancamento-form {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -381,56 +384,48 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 180px;
-  align-items: flex-end;
+
+  h5 {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #333;
+  }
 
   .form-check-input {
-    // Estilo para o radio button não selecionado
-    background-color: #ccc; // Um cinza mais escuro para visibilidade
+    background-color: #ccc;
     border: 1px solid #888;
 
     &:checked {
-      // Estilo para o radio button selecionado
-      background-color: #0d6efd; // Azul padrão do Bootstrap para consistência
+      background-color: #0d6efd;
       border-color: #0d6efd;
     }
 
     &:focus {
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); // Efeito de foco
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
   }
 
   .form-check-label {
-    color: #212529; // Cor escura para o texto do label para garantir a leitura
+    color: #212529;
   }
 }
 
-.floating-lancamento {
-  @extend .floating-aprovacao; // Herda todos os estilos da aprovação
-  top: 240px; // Posição ajustada para ficar abaixo da seção de aprovação
+.lancamento-form .btn-success {
+  background-color: #198754;
+  border-color: #198754;
 
-  .btn-success {
-    background-color: #198754; // Verde para o botão de salvar lançamento
-    border-color: #198754;
-
-    &:hover {
-      background-color: #157347;
-      border-color: #146c43;
-    }
+  &:hover {
+    background-color: #157347;
+    border-color: #146c43;
   }
 }
 
-.floating-aprovacao-gerente {
-  @extend .floating-aprovacao; // Herda todos os estilos da aprovação
-  top: 410px; // Posição ajustada para ficar abaixo da seção de lançamento
+.gerente-approval-form .btn-info {
+  background-color: #0dcaf0;
+  border-color: #0dcaf0;
 
-  .btn-info {
-    background-color: #0dcaf0;
-    border-color: #0dcaf0;
-
-    &:hover {
-      background-color: #31d2f2;
-      border-color: #25cff2;
-    }
+  &:hover {
+    background-color: #31d2f2;
+    border-color: #25cff2;
   }
 }

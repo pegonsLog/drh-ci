@@ -1,9 +1,5 @@
 <ng-container *ngIf="ci">
-  <div class="floating-buttons">
-    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
-    <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
-    <button (click)="sair()" class="btn-sair">Sair</button>
-  </div>
+
 
 <div class="ci-visualizar-container">
   <!-- Container da CI para impressão/PDF -->
@@ -146,6 +142,11 @@
       </div>
     </div>
 
+    <div class="action-buttons">
+      <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
+      <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
+      <button (click)="sair()" class="btn-sair">Sair</button>
+    </div>
   </div>
- </div>
+</div>
 </ng-container>

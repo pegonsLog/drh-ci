@@ -1,10 +1,4 @@
 <ng-container *ngIf="ci">
-  <div class="floating-buttons">
-    <button (click)="voltar()" class="btn-voltar">Voltar</button>
-    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
-    <button (click)="sair()" class="btn-sair">Sair</button>
-  </div>
-
   <!-- Bloco flutuante de lançamento -->
   <div *ngIf="(perfilUsuario$ | async) === 'lancador'" class="floating-lancamento">
     <div class="radio-group d-flex flex-column gap-2 align-items-start">
@@ -19,8 +13,9 @@
       <button (click)="salvarLancamento()" [disabled]="!respostaLancamento" class="btn btn-success mt-2">Salvar Lançamento</button>
     </div>
   </div>
-
+  
   <div class="ci-visualizar-container">
+   
     <!-- Container da CI para impressão/PDF -->
     <div #ciContainer class="ci-sheet-container">
       <div class="ci-form-wrapper">
@@ -90,6 +85,11 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="action-buttons">
+      <button (click)="voltar()" class="btn-voltar">Voltar</button>
+      <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
+      <button (click)="sair()" class="btn-sair">Sair</button>
     </div>
   </div>
 </ng-container>

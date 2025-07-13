@@ -7,68 +7,11 @@
 <!-- Container principal que aguarda o carregamento da CI -->
 <div *ngIf="ci" class="ci-visualizar-container">
 
-  <!-- Botões flutuantes de ação geral -->
-  <div class="floating-buttons">
-    <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
-    <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
-    <button (click)="sair()" class="btn-sair">Sair</button>
-  </div>
+  <!-- Container que agrupa a CI e os formulários de ação -->
+  <div class="ci-content-wrapper">
 
-  <!-- Bloco flutuante de aprovação do GESTOR -->
-  <div *ngIf="(perfil === 'gestor' && isDestinatario) || perfil === 'adm'" class="floating-aprovacao">
-    <div class="radio-group d-flex flex-column gap-2 align-items-start">
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="aprovacao-float" id="aprovadoRadioFloat" value="aprovado" [(ngModel)]="respostaAprovacao">
-        <label class="form-check-label" for="aprovadoRadioFloat">Aprovar</label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="aprovacao-float" id="naoAprovadoRadioFloat" value="nao_aprovado" [(ngModel)]="respostaAprovacao">
-        <label class="form-check-label" for="naoAprovadoRadioFloat">Não Aprovar</label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="aprovacao-float" id="pendenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacao">
-        <label class="form-check-label" for="pendenteRadioFloat">Pendente</label>
-      </div>
-      <button (click)="salvarAprovacao()" [disabled]="!respostaAprovacao" class="btn btn-primary mt-2">Salvar Resposta</button>
-    </div>
-  </div>
-
-  <!-- Bloco flutuante de aprovação do GERENTE -->
-  <div *ngIf="perfil === 'gerente' || perfil === 'adm'" class="floating-aprovacao-gerente">
-    <div class="radio-group d-flex flex-column gap-2 align-items-start">
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="aprovadoGerenteRadioFloat" value="aprovado" [(ngModel)]="respostaAprovacaoGerente">
-        <label class="form-check-label" for="aprovadoGerenteRadioFloat">Aprovar</label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="naoAprovadoGerenteRadioFloat" value="nao_aprovado" [(ngModel)]="respostaAprovacaoGerente">
-        <label class="form-check-label" for="naoAprovadoGerenteRadioFloat">Não Aprovar</label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="pendenteGerenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacaoGerente">
-        <label class="form-check-label" for="pendenteGerenteRadioFloat">Pendente</label>
-      </div>
-      <button (click)="salvarAprovacaoGerente()" [disabled]="!respostaAprovacaoGerente" class="btn btn-info mt-2">Salvar Aprovação Gerente</button>
-    </div>
-  </div>
-
-  <!-- Bloco flutuante de LANÇAMENTO (Apenas ADM) -->
-  <div *ngIf="perfil === 'adm'" class="floating-lancamento">
-    <div class="radio-group d-flex flex-column gap-2 align-items-start">
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="lancamento-float" id="naoLancadoRadioFloat" value="nao_lancado" [(ngModel)]="respostaLancamento">
-        <label class="form-check-label" for="naoLancadoRadioFloat">Não Lançado</label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="lancamento-float" id="lancadoRadioFloat" value="lancado" [(ngModel)]="respostaLancamento">
-        <label class="form-check-label" for="lancadoRadioFloat">Lançado</label>
-      </div>
-      <button (click)="salvarLancamento()" [disabled]="!respostaLancamento" class="btn btn-success mt-2">Salvar Lançamento</button>
-    </div>
-  </div>
-
-  <!-- Container da CI para impressão/PDF -->
-  <div #ciContainer class="ci-sheet-container">
+    <!-- Container da CI para impressão/PDF -->
+    <div #ciContainer class="ci-sheet-container">
     <div class="ci-form-wrapper">
       <div class="ci-form">
         <div class="form-header">
@@ -91,7 +34,7 @@
                 <div class="stamp-employee-name">{{ destinatario?.funcionario }}</div>
                 <div class="stamp-date">{{ dataAprovacaoExibicao }}</div>
                 <div class="stamp-signature">
-                  <img *ngIf="destinatario?.assinaturaDigitalUrl" [src]="destinatario?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  <img *ngIf="destinatario?.assinaturaDigitalUrl" [src]="destinatario!.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
                 </div>
               </div>
             </div>
@@ -103,7 +46,7 @@
                 <div class="stamp-employee-name">{{ lancador?.funcionario }}</div>
                 <div class="stamp-date">{{ dataLancamentoExibicao }}</div>
                 <div class="stamp-signature">
-                  <img *ngIf="lancador?.assinaturaDigitalUrl" [src]="lancador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  <img *ngIf="lancador?.assinaturaDigitalUrl" [src]="lancador!.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
                 </div>
               </div>
             </div>
@@ -115,7 +58,7 @@
                 <div class="stamp-employee-name">{{ gerenteAprovador?.funcionario }}</div>
                 <div class="stamp-date">{{ dataAprovacaoGerenteExibicao }}</div>
                 <div class="stamp-signature">
-                  <img *ngIf="gerenteAprovador?.assinaturaDigitalUrl" [src]="gerenteAprovador?.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
+                  <img *ngIf="gerenteAprovador?.assinaturaDigitalUrl" [src]="gerenteAprovador!.assinaturaDigitalUrl" alt="Assinatura" class="signature-image">
                 </div>
               </div>
             </div>
@@ -131,6 +74,75 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+    <!-- Container para os botões de ação e formulários de aprovação -->
+    <div class="actions-and-forms-container">
+
+      <!-- Botões de ação geral -->
+      <div class="action-buttons">
+        <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
+        <button (click)="voltarParaLista()" class="btn-voltar">Voltar</button>
+        <button (click)="sair()" class="btn-sair">Sair</button>
+      </div>
+
+      <!-- Bloco de aprovação do GESTOR -->
+      <div *ngIf="(perfil === 'gestor' && isDestinatario) || perfil === 'adm'" class="approval-form">
+        <h5>Aprovação do Gestor</h5>
+        <div class="radio-group d-flex flex-column gap-2 align-items-start">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="aprovacao-float" id="aprovadoRadioFloat" value="aprovado" [(ngModel)]="respostaAprovacao">
+            <label class="form-check-label" for="aprovadoRadioFloat">Aprovar</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="aprovacao-float" id="naoAprovadoRadioFloat" value="nao_aprovado" [(ngModel)]="respostaAprovacao">
+            <label class="form-check-label" for="naoAprovadoRadioFloat">Não Aprovar</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="aprovacao-float" id="pendenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacao">
+            <label class="form-check-label" for="pendenteRadioFloat">Pendente</label>
+          </div>
+          <button (click)="salvarAprovacao()" [disabled]="!respostaAprovacao" class="btn btn-primary mt-2">Salvar Resposta</button>
+        </div>
+      </div>
+
+      <!-- Bloco de aprovação do GERENTE -->
+      <div *ngIf="perfil === 'gerente' || perfil === 'adm'" class="gerente-approval-form">
+        <h5>Aprovação do Gerente</h5>
+        <div class="radio-group d-flex flex-column gap-2 align-items-start">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="aprovadoGerenteRadioFloat" value="aprovado" [(ngModel)]="respostaAprovacaoGerente">
+            <label class="form-check-label" for="aprovadoGerenteRadioFloat">Aprovar</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="naoAprovadoGerenteRadioFloat" value="nao_aprovado" [(ngModel)]="respostaAprovacaoGerente">
+            <label class="form-check-label" for="naoAprovadoGerenteRadioFloat">Não Aprovar</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="aprovacao-gerente-float" id="pendenteGerenteRadioFloat" value="pendente" [(ngModel)]="respostaAprovacaoGerente">
+            <label class="form-check-label" for="pendenteGerenteRadioFloat">Pendente</label>
+          </div>
+          <button (click)="salvarAprovacaoGerente()" [disabled]="!respostaAprovacaoGerente" class="btn btn-info mt-2">Salvar Aprovação Gerente</button>
+        </div>
+      </div>
+
+      <!-- Bloco de LANÇAMENTO (Apenas ADM) -->
+      <div *ngIf="perfil === 'adm'" class="lancamento-form">
+        <h5>Lançamento</h5>
+        <div class="radio-group d-flex flex-column gap-2 align-items-start">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="lancamento-float" id="naoLancadoRadioFloat" value="nao_lancado" [(ngModel)]="respostaLancamento">
+            <label class="form-check-label" for="naoLancadoRadioFloat">Não Lançado</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="lancamento-float" id="lancadoRadioFloat" value="lancado" [(ngModel)]="respostaLancamento">
+            <label class="form-check-label" for="lancadoRadioFloat">Lançado</label>
+          </div>
+          <button (click)="salvarLancamento()" [disabled]="!respostaLancamento" class="btn btn-success mt-2">Salvar Lançamento</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

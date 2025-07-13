@@ -1,3 +1,24 @@
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  .btn-voltar, .btn-sair, .btn-imprimir {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .btn-voltar { background-color: #6c757d; }
+  .btn-sair { background-color: #dc3545; }
+  .btn-imprimir { background-color: #17a2b8; }
+}
+
 .ci-visualizar-container {
   padding: 1cm;
   background-color: #e0e0e0;
@@ -237,13 +258,20 @@
     padding: 16px;
   }
 
-  .botoes-container {
-    position: static;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
+  .action-buttons {
+    flex-direction: row;
     align-items: stretch;
+    width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+
+    .btn-voltar, .btn-sair, .btn-imprimir {
+      width: 100%;
+    }
+
+    .btn-imprimir {
+      display: none;
+    }
   }
 
   .ci-sheet-container {
@@ -264,9 +292,7 @@
     padding: 16px;
   }
 
-  .btn-imprimir {
-    display: none;
-  }
+
 }
 
 // Mixin para os estilos de impressão/PDF, evitando duplicação de código
@@ -343,26 +369,5 @@
   @include print-layout;
 }
 
-.floating-buttons {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  z-index: 1000;
-  display: flex;
-  gap: 1rem;
 
-  .btn-voltar, .btn-sair, .btn-imprimir {
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    font-size: 1rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  }
-
-  .btn-voltar { background-color: #6c757d; }
-  .btn-sair { background-color: #dc3545; }
-  .btn-imprimir { background-color: #28a745; }
-}
 

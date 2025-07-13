@@ -10,17 +10,17 @@
 
       <div class="input-group">
         <label for="senhaAtual">Senha Atual</label>
-        <input type="password" id="senhaAtual" class="form-control" formControlName="senhaAtual" placeholder="Digite sua senha atual">
+        <input type="password" id="senhaAtual" class="form-control" formControlName="senhaAtual" placeholder="Digite sua senha atual" (keydown)="permitirApenasNumeros($event)">
       </div>
 
       <div class="input-group">
         <label for="novaSenha">Nova Senha</label>
-        <input type="password" id="novaSenha" class="form-control" formControlName="novaSenha" placeholder="Mínimo 6 caracteres">
+        <input type="password" id="novaSenha" class="form-control" formControlName="novaSenha" placeholder="Mínimo 6 caracteres numéricos" (keydown)="permitirApenasNumeros($event)">
       </div>
 
       <div class="input-group">
         <label for="confirmarSenha">Confirmar Nova Senha</label>
-        <input type="password" id="confirmarSenha" class="form-control" formControlName="confirmarSenha" placeholder="Repita a nova senha">
+        <input type="password" id="confirmarSenha" class="form-control" formControlName="confirmarSenha" placeholder="Repita a nova senha" (keydown)="permitirApenasNumeros($event)">
       </div>
 
       <div *ngIf="alterarSenhaForm.errors?.['senhasNaoCoincidem'] && alterarSenhaForm.get('confirmarSenha')?.touched" class="error-message">

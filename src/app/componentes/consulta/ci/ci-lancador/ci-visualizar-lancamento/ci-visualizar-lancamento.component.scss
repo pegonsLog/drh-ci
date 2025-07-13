@@ -1,10 +1,12 @@
 .ci-visualizar-container {
-  padding: 1cm;
+  padding: 1rem;
   background-color: #e0e0e0;
   font-family: Arial, sans-serif;
+}
+
+.ci-content-wrapper {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  gap: 2rem;
 }
 
 .ci-sheet-container {
@@ -27,40 +29,7 @@
   width: 48%;
 }
 
-.floating-buttons {
-  position: fixed;
-  top: 100px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 1000;
 
-  .btn-voltar, .btn-sair, .btn-imprimir {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: background-color 0.3s;
-    font-size: 1rem;
-    width: 120px;
-    text-align: center;
-  }
-
-  .btn-voltar {
-    background-color: #007bff; 
-  }
-
-  .btn-sair {
-    background-color: #dc3545; 
-  }
-
-  .btn-imprimir {
-    background-color: #17a2b8; 
-  }
-}
 
 .ci-form {
   border: 2px solid black;
@@ -267,24 +236,27 @@
 }
 
 // Media Query para Responsividade em Dispositivos Móveis
+@media (max-width: 1200px) { // Breakpoint para tablets e desktops menores
+  .ci-content-wrapper {
+    flex-direction: column;
+  }
+
+  .actions-and-forms-container {
+    width: 100%; // Ocupa a largura total abaixo da CI
+    flex-direction: row; // Botões e formulários em linha
+    flex-wrap: wrap; // Permite que os itens quebrem para a próxima linha
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .ci-visualizar-container {
     padding: 16px;
   }
 
-  .botoes-container {
-    position: static;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-    align-items: stretch;
-  }
-
   .ci-sheet-container {
     width: 100%;
     min-height: auto;
-    flex-direction: column;
     padding: 16px;
     gap: 20px;
     box-shadow: none;
@@ -306,7 +278,7 @@
 
 // Mixin para os estilos de impressão/PDF, evitando duplicação de código
 @mixin print-layout {
-  .floating-buttons {
+  .actions-and-forms-container {
     display: none !important;
   }
 
@@ -378,13 +350,18 @@
   @include print-layout;
 }
 
-.floating-buttons {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  z-index: 1000;
+.actions-and-forms-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 280px; // Largura fixa para a coluna de ações
+  flex-shrink: 0;
+}
+
+.action-buttons {
   display: flex;
   gap: 1rem;
+  justify-content: flex-start;
 
   .btn-voltar, .btn-sair, .btn-imprimir {
     padding: 0.8rem 1.5rem;
@@ -401,11 +378,7 @@
   .btn-imprimir { background-color: #28a745; }
 }
 
-.floating-aprovacao {
-  position: fixed;
-  top: 90px; /* abaixo dos botões flutuantes */
-  right: 2rem;
-  z-index: 999;
+.lancamento-form {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -413,56 +386,32 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 180px;
-  align-items: flex-end;
+
+  h5 {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #333;
+  }
 
   .form-check-input {
-    // Estilo para o radio button não selecionado
-    background-color: #ccc; // Um cinza mais escuro para visibilidade
+    background-color: #ccc;
     border: 1px solid #888;
 
     &:checked {
-      // Estilo para o radio button selecionado
-      background-color: #0d6efd; // Azul padrão do Bootstrap para consistência
+      background-color: #0d6efd;
       border-color: #0d6efd;
     }
 
     &:focus {
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); // Efeito de foco
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
   }
 
   .form-check-label {
-    color: #212529; // Cor escura para o texto do label para garantir a leitura
-  }
-}
-
-.floating-lancamento {
-  position: fixed;
-  top: 240px; /* Posição ajustada para ficar abaixo dos outros blocos flutuantes */
-  right: 2rem;
-  z-index: 998; /* Z-index um pouco menor para não sobrepor outros menus se houver */
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 190px;
-  align-items: flex-start; /* Alinha os itens à esquerda dentro do bloco */
-
-  .form-check {
-    width: 100%; /* Garante que o radio ocupe todo o espaço */
-  }
-
-  .form-check-label {
     color: #212529;
-    font-size: 1rem;
   }
 
   .btn-success {
-    width: 100%; /* Botão ocupa toda a largura do container */
     background-color: #198754;
     border-color: #198754;
 

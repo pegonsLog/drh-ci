@@ -23,13 +23,29 @@ export class AlterarSenhaComponent implements OnInit {
   ) {
     this.alterarSenhaForm = this.fb.group({
       matricula: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-      senhaAtual: ['', Validators.required],
-      novaSenha: ['', [Validators.required, Validators.minLength(6)]],
-      confirmarSenha: ['', Validators.required]
+      senhaAtual: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      novaSenha: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/^[0-9]+$/)]],
+      confirmarSenha: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]]
     }, { validator: this.senhasCoincidem });
   }
 
   ngOnInit(): void {}
+
+  permitirApenasNumeros(event: KeyboardEvent): void {
+    const charCode = (event.which) ? event.which : event.keyCode;
+    // Permite: backspace, delete, tab, escape, enter
+    if ([46, 8, 9, 27, 13].indexOf(charCode) !== -1 ||
+        // Permite: Ctrl+A
+        (charCode === 65 && event.ctrlKey === true) ||
+        // Permite: home, end, left, right
+        (charCode >= 35 && charCode <= 39)) {
+        return;
+    }
+    // Garante que é um número e impede a entrada de outros caracteres
+    if ((event.shiftKey || (charCode < 48 || charCode > 57)) && (charCode < 96 || charCode > 105)) {
+      event.preventDefault();
+    }
+  }
 
   senhasCoincidem(group: FormGroup) {
     const novaSenha = group.controls['novaSenha'].value;
