@@ -80,14 +80,19 @@
                 <label class="footer-label">Data</label>
               </div>
               <div class="footer-box">
-                <span class="footer-signature">{{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}</span>
+                <span class="footer-signature">
+                <div *ngIf="remetente?.assinaturaDigitalUrl" class="signature-image-container">
+                  <img [src]="remetente?.assinaturaDigitalUrl" alt="Assinatura do Remetente" class="signature-image">
+                </div>
+                {{ remetente?.funcionario }} - Mat. {{ remetente?.matricula }}
+              </span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="actions-and-forms-container">
+      <div class="actions-and-forms-container no-print">
         <div class="action-buttons">
           <button (click)="voltar()" class="btn-voltar">Voltar</button>
           <button (click)="imprimirPagina()" class="btn-imprimir">Imprimir</button>
