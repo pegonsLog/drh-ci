@@ -56,7 +56,7 @@ export class CiAlterarComponent implements OnInit {
         de: ci.de,
         para: ci.destinatario_matricula, // Povoa o form com a matrícula do destinatário
         comunicacao: ci.comunicacao,
-        lancamentoStatus: ci.lancamentoStatus || 'nao_lancado',
+        lancamentoStatus: ci.lancamentoStatus || 'pendente',
         'destinatario_matricula-cc': ci['destinatario_matricula-cc'] || ''
       });
     });

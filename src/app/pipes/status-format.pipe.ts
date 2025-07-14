@@ -20,8 +20,6 @@ export class StatusFormatPipe implements PipeTransform {
         return 'Não Aprovado';
       case 'lancado':
         return 'Lançado';
-      case 'nao_lancado':
-        return 'Não Lançado';
       default:
         const formatted = value.replace(/_/g, ' ');
         return formatted.charAt(0).toUpperCase() + formatted.slice(1);

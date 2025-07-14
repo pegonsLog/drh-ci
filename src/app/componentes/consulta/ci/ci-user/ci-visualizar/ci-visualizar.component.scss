@@ -252,6 +252,25 @@
       display: flex;
       justify-content: center;
       padding: 8px 0;
+      position: relative; // Torna este o contêiner de referência
+
+      .signature-image-container {
+        position: absolute;
+        bottom: 10px; // Ajusta a altura a partir da base do texto
+        left: 50%;
+        transform: translateX(-50%);
+        width: 170px; /* Aumento de 30% */
+        height: 70px; /* Aumento de 30% */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .signature-image {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+      }
     }
   }
 }

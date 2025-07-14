@@ -52,8 +52,8 @@
                 </span>
               </td>
                             <td class="status-cell">
-                <span [ngClass]="ci.lancamentoStatus || 'nao_lancado'">
-                  {{ (ci.lancamentoStatus || 'nao_lancado') === 'nao_lancado' ? 'Não Lançado' : 'Lançado' }}
+                <span [ngClass]="ci.lancamentoStatus || 'pendente'">
+                  {{ (ci.lancamentoStatus || 'pendente') === 'pendente' ? 'Pendente' : 'Lançado' }}
                 </span>
               </td>
               <td class="status-cell">

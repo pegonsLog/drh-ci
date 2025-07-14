@@ -20,7 +20,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   ]
 })
 export class CiVisualizarApuracaoComponent implements OnInit {
-  respostaLancamento: 'lancado' | 'nao_lancado' | null = null;
+  respostaLancamento: 'lancado' | 'pendente' | null = null;
   ci: ComunicacaoInterna | null = null;
   remetente: Funcionario | null = null;
   destinatario: Funcionario | null = null;
@@ -53,9 +53,9 @@ export class CiVisualizarApuracaoComponent implements OnInit {
           if (ci) {
             this.ci = ci;
             if (!this.ci.lancamentoStatus) {
-              this.ci.lancamentoStatus = 'nao_lancado';
+              this.ci.lancamentoStatus = 'pendente';
             }
-            this.respostaLancamento = this.ci.lancamentoStatus as 'lancado' | 'nao_lancado' | null;
+            this.respostaLancamento = this.ci.lancamentoStatus as 'lancado' | 'pendente' | null;
 
             if (ci.data) {
               this.dataExibicao = (ci.data as any).toDate ? (ci.data as any).toDate().toLocaleDateString('pt-BR') : new Date(ci.data).toLocaleDateString('pt-BR');

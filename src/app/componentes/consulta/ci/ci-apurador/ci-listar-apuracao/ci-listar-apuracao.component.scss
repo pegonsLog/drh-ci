@@ -213,9 +213,9 @@
       background-color: #dc3545; // Vermelho
     }
 
-    &.nao_lancado {
-      background-color: #6c757d; // Cinza
-      color: white;
+    &.pendente {
+      background-color: #ffc107; // Amarelo
+      color: #212529;
     }
 
     &.lancado {

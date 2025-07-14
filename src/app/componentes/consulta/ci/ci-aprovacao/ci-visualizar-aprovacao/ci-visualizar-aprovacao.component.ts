@@ -20,7 +20,7 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
 
   isDestinatario = false;
   respostaAprovacao: 'aprovado' | 'nao_aprovado' | 'pendente' | null = null;
-  respostaLancamento: 'lancado' | 'nao_lancado' | null = null;
+  respostaLancamento: 'lancado' | 'pendente' | null = null;
   respostaAprovacaoGerente: 'aprovado' | 'nao_aprovado' | 'pendente' | null = null;
   ci: ComunicacaoInterna | null = null;
   remetente: Funcionario | null = null;

@@ -13,7 +13,7 @@ export interface NewComunicacaoInterna {
   'destinatario_matricula-cc'?: string;
   aprovacaoStatus: 'aprovado' | 'nao_aprovado' | 'pendente';
   dataAprovacao?: any;
-  lancamentoStatus: 'nao_lancado' | 'lancado';
+  lancamentoStatus: 'pendente' | 'lancado';
   dataLancamento?: any;
   lancador_matricula?: string;
   aprovacao_gerente?:  'aprovado' | 'nao_aprovado' | 'pendente';
@@ -191,7 +191,7 @@ export class CiService {
     return updateDoc(ciDocRef, dataToUpdate);
   }
 
-  updateLancamentoStatus(id: string, status: 'lancado' | 'nao_lancado', dataLancamento?: any, lancadorMatricula?: string) {
+  async updateLancamentoStatus(id: string, status: 'lancado' | 'pendente', dataLancamento?: any, lancadorMatricula?: string): Promise<void> {
     const ciDocRef = doc(this.firestore, `cis/${id}`);
     const dataToUpdate: any = { lancamentoStatus: status };
 
