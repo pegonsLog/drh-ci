@@ -29,14 +29,14 @@ export class CiNovaComponent implements OnInit {
     this.ciForm = this.fb.group({
       matricula: [{value: '', disabled: true}, Validators.required],
       de: [{value: '', disabled: true}, Validators.required],
-      destinatario_matricula: ['', Validators.required],
-      'destinatario_matricula-cc': [''],
+      destinatario_matricula: [''],
+      'destinatario_matricula-cc': [{value: '1197', disabled: true}],
       comunicacao: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.funcionarios$ = this.funcionarioService.getFuncionarios();
+    this.funcionarios$ = this.funcionarioService.getGestores();
     this.funcionarios$.subscribe(data => this.funcionarios = data);
 
     this.matricula = this.route.snapshot.paramMap.get('matricula');
@@ -53,31 +53,37 @@ export class CiNovaComponent implements OnInit {
   onSubmit(): void {
     if (this.ciForm.valid) {
       const formValue = this.ciForm.getRawValue();
-
       const destinatarioMatriculaValue = formValue.destinatario_matricula;
 
-      // Compara os valores como strings para garantir a correspondência correta
-      const destinatario = this.funcionarios.find(
-        f => f.matricula.toString() === destinatarioMatriculaValue.toString()
-      );
+      let para: string;
+      let destinatario_matricula: string | null;
 
-      if (!destinatario) {
-        alert('O funcionário destinatário não foi encontrado. Por favor, selecione um válido.');
-        return;
+      if (destinatarioMatriculaValue) {
+        const destinatario = this.funcionarios.find(
+          f => f.matricula.toString() === destinatarioMatriculaValue.toString()
+        );
+
+        if (!destinatario) {
+          alert('O funcionário destinatário não foi encontrado. Por favor, selecione um válido.');
+          return;
+        }
+        para = destinatario.funcionario;
+        destinatario_matricula = destinatarioMatriculaValue.toString();
+      } else {
+        para = 'Não se aplica';
+        destinatario_matricula = null;
       }
 
-      // Constrói o objeto `novaCi` explicitamente para garantir a consistência dos tipos
       const novaCi: NewComunicacaoInterna = {
         de: formValue.de,
         comunicacao: formValue.comunicacao,
-        para: destinatario.funcionario,
+        para: para,
         data: new Date(),
-        aprovacaoStatus: 'pendente', // Define o status inicial como pendente
-        lancamentoStatus: 'pendente', // Define o status de lançamento inicial
-        // Garante que ambas as matrículas sejam salvas como STRINGS
+        aprovacaoStatus: 'pendente',
+        lancamentoStatus: 'pendente',
         matricula: formValue.matricula.toString(),
-        destinatario_matricula: destinatarioMatriculaValue.toString(),
-        'destinatario_matricula-cc': formValue['destinatario_matricula-cc'] ? formValue['destinatario_matricula-cc'].toString() : undefined
+        destinatario_matricula: destinatario_matricula,
+        'destinatario_matricula-cc': formValue['destinatario_matricula-cc'] ? formValue['destinatario_matricula-cc'].toString() : null
       };
 
       this.ciService.addCi(novaCi)

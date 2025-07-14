@@ -15,9 +15,9 @@
             <th>De</th>
             <th>Para</th>
             <th>Comunicação</th>
-            <th>Aprovação</th>
-                        <th>Lançamento</th>
-            <th>Aprovação Gerente</th>
+            <th>Coord./Superv.</th>
+            <th>Controle</th>
+            <th>Gerente</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -32,13 +32,27 @@
               </ng-template>
             </td>
             <td>{{ ci.de }}</td>
-            <td>{{ ci.para }}</td>
+            <td>
+              <ng-container *ngIf="ci.destinatario_matricula; else naoInformadoPara">
+                {{ ci.para }}
+              </ng-container>
+              <ng-template #naoInformadoPara>
+                Péricles Simbera
+              </ng-template>
+            </td>
             <td>{{ ci.comunicacao | slice:0:50 }}...</td>
 
             <td class="status-cell">
-              <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
-                {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
-              </span>
+              <ng-container *ngIf="ci.destinatario_matricula; else naoSeAplicaAprovacao">
+                <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
+                  {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
+                </span>
+              </ng-container>
+              <ng-template #naoSeAplicaAprovacao>
+                <span class="nao-se-aplica">
+                  Não se aplica
+                </span>
+              </ng-template>
             </td>
                         <td class="status-cell">
               <span [ngClass]="ci.lancamentoStatus || 'pendente'">

@@ -212,6 +212,11 @@ table {
     background-color: #28a745; // Verde
   }
 
+  &.nao-se-aplica {
+    background-color: #6c757d; // Cinza
+    color: white;
+  }
+
   &.nao_aprovado {
     background-color: #dc3545; // Vermelho
   }

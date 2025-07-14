@@ -199,28 +199,32 @@
     text-align: center;
     display: inline-block;
     min-width: 80px;
-  
+
     &.pendente {
       background-color: #ffc107; // Amarelo
       color: #212529; // Cor de texto escura para melhor contraste
     }
-  
+
     &.aprovado {
       background-color: #28a745; // Verde
     }
-  
+
     &.nao_aprovado {
       background-color: #dc3545; // Vermelho
-    }
-
-    &.pendente {
-      background-color: #ffc107; // Amarelo
-      color: #212529;
     }
 
     &.lancado {
       background-color: #17a2b8; // Ciano
       color: white;
+    }
+
+    &.nao-se-aplica {
+      background-color: #808080; // Cinza
+      color: white;
+      padding: 5px 10px;
+      border-radius: 12px;
+      text-align: center;
+      display: inline-block;
     }
   }
 

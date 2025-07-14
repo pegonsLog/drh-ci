@@ -9,8 +9,8 @@ export interface NewComunicacaoInterna {
   data: any;
   comunicacao: string;
   matricula: string;
-  destinatario_matricula?: string;
-  'destinatario_matricula-cc'?: string;
+  destinatario_matricula?: string | null;
+  'destinatario_matricula-cc'?: string | null;
   aprovacaoStatus: 'aprovado' | 'nao_aprovado' | 'pendente';
   dataAprovacao?: any;
   lancamentoStatus: 'pendente' | 'lancado';

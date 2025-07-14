@@ -180,6 +180,20 @@ export class FuncionarioService {
     );
   }
 
+  getGestores(): Observable<Funcionario[]> {
+    const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
+    const q = query(funcionariosCollectionRef, where('perfil', '==', 'gestor'), orderBy('funcionario'));
+    return from(getDocs(q)).pipe(
+      map(querySnapshot => {
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Funcionario));
+      }),
+      catchError(error => {
+        console.error('Erro ao buscar gestores:', error);
+        return of([]);
+      })
+    );
+  }
+
   getFuncionarioById(id: string): Observable<Funcionario | null> {
     const funcionarioDocRef = doc(this.firestore, 'funcionarios', id);
     return from(getDoc(funcionarioDocRef)).pipe(

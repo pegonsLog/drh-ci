@@ -16,8 +16,9 @@
               <th>De</th>
               <th>Para</th>
               <th>Comunicação</th>
-              <th>Aprov. Coord./Superv.</th>
-              <th>Aprov. Gerente</th>
+              <th>Coord./Superv.</th>
+              <th>Controle</th>
+              <th>Gerente</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -32,23 +33,41 @@
                 </ng-template>
               </td>
               <td>{{ ci.de }}</td>
-              <td>{{ ci.para }}</td>
+              <td>{{ ci.destinatario_matricula ? ci.para : 'Péricles Simbera' }}</td>
               <td>{{ ci.comunicacao | slice:0:50 }}...</td>
+
+              <!-- Coluna Coord./Superv. -->
               <td class="status-cell">
-                <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
-                  {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
+                <ng-container *ngIf="ci.destinatario_matricula; else naoSeAplica">
+                  <span [ngClass]="ci.aprovacaoStatus || 'pendente'">
+                    {{ (ci.aprovacaoStatus || 'pendente') | statusFormat }}
+                  </span>
+                </ng-container>
+                <ng-template #naoSeAplica>
+                  <span class="nao-se-aplica">Não se aplica</span>
+                </ng-template>
+              </td>
+
+              <!-- Coluna Controle -->
+              <td class="status-cell">
+                <span [ngClass]="ci.lancamentoStatus || 'pendente'">
+                  {{ (ci.lancamentoStatus || 'pendente') | statusFormat }}
                 </span>
               </td>
+
+              <!-- Coluna Gerente -->
               <td class="status-cell">
                 <span [ngClass]="ci.aprovacao_gerente || 'pendente'">
                   {{ (ci.aprovacao_gerente || 'pendente') | statusFormat }}
                 </span>
               </td>
+
+              <!-- Coluna Ações -->
               <td class="actions-cell">
                 <div class="action-icons-wrapper">
                   <a [routerLink]="['/ci-visualizar-aprovacao', matricula, ci.id]" [queryParams]="{ copia: 'false', perfil: perfil }">
                     <i class="material-icons icon-view" title="Visualizar">visibility</i>
-                  </a>                 
+                  </a>
                 </div>
               </td>
             </tr>

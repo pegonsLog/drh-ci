@@ -14,24 +14,16 @@
     <div class="form-group">
       <label for="destinatario_matricula">Para:</label>
       <select id="destinatario_matricula" formControlName="destinatario_matricula" class="form-select">
-        <option value="" disabled>Selecione um destinatário</option>
+        <option value="">Selecione um destinatário (Opcional)</option>
         <option *ngFor="let funcionario of funcionarios" [value]="funcionario.matricula">
           {{ funcionario.funcionario }}
         </option>
       </select>
-      <div *ngIf="ciForm.get('destinatario_matricula')?.invalid && (ciForm.get('destinatario_matricula')?.dirty || ciForm.get('destinatario_matricula')?.touched)" class="error-message">
-        <small *ngIf="ciForm.get('destinatario_matricula')?.errors?.['required']">O destinatário é obrigatório.</small>
-      </div>
     </div>
 
     <div class="form-group">
-      <label for="destinatario_matricula-cc">Com Cópia para (Opcional):</label>
-      <select id="destinatario_matricula-cc" formControlName="destinatario_matricula-cc" class="form-select">
-        <option [value]="null">Selecione um destinatário (opcional)</option>
-        <option *ngFor="let funcionario of funcionarios" [value]="funcionario.matricula">
-          {{ funcionario.funcionario }}
-        </option>
-      </select>
+      <label for="destinatario_matricula-cc">Com Cópia para:</label>
+      <input id="destinatario_matricula-cc" type="text" formControlName="destinatario_matricula-cc" class="form-control">
     </div>
 
     <div class="form-group">

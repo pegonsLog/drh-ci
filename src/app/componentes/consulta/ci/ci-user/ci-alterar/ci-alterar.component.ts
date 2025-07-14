@@ -30,12 +30,12 @@ export class CiAlterarComponent implements OnInit {
   ) {
     this.ciForm = this.fb.group({
       de: [{ value: '', disabled: true }, Validators.required],
-      para: ['', Validators.required], // Este controle agora armazenará a matrícula do destinatário
+      para: [''], // Este controle agora armazenará a matrícula do destinatário
       comunicacao: ['', Validators.required],
-      lancamentoStatus: ['', Validators.required],
-      'destinatario_matricula-cc': ['']
+      lancamentoStatus: [''],
+      'destinatario_matricula-cc': [{value: '1197', disabled: true}]
     });
-    this.funcionarios$ = this.funcionarioService.getFuncionarios();
+    this.funcionarios$ = this.funcionarioService.getGestores();
   }
 
   ngOnInit(): void {
@@ -68,24 +68,32 @@ export class CiAlterarComponent implements OnInit {
 
       this.funcionarios$.pipe(take(1)).subscribe(funcionarios => {
         const destinatarioMatricula = formValue.para;
-        const destinatario = funcionarios.find(f => f.matricula.toString() === destinatarioMatricula.toString());
+        let para: string;
+        let destinatario_matricula: string | null;
 
-        if (!destinatario) {
-          console.error('Destinatário não encontrado');
-          // Adicionar feedback para o usuário aqui
-          return;
+        if (destinatarioMatricula) {
+          const destinatario = funcionarios.find(f => f.matricula.toString() === destinatarioMatricula.toString());
+          if (!destinatario) {
+            alert('O funcionário destinatário não foi encontrado. Por favor, selecione um válido.');
+            return;
+          }
+          para = destinatario.funcionario;
+          destinatario_matricula = String(destinatario.matricula);
+        } else {
+          para = 'Não se aplica';
+          destinatario_matricula = null;
         }
 
         const ciAtualizada: Partial<ComunicacaoInterna> = {
           ...this.originalCi,
           comunicacao: formValue.comunicacao,
-          para: destinatario.funcionario, // Salva o NOME do funcionário
-          destinatario_matricula: String(destinatario.matricula), // Garante que a matrícula seja salva como string
+          para: para,
+          destinatario_matricula: destinatario_matricula,
           lancamentoStatus: formValue.lancamentoStatus,
           'destinatario_matricula-cc': formValue['destinatario_matricula-cc'] ? String(formValue['destinatario_matricula-cc']) : undefined,
         };
 
-        delete ciAtualizada.aprovacaoStatus; // Remove o status de aprovação
+        delete ciAtualizada.aprovacaoStatus;
 
         this.ciService.updateCi(ciAtualizada as ComunicacaoInterna)
           .then(() => {
@@ -97,6 +105,7 @@ export class CiAlterarComponent implements OnInit {
           })
           .catch(err => {
             console.error('Erro ao atualizar CI:', err);
+            alert('Ocorreu um erro ao atualizar a Comunicação Interna.');
           });
       });
     }
