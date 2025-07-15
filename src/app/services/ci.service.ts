@@ -19,6 +19,7 @@ export interface NewComunicacaoInterna {
   aprovacao_gerente?:  'aprovado' | 'nao_aprovado' | 'pendente';
   data_aprovacao_gerente?: any;
   gerente_aprovador_matricula?: string;
+  impressa?: boolean;
 }
 
 // Interface para CIs que vêm do banco (com id obrigatório)
@@ -219,6 +220,11 @@ export class CiService {
     }
 
     return updateDoc(ciDocRef, dataToUpdate);
+  }
+
+  updateImpressaStatus(id: string, impressa: boolean): Promise<void> {
+    const ciDocRef = doc(this.firestore, `cis/${id}`);
+    return updateDoc(ciDocRef, { impressa });
   }
 
   getCisParaLancamento(): Observable<ComunicacaoInterna[]> {

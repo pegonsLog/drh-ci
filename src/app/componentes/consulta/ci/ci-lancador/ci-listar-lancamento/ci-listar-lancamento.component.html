@@ -20,6 +20,7 @@
               <th>Coord./Superv.</th>
               <th>Controle</th>
               <th>Gerente</th>
+              <th>Impresso</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -66,6 +67,15 @@
                 <span [ngClass]="ci.aprovacao_gerente || 'pendente'">
                   {{ (ci.aprovacao_gerente || 'pendente') | statusFormat }}
                 </span>
+              </td>
+              <td class="text-center">
+                <div class="form-check d-inline-block">
+                  <input class="form-check-input" 
+                         type="checkbox" 
+                         [checked]="ci.impressa" 
+                         (change)="onImpressaChange(ci, $event)" 
+                         [id]="'impressa-' + ci.id">
+                </div>
               </td>
               <td class="actions-cell">
                 <div class="action-icons-wrapper">

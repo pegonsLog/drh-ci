@@ -81,4 +81,13 @@ export class CiListarLancamentoComponent implements OnInit {
     this.funcionarioService.logout();
     this.router.navigate(['/login']);
   }
+
+  onImpressaChange(ci: ComunicacaoInterna, event: any): void {
+    const impressa = event.target.checked;
+    this.ciService.updateImpressaStatus(ci.id, impressa).catch(err => {
+      console.error('Erro ao atualizar status de impressão:', err);
+      // Opcional: reverter o estado do checkbox em caso de erro
+      event.target.checked = !impressa;
+    });
+  }
 }
