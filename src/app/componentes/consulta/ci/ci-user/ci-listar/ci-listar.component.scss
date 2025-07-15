@@ -106,7 +106,7 @@ table {
   }
 }
 
-.icon-view, .icon-email, .icon-edit, .icon-delete {
+.icon-view, .icon-email, .icon-edit, .icon-delete, .icon-copy {
   cursor: pointer;
   margin: 0 5px;
   transition: color 0.3s;
@@ -132,6 +132,11 @@ table {
     &:hover {
       color: #e0a800;
     }
+
+    &.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
   }
 
   &.icon-delete {
@@ -151,6 +156,13 @@ table {
     color: #007bff; // Azul para consistência
     &:hover {
       color: #0056b3;
+    }
+  }
+
+  &.icon-copy {
+    color: #0d6efd; // Um azul diferente para cópia
+    &:hover {
+      color: #0b5ed7;
     }
   }
 }

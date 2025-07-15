@@ -69,7 +69,11 @@
               <td class="actions-cell">
                 <div class="action-icons-wrapper">
                   <i class="material-icons icon-view" (click)="abrirModalImpressao(ci.id)" title="Visualizar">visibility</i>
-                  <i class="material-icons icon-edit" (click)="editarCi(ci.id)" title="Editar">edit</i>
+                  <i class="material-icons icon-copy" (click)="copiarConteudo(ci.comunicacao)" title="Copiar Comunicação">content_copy</i>
+                  <i class="material-icons icon-edit"
+                     [class.disabled]="ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado'"
+                     (click)="!(ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado') && editarCi(ci.id)"
+                     [title]="(ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado') ? 'Ação não permitida' : 'Editar'">edit</i>
                                     <i class="material-icons icon-delete"
                      [class.disabled]="ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado'"
                      (click)="!(ci.aprovacaoStatus === 'aprovado' && ci.lancamentoStatus === 'lancado') && abrirModalExclusao(ci.id)"

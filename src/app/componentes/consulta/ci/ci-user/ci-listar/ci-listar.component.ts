@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { DocumentData, DocumentSnapshot } from 'firebase/firestore';
@@ -40,6 +42,8 @@ export class CiListarComponent implements OnInit {
     @Inject(CiService) private ciService: CiService,
     private router: Router,
     private route: ActivatedRoute,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     @Inject(FuncionarioService) private funcionarioService: FuncionarioService
   ) {
     this.perfilUsuario$ = this.funcionarioService.perfilUsuario$;
@@ -206,6 +210,23 @@ export class CiListarComponent implements OnInit {
   excluirCi(id: string | undefined): void {
     if (id) {
       this.abrirModalExclusao(id);
+    }
+  }
+
+  copiarConteudo(texto: string) {
+    if (texto) {
+      navigator.clipboard.writeText(texto).then(() => {
+        this.snackBar.open('Comunicação copiada para a área de transferência!', 'Fechar', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      }).catch(err => {
+        console.error('Erro ao copiar texto: ', err);
+        this.snackBar.open('Erro ao copiar comunicação.', 'Fechar', {
+          duration: 3000,
+        });
+      });
     }
   }
 }
