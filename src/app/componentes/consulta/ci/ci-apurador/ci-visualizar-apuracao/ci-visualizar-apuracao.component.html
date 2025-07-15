@@ -26,7 +26,15 @@
             </div>
             <div class="form-to-from">
               <div class="address-section">
-                <div class="address-row"><label>Para:</label> <span>{{ destinatario?.funcionario }}</span></div>
+                                <div class="address-row">
+                  <label>Para:</label>
+                  <span *ngIf="destinatario && destinatario.funcionario && destinatario.funcionario !== 'Não se aplica'; else showDefault">
+                    {{ destinatario.funcionario }}
+                  </span>
+                  <ng-template #showDefault>
+                    <span>Péricles Simbera</span>
+                  </ng-template>
+                </div>
                 <div class="address-row"><label>De:</label> <span>{{ remetente?.funcionario }}</span></div>
               </div>
               <div class="area-section">
@@ -38,7 +46,7 @@
               <div class="form-body" [innerHTML]="ci.comunicacao"></div>
               <div class="stamps-container">
                 <!-- Carimbo de Aprovação do Coordenador/Supervisor -->
-                <div *ngIf="ci.aprovacaoStatus === 'aprovado' && destinatario" class="stamp-wrapper">
+                                <div *ngIf="ci.aprovacaoStatus === 'aprovado' && destinatario && destinatario.funcionario !== 'Não se aplica'" class="stamp-wrapper">
                   <div class="aprovado-stamp">
                     <div class="stamp-text">De acordo</div>
                     <div class="stamp-employee-name">{{ destinatario.funcionario }}</div>
