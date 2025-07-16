@@ -17,8 +17,8 @@
               <th>Para</th>
               <th>Comunicação</th>
               <th>Coord./Superv.</th>
-              <th>Controle</th>
               <th>Gerente</th>
+              <th>Controle</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -48,20 +48,21 @@
                 </ng-template>
               </td>
 
-              <!-- Coluna Controle -->
-              <td class="status-cell">
-                <span [ngClass]="ci.lancamentoStatus || 'pendente'">
-                  {{ (ci.lancamentoStatus || 'pendente') | statusFormat }}
-                </span>
-              </td>
-
+              
               <!-- Coluna Gerente -->
               <td class="status-cell">
                 <span [ngClass]="ci.aprovacao_gerente || 'pendente'">
                   {{ (ci.aprovacao_gerente || 'pendente') | statusFormat }}
                 </span>
               </td>
-
+              
+              <!-- Coluna Controle -->
+              <td class="status-cell">
+                <span [ngClass]="ci.lancamentoStatus || 'pendente'">
+                  {{ (ci.lancamentoStatus || 'pendente') | statusFormat }}
+                </span>
+              </td>
+              
               <!-- Coluna Ações -->
               <td class="actions-cell">
                 <div class="action-icons-wrapper">

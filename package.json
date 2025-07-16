@@ -25,6 +25,7 @@
     "@popperjs/core": "^2.11.8",
     "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.7",
+    "firebase-functions": "^6.4.0",
     "googleapis": "^150.0.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
