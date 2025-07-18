@@ -1,7 +1,7 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { CiService, NewComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService, Funcionario } from '../../../../../services/funcionario.service';
 import { Observable } from 'rxjs';
@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./ci-nova.component.scss']
 })
 export class CiNovaComponent implements OnInit {
+  showPasteButton = false;
   ciForm: FormGroup;
   matricula: string | null = null;
   funcionarios$!: Observable<Funcionario[]>;
@@ -24,7 +25,8 @@ export class CiNovaComponent implements OnInit {
     @Inject(CiService) private ciService: CiService,
     @Inject(FuncionarioService) private funcionarioService: FuncionarioService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject(DOCUMENT) private document: Document
   ) {
     this.ciForm = this.fb.group({
       matricula: [{value: '', disabled: true}, Validators.required],
@@ -35,7 +37,13 @@ export class CiNovaComponent implements OnInit {
     });
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event?: Event) {
+    this.checkPasteButtonVisibility();
+  }
+
   ngOnInit(): void {
+    this.checkPasteButtonVisibility();
     this.funcionarios$ = this.funcionarioService.getGestores();
     this.funcionarios$.subscribe(data => this.funcionarios = data);
 
@@ -48,6 +56,30 @@ export class CiNovaComponent implements OnInit {
         }
       });
     }
+  }
+
+  async pasteFromClipboard(): Promise<void> {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      alert('Seu navegador não suporta a funcionalidade de colar programaticamente. Por favor, use a função de colar nativa do seu dispositivo (pressionar e segurar no campo de texto).');
+      return;
+    }
+
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        const currentText = this.ciForm.get('comunicacao')?.value || '';
+        this.ciForm.patchValue({ comunicacao: currentText + text });
+      }
+    } catch (err) {
+      console.error('Falha ao ler da área de transferência:', err);
+      alert('Não foi possível colar. Por favor, verifique se você deu permissão ao site para acessar sua área de transferência. Em alguns navegadores, essa funcionalidade só está disponível em conexões seguras (HTTPS).');
+    }
+  }
+
+  private checkPasteButtonVisibility(): void {
+    const isHttps = this.document.location.protocol === 'https:';
+    const isMobile = this.document.defaultView ? this.document.defaultView.innerWidth < 992 : false;
+    this.showPasteButton = isMobile || isHttps;
   }
 
   onSubmit(): void {

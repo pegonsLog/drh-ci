@@ -1,19 +1,4 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "cis",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "destinatario_matricula",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "aprovacaoStatus",
-          "order": "ASCENDING"
-        }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }
