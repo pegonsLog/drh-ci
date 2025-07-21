@@ -10,7 +10,7 @@
 
 <div class="ci-list-container">
   <div class="header">
-    <p>LISTA DE CI'S MAT: {{ matricula }}</p>
+    <p>LISTA DE CI'S MAT: {{ matricula }} (Total: {{ totalCis }})</p>
     <div class="button-group">
       <a class="btn-voltar" [routerLink]="['/painel', matricula]">Painel</a>
       <a class="new-ci-button" [routerLink]="['/ci-nova', matricula]">Nova CI</a>

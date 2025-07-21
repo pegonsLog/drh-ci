@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, doc, updateDoc, deleteDoc, docData, query, where, orderBy, CollectionReference, DocumentData, DocumentSnapshot, QueryConstraint, endBefore, getDocs, limit, limitToLast, startAfter } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, doc, updateDoc, deleteDoc, docData, query, where, orderBy, CollectionReference, DocumentData, DocumentSnapshot, QueryConstraint, endBefore, getDocs, limit, limitToLast, startAfter, getCountFromServer } from '@angular/fire/firestore';
 import { Observable, filter, map, from, of, forkJoin, switchMap } from 'rxjs';
 
 // Interface para CIs que ainda não foram salvas (sem id)
@@ -68,7 +68,7 @@ export class CiService {
       q = query(
         cisCollection,
         ...constraints,
-        orderBy('data', 'asc'),
+        orderBy('data', 'desc'), // Corrected order
         endBefore(cursor),
         limitToLast(pageSize)
       );
@@ -86,14 +86,10 @@ export class CiService {
 
     return from(getDocs(q)).pipe(
       map(snapshot => {
-        let cis = snapshot.docs.map(doc => {
+        const cis = snapshot.docs.map(doc => {
           const data = doc.data() as ComunicacaoInterna;
           return { ...data, id: doc.id };
         });
-
-        if (direction === 'prev') {
-          cis.reverse();
-        }
 
         const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
         const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
@@ -102,8 +98,6 @@ export class CiService {
       })
     );
   }
-
-
 
   // Este método foi simplificado para buscar TODAS as CIs para aprovação sem paginação no lado do serviço.
   // A paginação será tratada no componente.
@@ -239,16 +233,14 @@ export class CiService {
     cursor?: DocumentSnapshot<DocumentData>
   ): Observable<{ cis: ComunicacaoInterna[], firstDoc: DocumentSnapshot<DocumentData> | null, lastDoc: DocumentSnapshot<DocumentData> | null }> {
     const cisCollection = collection(this.firestore, 'cis');
-    const constraints: QueryConstraint[] = [
-      // Nenhum filtro aplicado para mostrar todos os registros
-    ];
+    const constraints: QueryConstraint[] = []; // Sem filtros para mostrar todas
 
     let q;
     if (direction === 'prev' && cursor) {
       q = query(
         cisCollection,
         ...constraints,
-        orderBy('data', 'asc'),
+        orderBy('data', 'desc'), // Corrected order
         endBefore(cursor),
         limitToLast(pageSize)
       );
@@ -267,14 +259,10 @@ export class CiService {
 
     return from(getDocs(q)).pipe(
       map(snapshot => {
-        let cis = snapshot.docs.map(doc => {
+        const cis = snapshot.docs.map(doc => {
           const data = doc.data() as ComunicacaoInterna;
           return { ...data, id: doc.id };
         });
-
-        if (direction === 'prev') {
-          cis.reverse();
-        }
 
         const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
         const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
@@ -287,66 +275,6 @@ export class CiService {
   getCisParaApuracao(): Observable<ComunicacaoInterna[]> {
     return this.getCisParaApuracaoPaginado(1000, 'next').pipe(
       map(result => result.cis)
-    );
-  }
-
-  getCisParaAprovacaoPaginado(
-    matricula: string,
-    perfil: string,
-    pageSize: number,
-    direction: 'next' | 'prev',
-    cursor?: DocumentSnapshot<DocumentData>
-  ): Observable<PaginatedCisResult> {
-    const cisCollection = collection(this.firestore, 'cis');
-    let constraints: QueryConstraint[] = [];
-
-    if (perfil === 'gestor') {
-      constraints.push(where('destinatario_matricula', '==', matricula));
-    } else if (perfil === 'gerente') {
-      constraints.push(where('destinatario_matricula-cc', '==', matricula));
-    } else if (perfil !== 'adm') {
-      // Fallback para outros perfis não-adm (se houver), ou caso 'gestor' seja o padrão
-      constraints.push(where('destinatario_matricula', '==', matricula));
-    }
-    // Se o perfil for 'adm', nenhum filtro de matrícula é adicionado, buscando todas as CIs.
-
-    let q;
-    if (direction === 'prev' && cursor) {
-      q = query(
-        cisCollection,
-        ...constraints,
-        orderBy('data', 'asc'),
-        endBefore(cursor),
-        limitToLast(pageSize)
-      );
-    } else {
-      q = query(
-        cisCollection,
-        ...constraints,
-        orderBy('data', 'desc'),
-        limit(pageSize)
-      );
-      if (cursor && direction === 'next') {
-        q = query(q, startAfter(cursor));
-      }
-    }
-
-    return from(getDocs(q)).pipe(
-      map(snapshot => {
-        let cis = snapshot.docs.map(doc => {
-          const data = doc.data() as ComunicacaoInterna;
-          return { ...data, id: doc.id };
-        });
-
-        if (direction === 'prev') {
-          cis.reverse();
-        }
-
-        const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
-        const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
-
-        return { cis, firstDoc, lastDoc };
-      })
     );
   }
 
@@ -365,7 +293,7 @@ export class CiService {
       q = query(
         cisCollection,
         ...constraints,
-        orderBy('data', 'asc'),
+        orderBy('data', 'desc'), // Corrected order
         endBefore(cursor),
         limitToLast(pageSize)
       );
@@ -384,20 +312,112 @@ export class CiService {
 
     return from(getDocs(q)).pipe(
       map(snapshot => {
-        let cis = snapshot.docs.map(doc => {
+        const cis = snapshot.docs.map(doc => {
           const data = doc.data() as ComunicacaoInterna;
           return { ...data, id: doc.id };
         });
-
-        if (direction === 'prev') {
-          cis.reverse();
-        }
 
         const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
         const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
 
         return { cis, firstDoc, lastDoc };
       })
+    );
+  }
+
+  getCisParaAprovacaoPaginado(
+    matricula: string,
+    perfil: string,
+    pageSize: number,
+    direction: 'next' | 'prev',
+    cursor?: DocumentSnapshot<DocumentData>
+  ): Observable<PaginatedCisResult> {
+    const cisCollection = collection(this.firestore, 'cis');
+    let constraints: QueryConstraint[] = [];
+
+    // Lógica de filtro baseada no perfil
+    if (perfil === 'gestor') {
+      constraints.push(where('destinatario_matricula', '==', matricula));
+    } else if (perfil === 'gerente') {
+      constraints.push(where('destinatario_matricula-cc', '==', matricula));
+    } else if (perfil !== 'adm') {
+      constraints.push(where('matricula', '==', matricula));
+    }
+
+    let q;
+    if (direction === 'prev' && cursor) {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'desc'),
+        endBefore(cursor),
+        limitToLast(pageSize)
+      );
+    } else {
+      q = query(
+        cisCollection,
+        ...constraints,
+        orderBy('data', 'desc'),
+        limit(pageSize)
+      );
+      if (cursor && direction === 'next') {
+        q = query(q, startAfter(cursor));
+      }
+    }
+
+    return from(getDocs(q)).pipe(
+      map(snapshot => {
+        const cis = snapshot.docs.map(doc => {
+          const data = doc.data() as ComunicacaoInterna;
+          return { ...data, id: doc.id };
+        });
+
+        const firstDoc = snapshot.docs.length > 0 ? snapshot.docs[0] : null;
+        const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+
+        return { cis, firstDoc, lastDoc };
+      })
+    );
+  }
+
+  // Métodos de Contagem
+
+  getTotalCisPorUsuario(matricula: string): Observable<number> {
+    const q = query(this.ciCollection, where('matricula', '==', matricula));
+    return from(getCountFromServer(q)).pipe(
+      map(snapshot => snapshot.data().count)
+    );
+  }
+
+  getTotalCisParaLancamento(): Observable<number> {
+    // Sem filtros para contar todas as CIs
+    const q = query(this.ciCollection);
+    return from(getCountFromServer(q)).pipe(
+      map(snapshot => snapshot.data().count)
+    );
+  }
+
+  getTotalCisParaAprovacao(matricula: string, perfil: string): Observable<number> {
+    let constraints: QueryConstraint[] = [];
+    if (perfil === 'gestor') {
+      constraints.push(where('destinatario_matricula', '==', matricula));
+    } else if (perfil === 'gerente') {
+      constraints.push(where('destinatario_matricula-cc', '==', matricula));
+    } else if (perfil !== 'adm') {
+      constraints.push(where('destinatario_matricula', '==', matricula));
+    }
+
+    const q = query(this.ciCollection, ...constraints);
+    return from(getCountFromServer(q)).pipe(
+      map(snapshot => snapshot.data().count)
+    );
+  }
+
+  getTotalCisParaApuracao(): Observable<number> {
+    // Apuração lista todas as CIs, então a contagem é de toda a coleção.
+    const q = query(this.ciCollection);
+    return from(getCountFromServer(q)).pipe(
+      map(snapshot => snapshot.data().count)
     );
   }
 }

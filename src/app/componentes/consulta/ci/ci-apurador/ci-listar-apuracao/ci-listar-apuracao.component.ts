@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
@@ -8,6 +8,8 @@ import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
 import { ConfirmacaoExclusaoModalComponent } from '../../../../confirmacao-exclusao-modal/confirmacao-exclusao-modal.component';
 
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ci-listar-apuracao',
@@ -16,10 +18,11 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './ci-listar-apuracao.component.html',
   styleUrls: ['./ci-listar-apuracao.component.scss']
 })
-export class CiListarApuracaoComponent implements OnInit {
+export class CiListarApuracaoComponent implements OnInit, OnDestroy {
   cis: ComunicacaoInterna[] = [];
   matriculaLogada: string | null = null;
   perfilUsuario: string | null = null;
+  private unsubscribe$ = new Subject<void>();
 
   // Paginação
   pageSize = 10;
@@ -29,9 +32,15 @@ export class CiListarApuracaoComponent implements OnInit {
   isLoading = false;
   isLastPage = false;
   pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
+  totalCis = 0;
 
   mostrarModalExclusao = false;
   ciParaExcluirId: string | undefined;
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
   constructor(
     private ciService: CiService,
@@ -41,10 +50,13 @@ export class CiListarApuracaoComponent implements OnInit {
 
   ngOnInit(): void {
     this.matriculaLogada = this.funcionarioService.getMatriculaLogada();
-    this.funcionarioService.perfilUsuario$.subscribe(perfil => {
+    this.funcionarioService.perfilUsuario$.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(perfil => {
       this.perfilUsuario = perfil;
     });
     this.loadCis('next');
+    this.loadTotalCis();
   }
 
   loadCis(direction: 'next' | 'prev', fromStart: boolean = false): void {
@@ -104,6 +116,12 @@ export class CiListarApuracaoComponent implements OnInit {
     this.pageNumber--;
     this.isLastPage = false;
     this.loadCis('prev');
+  }
+
+  loadTotalCis(): void {
+    this.ciService.getTotalCisParaApuracao().subscribe(count => {
+      this.totalCis = count;
+    });
   }
 
   logout(): void {

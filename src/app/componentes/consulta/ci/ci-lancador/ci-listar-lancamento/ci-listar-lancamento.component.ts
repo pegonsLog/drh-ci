@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
 
 @Component({
@@ -14,10 +16,12 @@ import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
   templateUrl: './ci-listar-lancamento.component.html',
   styleUrls: ['./ci-listar-lancamento.component.scss']
 })
-export class CiListarLancamentoComponent implements OnInit {
+export class CiListarLancamentoComponent implements OnInit, OnDestroy {
   cis: ComunicacaoInterna[] = [];
   matriculaLogada: string | null = null;
   perfilUsuario: string | null = null;
+  private unsubscribe$ = new Subject<void>();
+  totalCis = 0;
 
   // Paginação
   pageSize = 10;
@@ -28,6 +32,11 @@ export class CiListarLancamentoComponent implements OnInit {
   isLastPage = false;
   pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
   constructor(
     private ciService: CiService,
     private router: Router,
@@ -36,10 +45,13 @@ export class CiListarLancamentoComponent implements OnInit {
 
   ngOnInit(): void {
     this.matriculaLogada = this.funcionarioService.getMatriculaLogada();
-    this.funcionarioService.perfilUsuario$.subscribe(perfil => {
+    this.funcionarioService.perfilUsuario$.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(perfil => {
       this.perfilUsuario = perfil;
     });
     this.loadCis('next');
+    this.loadTotalCis();
   }
 
   loadCis(direction: 'next' | 'prev'): void {
@@ -92,6 +104,12 @@ export class CiListarLancamentoComponent implements OnInit {
     this.pageNumber--;
     this.isLastPage = false; // Se voltamos, não estamos mais na última página
     this.loadCis('prev');
+  }
+
+  loadTotalCis(): void {
+    this.ciService.getTotalCisParaLancamento().subscribe(count => {
+      this.totalCis = count;
+    });
   }
 
   logout(): void {

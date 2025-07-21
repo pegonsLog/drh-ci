@@ -37,6 +37,7 @@ export class CiListarComponent implements OnInit {
   firstDoc: DocumentSnapshot<DocumentData> | null = null;
   lastDoc: DocumentSnapshot<DocumentData> | null = null;
   pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
+  totalCis = 0;
 
   constructor(
     @Inject(CiService) private ciService: CiService,
@@ -50,11 +51,10 @@ export class CiListarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.matricula = this.route.snapshot.paramMap.get('matricula');
+    this.matricula = this.funcionarioService.getMatriculaLogada();
+    this.loadCis('next');
     if (this.matricula) {
-      this.loadCis('next'); // Load initial page
-    } else {
-      this.isLoading = false;
+      this.loadTotalCis();
     }
   }
 
@@ -107,6 +107,13 @@ export class CiListarComponent implements OnInit {
     this.pageNumber--;
     this.isLastPage = false;
     this.loadCis('prev');
+  }
+
+  loadTotalCis(): void {
+    if (!this.matricula) return;
+    this.ciService.getTotalCisPorUsuario(this.matricula).subscribe(count => {
+      this.totalCis = count;
+    });
   }
 
   abrirModalImpressao(ciId: string): void {

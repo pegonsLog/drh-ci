@@ -1,5 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
@@ -12,14 +14,15 @@ import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
 @Component({
   selector: 'app-ci-listar-aprovacao',
   standalone: true,
-    imports: [CommonModule, RouterLink, RouterModule, FormsModule, DatePipe, StatusFormatPipe],
+  imports: [CommonModule, RouterLink, RouterModule, FormsModule, DatePipe, StatusFormatPipe],
   templateUrl: './ci-listar-aprovacao.component.html',
   styleUrls: ['./ci-listar-aprovacao.component.scss']
 })
-export class CiListarAprovacaoComponent implements OnInit {
+export class CiListarAprovacaoComponent implements OnInit, OnDestroy {
   cis: ComunicacaoInterna[] = [];
   matricula: string | null = null;
-  perfil: string | null = null;
+  perfil: string = '';
+  private unsubscribe$ = new Subject<void>();
 
   // Paginação no lado do servidor
   pageSize = 10;
@@ -29,6 +32,12 @@ export class CiListarAprovacaoComponent implements OnInit {
   firstDoc: DocumentSnapshot<DocumentData> | null = null;
   lastDoc: DocumentSnapshot<DocumentData> | null = null;
   pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
+  totalCis = 0;
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
   constructor(
     private ciService: CiService,
@@ -39,16 +48,19 @@ export class CiListarAprovacaoComponent implements OnInit {
 
   ngOnInit(): void {
     this.matricula = this.funcionarioService.getMatriculaLogada();
-    this.funcionarioService.perfilUsuario$.subscribe(perfil => {
-      this.perfil = perfil;
-      // Recarregar os dados se o perfil for carregado após a matrícula
-      if (this.matricula) {
-        this.loadCis();
-      }
-    });
-    if (this.matricula && !this.perfil) {
-        // A chamada inicial agora acontece dentro do subscribe do perfil
+    if (!this.matricula) {
+      this.router.navigate(['/login']);
+      return;
     }
+
+    this.funcionarioService.perfilUsuario$.pipe(
+      filter((perfil): perfil is string => perfil !== null),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(perfil => {
+      this.perfil = perfil;
+      this.loadCis('next');
+      this.loadTotalCis();
+    });
   }
 
   loadCis(direction: 'next' | 'prev' = 'next'): void {
@@ -104,6 +116,14 @@ export class CiListarAprovacaoComponent implements OnInit {
     this.pageNumber--;
     this.isLastPage = false;
     this.loadCis('prev');
+  }
+
+  loadTotalCis(): void {
+    if (this.matricula && this.perfil) {
+      this.ciService.getTotalCisParaAprovacao(this.matricula, this.perfil).subscribe(count => {
+        this.totalCis = count;
+      });
+    }
   }
 
   logout(): void {
