@@ -27,7 +27,8 @@ export class CiListarApuracaoComponent implements OnInit {
   lastDoc: DocumentSnapshot<DocumentData> | null = null;
   pageNumber = 1;
   isLoading = false;
-    isLastPage = false;
+  isLastPage = false;
+  pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
 
   mostrarModalExclusao = false;
   ciParaExcluirId: string | undefined;
@@ -52,21 +53,37 @@ export class CiListarApuracaoComponent implements OnInit {
     }
     this.isLoading = true;
 
-    const cursor = fromStart ? null : (direction === 'next' ? this.lastDoc : this.firstDoc);
+    let cursor: DocumentSnapshot<DocumentData> | null | undefined = null;
+    if (fromStart) {
+      this.pageNumber = 1;
+      this.pageCursors = { 1: null };
+      this.isLastPage = false;
+    } else if (direction === 'next') {
+      cursor = this.lastDoc;
+    } else {
+      cursor = this.pageCursors[this.pageNumber];
+    }
 
     this.ciService.getCisParaApuracaoPaginado(this.pageSize, direction, cursor ?? undefined).subscribe({
       next: result => {
-        this.cis = result.cis.map(ci => {
-          const data = ci.data as any;
-          if (data && typeof data.toDate === 'function') {
-            return { ...ci, data: data.toDate() };
-          }
-          return ci;
-        });
+        if (result.cis.length > 0) {
+          this.cis = result.cis.map(ci => {
+            const data = ci.data as any;
+            if (data && typeof data.toDate === 'function') {
+              return { ...ci, data: data.toDate() };
+            }
+            return ci;
+          });
 
-        this.firstDoc = result.firstDoc;
-        this.lastDoc = result.lastDoc;
-        this.isLastPage = result.cis.length < this.pageSize;
+          this.firstDoc = result.firstDoc;
+          this.lastDoc = result.lastDoc;
+
+          if (direction === 'next' && this.lastDoc) {
+            this.pageCursors[this.pageNumber + 1] = result.firstDoc;
+          }
+        } else if (direction === 'next') {
+          this.isLastPage = true;
+        }
         this.isLoading = false;
       },
       error: (err) => {
@@ -77,14 +94,15 @@ export class CiListarApuracaoComponent implements OnInit {
   }
 
   nextPage(): void {
-    if (this.isLastPage) return;
+    if (this.isLastPage || !this.lastDoc) return;
     this.pageNumber++;
     this.loadCis('next');
   }
 
   previousPage(): void {
-    if (this.pageNumber === 1) return;
+    if (this.pageNumber <= 1) return;
     this.pageNumber--;
+    this.isLastPage = false;
     this.loadCis('prev');
   }
 

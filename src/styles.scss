@@ -135,8 +135,6 @@ tbody tr:last-of-type {
 }
 
 .table-container {
-  max-height: 360px; /* Altura aproximada para 7 linhas + cabeçalho */
-  overflow-y: auto;
   border-radius: 8px; /* Para manter as bordas arredondadas */
 }
 

@@ -26,6 +26,7 @@ export class CiListarLancamentoComponent implements OnInit {
   pageNumber = 1;
   isLoading = false;
   isLastPage = false;
+  pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
 
   constructor(
     private ciService: CiService,
@@ -47,33 +48,49 @@ export class CiListarLancamentoComponent implements OnInit {
     }
     this.isLoading = true;
 
-    const cursor = direction === 'next' ? this.lastDoc : this.firstDoc;
+    let cursor: DocumentSnapshot<DocumentData> | null | undefined = null;
+    if (direction === 'next') {
+      cursor = this.lastDoc;
+    } else {
+      // Para 'prev', usamos o cursor da página para a qual estamos navegando
+      cursor = this.pageCursors[this.pageNumber];
+    }
 
     this.ciService.getCisParaLancamentoPaginado(this.pageSize, direction, cursor ?? undefined).subscribe(result => {
-      this.cis = result.cis.map(ci => {
-        const data = ci.data as any;
-        if (data && typeof data.toDate === 'function') {
-          return { ...ci, data: data.toDate() };
-        }
-        return ci;
-      });
+      if (result.cis.length > 0) {
+        this.cis = result.cis.map(ci => {
+          const data = ci.data as any;
+          if (data && typeof data.toDate === 'function') {
+            return { ...ci, data: data.toDate() };
+          }
+          return ci;
+        });
 
-      this.firstDoc = result.firstDoc;
-      this.lastDoc = result.lastDoc;
-      this.isLastPage = result.cis.length < this.pageSize;
+        this.firstDoc = result.firstDoc;
+        this.lastDoc = result.lastDoc;
+
+        if (direction === 'next' && this.lastDoc) {
+          // Armazena o primeiro documento da *próxima* página para poder voltar a ela
+          this.pageCursors[this.pageNumber + 1] = result.firstDoc;
+        }
+      } else if (direction === 'next') {
+        this.isLastPage = true;
+      }
+
       this.isLoading = false;
     });
   }
 
   nextPage(): void {
-    if (this.isLastPage) return;
+    if (this.isLastPage || !this.lastDoc) return;
     this.pageNumber++;
     this.loadCis('next');
   }
 
   previousPage(): void {
-    if (this.pageNumber === 1) return;
+    if (this.pageNumber <= 1) return;
     this.pageNumber--;
+    this.isLastPage = false; // Se voltamos, não estamos mais na última página
     this.loadCis('prev');
   }
 

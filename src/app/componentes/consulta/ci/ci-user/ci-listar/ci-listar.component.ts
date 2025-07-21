@@ -34,9 +34,9 @@ export class CiListarComponent implements OnInit {
   pageNumber = 1;
   pageSize = 10;
   isLastPage = false;
-
-  private firstDocOnPage: DocumentSnapshot<DocumentData> | null = null;
-  private lastDocOnPage: DocumentSnapshot<DocumentData> | null = null;
+  firstDoc: DocumentSnapshot<DocumentData> | null = null;
+  lastDoc: DocumentSnapshot<DocumentData> | null = null;
+  pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
 
   constructor(
     @Inject(CiService) private ciService: CiService,
@@ -58,49 +58,55 @@ export class CiListarComponent implements OnInit {
     }
   }
 
-  loadCis(direction: 'next' | 'prev', cursor?: DocumentSnapshot<DocumentData>): void {
+  loadCis(direction: 'next' | 'prev'): void {
     if (!this.matricula) return;
     this.isLoading = true;
 
-    this.ciService.getCisPorUsuarioPaginado(this.matricula, this.pageSize, direction, cursor).subscribe(result => {
-      if (result.cis.length === 0) {
-        if (direction === 'next') this.isLastPage = true;
-        this.isLoading = false;
-        return;
+    let cursor: DocumentSnapshot<DocumentData> | null | undefined = null;
+    if (direction === 'next') {
+      cursor = this.lastDoc;
+    } else {
+      cursor = this.pageCursors[this.pageNumber];
+    }
+
+    this.ciService.getCisPorUsuarioPaginado(this.matricula, this.pageSize, direction, cursor ?? undefined).subscribe(result => {
+      if (result.cis.length > 0) {
+        this.cis = result.cis.map(ci => {
+          const data = ci.data as any;
+          if (data && typeof data.toDate === 'function') {
+            return { ...ci, data: data.toDate() };
+          }
+          const parsedDate = new Date(data);
+          if (data && !isNaN(parsedDate.getTime())) {
+            return { ...ci, data: parsedDate };
+          }
+          return { ...ci, data: data as any };
+        });
+
+        this.firstDoc = result.firstDoc;
+        this.lastDoc = result.lastDoc;
+
+        if (direction === 'next' && this.lastDoc) {
+          this.pageCursors[this.pageNumber + 1] = result.firstDoc;
+        }
+      } else if (direction === 'next') {
+        this.isLastPage = true;
       }
-
-      this.cis = result.cis.map(ci => {
-        const data = ci.data as any;
-        if (data && typeof data.toDate === 'function') {
-          return { ...ci, data: data.toDate() };
-        }
-        const parsedDate = new Date(data);
-        if (data && !isNaN(parsedDate.getTime())) {
-          return { ...ci, data: parsedDate };
-        }
-        return { ...ci, data: data as any };
-      });
-
-      this.firstDocOnPage = result.firstDoc;
-      this.lastDocOnPage = result.lastDoc;
-      this.isLastPage = result.cis.length < this.pageSize;
       this.isLoading = false;
     });
   }
 
   nextPage(): void {
-    if (!this.isLastPage) {
-      this.pageNumber++;
-      this.loadCis('next', this.lastDocOnPage ?? undefined);
-    }
+    if (this.isLastPage || !this.lastDoc) return;
+    this.pageNumber++;
+    this.loadCis('next');
   }
 
   previousPage(): void {
-    if (this.pageNumber > 1) {
-      this.pageNumber--;
-      this.isLastPage = false;
-      this.loadCis('prev', this.firstDocOnPage ?? undefined);
-    }
+    if (this.pageNumber <= 1) return;
+    this.pageNumber--;
+    this.isLastPage = false;
+    this.loadCis('prev');
   }
 
   abrirModalImpressao(ciId: string): void {

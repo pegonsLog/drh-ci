@@ -28,6 +28,7 @@ export class CiListarAprovacaoComponent implements OnInit {
   isLastPage = false;
   firstDoc: DocumentSnapshot<DocumentData> | null = null;
   lastDoc: DocumentSnapshot<DocumentData> | null = null;
+  pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
 
   constructor(
     private ciService: CiService,
@@ -54,21 +55,33 @@ export class CiListarAprovacaoComponent implements OnInit {
     if (this.isLoading || !this.matricula || !this.perfil) return;
     this.isLoading = true;
 
-    const cursor = direction === 'next' ? this.lastDoc : this.firstDoc;
+    let cursor: DocumentSnapshot<DocumentData> | null | undefined = null;
+    if (direction === 'next') {
+      cursor = this.lastDoc;
+    } else {
+      cursor = this.pageCursors[this.pageNumber];
+    }
 
     this.ciService.getCisParaAprovacaoPaginado(this.matricula, this.perfil, this.pageSize, direction, cursor ?? undefined).subscribe({
       next: (result) => {
-        this.cis = result.cis.map((ci: ComunicacaoInterna) => {
-          const data = ci.data as any;
-          if (data && typeof data.toDate === 'function') {
-            return { ...ci, data: data.toDate() };
-          }
-          return ci;
-        });
+        if (result.cis.length > 0) {
+          this.cis = result.cis.map((ci: ComunicacaoInterna) => {
+            const data = ci.data as any;
+            if (data && typeof data.toDate === 'function') {
+              return { ...ci, data: data.toDate() };
+            }
+            return ci;
+          });
 
-        this.firstDoc = result.firstDoc;
-        this.lastDoc = result.lastDoc;
-        this.isLastPage = result.cis.length < this.pageSize;
+          this.firstDoc = result.firstDoc;
+          this.lastDoc = result.lastDoc;
+
+          if (direction === 'next' && this.lastDoc) {
+            this.pageCursors[this.pageNumber + 1] = result.firstDoc;
+          }
+        } else if (direction === 'next') {
+          this.isLastPage = true;
+        }
         this.isLoading = false;
       },
       error: (err) => {
@@ -81,14 +94,15 @@ export class CiListarAprovacaoComponent implements OnInit {
 
 
   nextPage(): void {
-    if (this.isLastPage) return;
+    if (this.isLastPage || !this.lastDoc) return;
     this.pageNumber++;
     this.loadCis('next');
   }
 
   previousPage(): void {
-    if (this.pageNumber === 1) return;
+    if (this.pageNumber <= 1) return;
     this.pageNumber--;
+    this.isLastPage = false;
     this.loadCis('prev');
   }
 
