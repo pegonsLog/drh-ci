@@ -151,7 +151,6 @@ export class CiVisualizarLancamentoComponent implements OnInit {
               this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
             }
           }
-          this.voltar();
         })
         .catch(err => {
           console.error('Erro ao salvar status de lançamento:', err);
