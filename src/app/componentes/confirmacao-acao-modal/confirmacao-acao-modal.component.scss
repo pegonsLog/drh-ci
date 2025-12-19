@@ -4,26 +4,86 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1050;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
 }
 
 .modal-container {
-  background-color: white;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background: white;
+  padding: 2rem;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
   text-align: center;
-  width: 90%;
+  width: 100%;
   max-width: 400px;
+  animation: slideUp 0.3s ease-out;
+
+  .modal-icon {
+    width: 4rem;
+    height: 4rem;
+    background: var(--primary-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+
+    svg {
+      width: 2rem;
+      height: 2rem;
+      color: var(--primary-600);
+    }
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--gray-600);
+    font-size: 0.9375rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
 }
 
 .button-group {
-  margin-top: 20px;
   display: flex;
+  gap: 0.75rem;
   justify-content: center;
-  gap: 15px;
+
+  .btn {
+    flex: 1;
+    padding: 0.75rem 1.25rem;
+
+    svg {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

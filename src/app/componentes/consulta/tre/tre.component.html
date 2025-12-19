@@ -1,33 +1,46 @@
-<h4>TRE</h4>
+<div class="data-card">
+  <div class="card-header tre-header">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+      class="header-icon">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+    </svg>
+    <h4>TRE</h4>
+  </div>
 
-<div *ngIf="isLoading" class="loading-placeholder">
-  <p>Carregando dados...</p>
-</div>
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <span>Carregando dados...</span>
+  </div>
 
-<div *ngIf="!isLoading && notionData.length > 0" class="table-responsive">
-  <table class="table table-striped table-hover table-sm">
-    <thead>
-      <tr>
-        <th>Mat</th>
-        <th>Eleição</th>
-        <th>Data Folga</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of notionData">
-        <!-- Coluna 'Mat', tipo Título -->
-        <td>{{ item.properties['Matricula']?.title?.[0]?.plain_text || 'N/A' }}</td>
-        
-        <!-- Coluna 'Eleicao', tratando como tipo 'multi_select'. -->
-        <td [ngClass]="{'disponivel': !item.properties['Eleicao']?.multi_select?.[0]?.name}">{{ item.properties['Eleicao']?.multi_select?.[0]?.name | abbreviateYear }}</td>
-        
-        <!-- Coluna 'Data Folga', tipo Data -->
-        <td [ngClass]="{'disponivel': !item.properties['Data Folga']?.date?.start}">{{ (item.properties['Data Folga']?.date?.start | date:'dd/MM/yy') || 'Disponível' }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <div *ngIf="!isLoading && notionData.length > 0" class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Mat</th>
+          <th>Eleição</th>
+          <th>Data Folga</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of notionData">
+          <td>{{ item.properties['Matricula']?.title?.[0]?.plain_text || 'N/A' }}</td>
+          <td [ngClass]="{'disponivel': !item.properties['Eleicao']?.multi_select?.[0]?.name}">
+            {{ item.properties['Eleicao']?.multi_select?.[0]?.name | abbreviateYear }}
+          </td>
+          <td [ngClass]="{'disponivel': !item.properties['Data Folga']?.date?.start}">
+            {{ (item.properties['Data Folga']?.date?.start | date:'dd/MM/yy') || 'Disponível' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-<div *ngIf="!isLoading && notionData.length === 0">
-  <p>Você não tem TREs</p>
+  <div *ngIf="!isLoading && notionData.length === 0" class="empty-state">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+    </svg>
+    <p>Você não tem TREs</p>
+  </div>
 </div>

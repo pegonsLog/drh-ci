@@ -1,71 +1,175 @@
-<div class="funcionario-form-container">
-  <p>NOVO FUNCIONÁRIO</p>
-  <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="funcionario">Nome do Funcionário:</label>
-      <input id="funcionario" type="text" formControlName="funcionario" placeholder="Nome completo">
-      <div *ngIf="funcionarioForm.get('funcionario')?.invalid && funcionarioForm.get('funcionario')?.touched" class="error-message">
-        <small *ngIf="funcionarioForm.get('funcionario')?.errors?.['required']">O nome é obrigatório.</small>
-      </div>
+<div class="form-page">
+  <div class="form-container">
+    <div class="form-header user-header">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="header-icon">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+      </svg>
+      <h1>Novo Funcionário</h1>
     </div>
 
-    <div class="form-group">
-      <label for="matricula">Matrícula:</label>
-      <input id="matricula" type="text" formControlName="matricula" placeholder="Apenas números">
-      <div *ngIf="funcionarioForm.get('matricula')?.invalid && funcionarioForm.get('matricula')?.touched" class="error-message">
-        <small *ngIf="funcionarioForm.get('matricula')?.errors?.['required']">A matrícula é obrigatória.</small>
-        <small *ngIf="funcionarioForm.get('matricula')?.errors?.['pattern']">A matrícula deve conter apenas números.</small>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="perfil">Perfil:</label>
-      <select id="perfil" formControlName="perfil" class="form-select">
-        <option value="" disabled>Selecione o perfil</option>
-        <option value="adm">Administrador</option>
-        <option value="user">Usuário</option>
-        <option value="gestor">Gestor</option>
-        <option value="apurador">Apurador</option>
-        <option value="lancador">Lancador</option>
-        <option value="gerente">Gerente</option>
-      </select>
-      <div *ngIf="funcionarioForm.get('perfil')?.invalid && funcionarioForm.get('perfil')?.touched" class="error-message">
-        <small *ngIf="funcionarioForm.get('perfil')?.errors?.['required']">O perfil é obrigatório.</small>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="email">E-mail:</label>
-      <input id="email" type="email" formControlName="email" placeholder="email@pbh.gov.br">
-      <div *ngIf="funcionarioForm.get('email')?.invalid && funcionarioForm.get('email')?.touched" class="error-message">
-        <small *ngIf="funcionarioForm.get('email')?.errors?.['required']">O e-mail é obrigatório.</small>
-        <small *ngIf="funcionarioForm.get('email')?.errors?.['email']">Formato de e-mail inválido.</small>
-      </div>
-    </div>
-
-    <!-- Seção de Assinatura -->
-    <div class="card mt-4 mb-4">
-      <div class="card-body">
-        <h5 class="card-title">Assinatura Digital <small class="text-muted">(Opcional)</small></h5>
-        <div class="mb-3">
-          <label for="assinaturaFile" class="form-label">Carregar assinatura:</label>
-          <input class="form-control" type="file" id="assinaturaFile" (change)="onFileSelected($event)" accept="image/png, image/jpeg">
+    <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()" class="form-content">
+      <div class="form-group">
+        <label for="funcionario">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+          </svg>
+          Nome do Funcionário
+        </label>
+        <input id="funcionario" type="text" formControlName="funcionario" placeholder="Nome completo"
+          class="form-control">
+        <div *ngIf="funcionarioForm.get('funcionario')?.invalid && funcionarioForm.get('funcionario')?.touched"
+          class="error-message">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+          </svg>
+          <small *ngIf="funcionarioForm.get('funcionario')?.errors?.['required']">O nome é obrigatório.</small>
         </div>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label for="senha">Senha:</label>
-      <input id="senha" type="password" formControlName="senha" placeholder="Mínimo 6 caracteres">
-      <div *ngIf="funcionarioForm.get('senha')?.invalid && funcionarioForm.get('senha')?.touched" class="error-message">
-        <small *ngIf="funcionarioForm.get('senha')?.errors?.['required']">A senha é obrigatória.</small>
-        <small *ngIf="funcionarioForm.get('senha')?.errors?.['minlength']">A senha deve ter no mínimo 6 caracteres.</small>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="matricula">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+            </svg>
+            Matrícula
+          </label>
+          <input id="matricula" type="text" formControlName="matricula" placeholder="Apenas números"
+            class="form-control">
+          <div *ngIf="funcionarioForm.get('matricula')?.invalid && funcionarioForm.get('matricula')?.touched"
+            class="error-message">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+            </svg>
+            <small *ngIf="funcionarioForm.get('matricula')?.errors?.['required']">A matrícula é obrigatória.</small>
+            <small *ngIf="funcionarioForm.get('matricula')?.errors?.['pattern']">Apenas números.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="perfil">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+            </svg>
+            Perfil
+          </label>
+          <select id="perfil" formControlName="perfil" class="form-select">
+            <option value="" disabled>Selecione o perfil</option>
+            <option value="adm">Administrador</option>
+            <option value="user">Usuário</option>
+            <option value="gestor">Gestor</option>
+            <option value="apurador">Apurador</option>
+            <option value="lancador">Lancador</option>
+            <option value="gerente">Gerente</option>
+          </select>
+          <div *ngIf="funcionarioForm.get('perfil')?.invalid && funcionarioForm.get('perfil')?.touched"
+            class="error-message">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+            </svg>
+            <small *ngIf="funcionarioForm.get('perfil')?.errors?.['required']">O perfil é obrigatório.</small>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="button-group">
-      <button type="submit" [disabled]="funcionarioForm.invalid">Salvar Funcionário</button>
-      <button class="btn-voltar" *ngIf="matriculaLogado" [routerLink]="['/funcionario-listar', matriculaLogado]">Voltar para a Lista</button>
-    </div>
-  </form>
+      <div class="form-group">
+        <label for="email">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+          </svg>
+          E-mail
+        </label>
+        <input id="email" type="email" formControlName="email" placeholder="email@pbh.gov.br" class="form-control">
+        <div *ngIf="funcionarioForm.get('email')?.invalid && funcionarioForm.get('email')?.touched"
+          class="error-message">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+          </svg>
+          <small *ngIf="funcionarioForm.get('email')?.errors?.['required']">O e-mail é obrigatório.</small>
+          <small *ngIf="funcionarioForm.get('email')?.errors?.['email']">Formato de e-mail inválido.</small>
+        </div>
+      </div>
+
+      <!-- Seção de Assinatura -->
+      <div class="signature-section">
+        <h5>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+          </svg>
+          Assinatura Digital <span class="optional">(Opcional)</span>
+        </h5>
+        <div class="file-upload">
+          <label for="assinaturaFile" class="upload-label">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+            </svg>
+            Carregar assinatura
+          </label>
+          <input type="file" id="assinaturaFile" (change)="onFileSelected($event)" accept="image/png, image/jpeg">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="senha">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+          Senha
+        </label>
+        <input id="senha" type="password" formControlName="senha" placeholder="Mínimo 6 caracteres"
+          class="form-control">
+        <div *ngIf="funcionarioForm.get('senha')?.invalid && funcionarioForm.get('senha')?.touched"
+          class="error-message">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+          </svg>
+          <small *ngIf="funcionarioForm.get('senha')?.errors?.['required']">A senha é obrigatória.</small>
+          <small *ngIf="funcionarioForm.get('senha')?.errors?.['minlength']">Mínimo 6 caracteres.</small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="funcionarioForm.invalid" class="btn btn-success">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          Salvar Funcionário
+        </button>
+        <a class="btn btn-secondary" *ngIf="matriculaLogado" [routerLink]="['/funcionario-listar', matriculaLogado]">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+          </svg>
+          Voltar
+        </a>
+      </div>
+    </form>
+  </div>
 </div>

@@ -1,47 +1,103 @@
-<div class="ci-form-container">
-  <p>ALTERAR CI</p>
-  <form [formGroup]="ciForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="de">De:</label>
-      <input id="de" type="text" formControlName="de">
+<div class="form-page">
+  <div class="form-container">
+    <div class="form-header edit-header">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="header-icon">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+      </svg>
+      <h1>Alterar CI</h1>
     </div>
 
-    <div class="form-group">
-      <label for="para">Para:</label>
-      <select id="para" formControlName="para" class="form-select">
-        <option value="">Selecione um destinatário (Opcional)</option>
-        <option *ngFor="let funcionario of (funcionarios$ | async)" [value]="funcionario.matricula">
-          {{ funcionario.funcionario }}
-        </option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="destinatario_matricula-cc">Com Cópia para:</label>
-      <input id="destinatario_matricula-cc" type="text" formControlName="destinatario_matricula-cc" class="form-control">
-    </div>
-
-    <div class="form-group">
-      <label for="comunicacao">Comunicação:</label>
-      <textarea id="comunicacao" formControlName="comunicacao" rows="10"></textarea>
-      <div *ngIf="ciForm.get('comunicacao')?.invalid && (ciForm.get('comunicacao')?.dirty || ciForm.get('comunicacao')?.touched)" class="error-message">
-        <small *ngIf="ciForm.get('comunicacao')?.errors?.['required']">A comunicação é obrigatória.</small>
+    <form [formGroup]="ciForm" (ngSubmit)="onSubmit()" class="form-content">
+      <div class="form-group">
+        <label for="de">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+          </svg>
+          De
+        </label>
+        <input id="de" type="text" formControlName="de" class="form-control">
       </div>
-    </div>
 
-    <!-- Campo de Status Lançamento oculto conforme solicitado
-    <div class="form-group">
-      <label for="lancamentoStatus">Status Lançamento:</label>
-      <select id="lancamentoStatus" formControlName="lancamentoStatus" class="form-select">
-        <option value="pendente">Pendente</option>
-        <option value="lancado">Lançado</option>
-      </select>
-    </div>
-    -->
-    <div class="button-group">
-      <button type="submit" [disabled]="ciForm.invalid || ciForm.pristine">Salvar Alterações</button>
-      <button class="btn-voltar" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">Voltar para a Lista</button>
-      <button class="btn-sair" *ngIf="matricula" [routerLink]="['/painel', matricula]">Sair</button>
-    </div>
-  </form>
+      <div class="form-group">
+        <label for="para">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+          </svg>
+          Para
+        </label>
+        <select id="para" formControlName="para" class="form-select">
+          <option value="">Selecione um destinatário (Opcional)</option>
+          <option *ngFor="let funcionario of (funcionarios$ | async)" [value]="funcionario.matricula">
+            {{ funcionario.funcionario }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="destinatario_matricula-cc">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+          </svg>
+          Com Cópia para
+        </label>
+        <input id="destinatario_matricula-cc" type="text" formControlName="destinatario_matricula-cc"
+          class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="comunicacao">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+          </svg>
+          Comunicação
+        </label>
+        <textarea id="comunicacao" formControlName="comunicacao" rows="10" class="form-control"></textarea>
+        <div
+          *ngIf="ciForm.get('comunicacao')?.invalid && (ciForm.get('comunicacao')?.dirty || ciForm.get('comunicacao')?.touched)"
+          class="error-message">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+          </svg>
+          <small *ngIf="ciForm.get('comunicacao')?.errors?.['required']">A comunicação é obrigatória.</small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="ciForm.invalid || ciForm.pristine" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          Salvar Alterações
+        </button>
+        <a class="btn btn-secondary" *ngIf="matricula" [routerLink]="['/ci-listar', matricula]">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+          </svg>
+          Voltar
+        </a>
+        <a class="btn btn-success" *ngIf="matricula" [routerLink]="['/painel', matricula]">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+          </svg>
+          Sair
+        </a>
+      </div>
+    </form>
+  </div>
 </div>

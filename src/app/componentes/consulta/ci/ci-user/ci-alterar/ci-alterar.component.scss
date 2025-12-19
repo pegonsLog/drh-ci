@@ -1,2 +1,5 @@
-// Reutiliza os mesmos estilos do formulário de nova CI.
 @import '../ci-nova/ci-nova.component.scss';
+
+.edit-header {
+  background: linear-gradient(135deg, var(--warning-500) 0%, var(--warning-600) 100%);
+}

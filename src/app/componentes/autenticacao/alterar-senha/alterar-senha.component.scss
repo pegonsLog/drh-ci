@@ -1,84 +1,180 @@
-.container {
+.password-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f4f4f4;
+  min-height: 100vh;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.card {
+.password-card {
   background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  overflow: hidden;
+}
+
+.card-header {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  padding: 2rem;
   text-align: center;
+  color: white;
+
+  .icon-wrapper {
+    width: 4rem;
+    height: 4rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+
+    svg {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: white;
+  }
+
+  p {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9);
+  }
 }
 
-h2 {
-  margin-bottom: 1.5rem;
-  color: #333;
+.card-form {
+  padding: 2rem;
 }
 
-.input-group {
-  margin-bottom: 1rem;
-  text-align: left;
+.form-group {
+  margin-bottom: 1.25rem;
 
   label {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--gray-700);
     margin-bottom: 0.5rem;
-    color: #555;
+    font-size: 0.875rem;
+
+    svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      color: var(--gray-500);
+    }
   }
 
   .form-control {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-}
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition);
+    background: var(--gray-50);
 
-.btn-login {
-  width: 100%;
-  padding: 0.75rem;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-top: 1rem;
+    &:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
 
-  &:disabled {
-    background-color: #a0c8f0;
-    cursor: not-allowed;
+    &::placeholder {
+      color: var(--gray-400);
+    }
   }
 }
 
 .error-message {
-  color: #d9534f;
-  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--danger-600);
+  font-size: 0.875rem;
   margin-bottom: 1rem;
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+  }
 }
 
-.success-message {
-  color: #5cb85c;
-  margin-top: 1rem;
+.message-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
   margin-bottom: 1rem;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  &.error {
+    background: var(--danger-50);
+    color: var(--danger-700);
+    border: 1px solid var(--danger-200);
+  }
+
+  &.success {
+    background: var(--success-50);
+    color: var(--success-700);
+    border: 1px solid var(--success-200);
+  }
+}
+
+.btn-full {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
 
 .links-container {
   margin-top: 1.5rem;
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--gray-100);
 
   .link-voltar {
-    color: #007bff;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-600);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color var(--transition);
+
+    svg {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
 
     &:hover {
-      text-decoration: underline;
+      color: var(--primary-600);
     }
   }
 }

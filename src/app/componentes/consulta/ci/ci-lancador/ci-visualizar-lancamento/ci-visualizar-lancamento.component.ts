@@ -132,33 +132,28 @@ export class CiVisualizarLancamentoComponent implements OnInit {
   }
 
   salvarLancamento(): void {
-    const acao = () => {
-      if (!this.ci || !this.respostaLancamento) return;
+    if (!this.ci || !this.respostaLancamento) return;
 
-      const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
-      const lancadorMatricula = this.respostaLancamento === 'lancado' ? this.matriculaLogado : undefined;
+    const dataLancamento = this.respostaLancamento === 'lancado' ? new Date() : undefined;
+    const lancadorMatricula = this.respostaLancamento === 'lancado' ? this.matriculaLogado : undefined;
 
-      this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento, lancadorMatricula ?? undefined)
-        .then(() => {
-          if (this.ci) {
-            this.ci.lancamentoStatus = this.respostaLancamento!;
-            if (dataLancamento) {
-              this.ci.dataLancamento = dataLancamento;
-              this.dataLancamentoExibicao = new Date(dataLancamento).toLocaleDateString('pt-BR');
-            }
-            if (lancadorMatricula) {
-              this.ci.lancador_matricula = lancadorMatricula;
-              this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
-            }
+    this.ciService.updateLancamentoStatus(this.ci.id, this.respostaLancamento, dataLancamento, lancadorMatricula ?? undefined)
+      .then(() => {
+        if (this.ci) {
+          this.ci.lancamentoStatus = this.respostaLancamento!;
+          if (dataLancamento) {
+            this.ci.dataLancamento = dataLancamento;
+            this.dataLancamentoExibicao = new Date(dataLancamento).toLocaleDateString('pt-BR');
           }
-        })
-        .catch(err => {
-          console.error('Erro ao salvar status de lançamento:', err);
-          alert('Falha ao salvar o status de lançamento. Tente novamente.');
-        });
-    };
-
-    const mensagem = `Tem certeza que deseja salvar o status como '${this.respostaLancamento === 'lancado' ? 'Lançado' : 'Pendente'}'?`;
-    this.abrirModalConfirmacao(acao, mensagem);
+          if (lancadorMatricula) {
+            this.ci.lancador_matricula = lancadorMatricula;
+            this.funcionarioService.getFuncionarioByMatricula(lancadorMatricula).subscribe(lancador => this.lancador = lancador);
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Erro ao salvar status de lançamento:', err);
+        alert('Falha ao salvar o status de lançamento. Tente novamente.');
+      });
   }
 }

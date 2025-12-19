@@ -1,18 +1,5 @@
+@import '../drh/drh.component.scss';
 
-
-h4 {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 15px !important;
-    font-weight: 600;
-    background-color: #007bff;
-    color: white;
-    padding: 0.2rem;
-    padding-left: 0.5rem;
-}
-
-.table-responsive {
-  max-height: 250px;
-  overflow-y: auto;
+.pf-header {
+  background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
 }

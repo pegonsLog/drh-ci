@@ -1,40 +1,86 @@
 .ci-visualizar-container {
-  padding: 1rem;
-  background-color: #e0e0e0;
-  font-family: Arial, sans-serif;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+  min-height: 100vh;
+  font-family: var(--font-family);
 }
 
 .ci-content-wrapper {
   display: flex;
   gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .actions-and-forms-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  width: 280px;
+  gap: 1rem;
+  width: 200px;
   flex-shrink: 0;
 }
 
 .action-buttons {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-start;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: sticky;
+  top: 1.5rem;
 
-  .btn-voltar, .btn-sair, .btn-imprimir {
-    padding: 0.8rem 1.5rem;
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.25rem;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--radius-lg);
     color: white;
     cursor: pointer;
-    font-size: 1rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    transition: all var(--transition);
+    box-shadow: var(--shadow);
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
   }
 
-  .btn-voltar { background-color: #6c757d; }
-  .btn-sair { background-color: #dc3545; }
-  .btn-imprimir { background-color: #28a745; }
+  .btn-success {
+    background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
+
+    &:hover {
+      background: linear-gradient(135deg, var(--success-600) 0%, var(--success-700) 100%);
+    }
+  }
+
+  .btn-secondary {
+    background: linear-gradient(135deg, var(--gray-500) 0%, var(--gray-600) 100%);
+
+    &:hover {
+      background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
+    }
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, var(--danger-500) 0%, var(--danger-600) 100%);
+
+    &:hover {
+      background: linear-gradient(135deg, var(--danger-600) 0%, var(--danger-700) 100%);
+    }
+  }
 }
 
 .ci-sheet-container {
@@ -45,11 +91,12 @@
   min-height: 210mm;
   margin: 0;
   padding: 1cm;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-xl);
+  border-radius: var(--radius-lg);
   gap: 2cm;
 
   &.sem-copia {
-    justify-content: flex-start; /* Alinha a CI à esquerda */
+    justify-content: flex-start;
   }
 }
 
@@ -58,23 +105,25 @@
 }
 
 .ci-form {
-  border: 2px solid black;
+  border: 2px solid var(--gray-800);
   display: flex;
   flex-direction: column;
   height: 100%;
   background-color: white;
+  font-family: var(--font-family);
 }
 
 .form-header, .form-to-from, .form-footer {
   display: flex;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid var(--gray-800);
 }
 
 .form-body {
-  font-size: 16px;
+  font-size: 14px;
   flex-grow: 1;
-  padding: 24px;
+  padding: 20px;
   min-height: 12cm;
+  line-height: 1.6;
 }
 
 .form-body-wrapper {
@@ -84,12 +133,11 @@
 
 .stamps-container {
   position: absolute;
-  bottom: 0px;
-  right: 30px;
+  bottom: 10px;
+  right: 20px;
   display: flex;
-  gap: 20px;
+  gap: 15px;
   align-items: flex-start;
-  margin-left: 20px;
 }
 
 .stamp-wrapper {
@@ -99,35 +147,40 @@
 }
 
 .aprovado-stamp, .lancado-stamp, .aprovado-gerente-stamp {
-  border: 1px solid black;
-  padding: 4px;
-  border-radius: 5px;
+  border: 2px solid var(--gray-700);
+  padding: 6px 8px;
+  border-radius: var(--radius);
   font-weight: bold;
   text-align: center;
   position: relative;
-  min-width: 130px;
+  min-width: 120px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  background: white;
 
   .stamp-text {
-    font-size: 0.8rem;
-    font-weight: 900;
+    font-size: 0.75rem;
+    font-weight: 700;
     line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .stamp-employee-name {
-    font-size: 0.75rem;
-    font-weight: normal;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-top: 2px;
   }
 
   .stamp-date {
-    font-size: 0.7rem;
-    font-weight: normal;
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--gray-600);
   }
 
   .stamp-signature {
-    margin-top: 5px;
+    margin-top: 4px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -135,25 +188,25 @@
 
     .signature-image {
       max-width: 80%;
-      max-height: 40px;
+      max-height: 35px;
       object-fit: contain;
     }
   }
 }
 
 .aprovado-stamp {
-  border-color: black;
-  color: black;
+  border-color: var(--success-600);
+  color: var(--success-700);
 }
 
 .lancado-stamp {
-  border-color: black;
-  color: black;
+  border-color: var(--primary-600);
+  color: var(--primary-700);
 }
 
 .aprovado-gerente-stamp {
-  border-color: black;
-  color: black;
+  border-color: var(--warning-600);
+  color: var(--warning-700);
 }
 
 .header-title, .header-logo {
@@ -165,9 +218,11 @@
 
 .header-title {
   width: 85%;
-  font-weight: bold;
-  border-right: 2px solid black;
-  font-size: 16px;
+  font-weight: 700;
+  border-right: 2px solid var(--gray-800);
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .header-logo {
@@ -178,37 +233,45 @@
 
   img {
     max-width: 100%;
-    max-height: 45px;
+    max-height: 40px;
     object-fit: contain;
   }
 }
 
 .form-to-from {
   .address-section {
-    width: 85%;
+    width: 72%;
     flex-grow: 1;
+
     .address-row {
-      padding: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+
       &:first-child {
-        border-bottom: 2px solid black;
+        border-bottom: 2px solid var(--gray-800);
       }
+
       label {
-        font-weight: bold;
+        font-weight: 700;
         margin-right: 5px;
       }
     }
   }
 
   .area-section {
-    border-left: 2px solid black;
+    border-left: 2px solid var(--gray-800);
     width: 28%;
-    .area-row { 
-      padding: 8px;
+
+    .area-row {
+      padding: 6px 10px;
+      font-size: 12px;
+
       &:first-child {
-        border-bottom: 2px solid black;
+        border-bottom: 2px solid var(--gray-800);
       }
-       label {
-        font-weight: bold;
+
+      label {
+        font-weight: 700;
         margin-right: 5px;
       }
     }
@@ -216,44 +279,55 @@
 }
 
 .form-footer {
+  border-top: 2px solid var(--gray-800);
+  border-bottom: none;
+
   .footer-box {
-    margin-top: 1rem;
-    border-top: 2px solid black;
     width: 50%;
-    padding-top: 16px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
+    font-size: 11px;
 
     &:first-child {
-      border-right: 2px solid black;
-    }
-
-    label {
-      font-size: 0.8em;
-      color: #555;
-      margin-top: 4px;
+      border-right: 2px solid var(--gray-800);
     }
 
     .footer-label {
-      border-top: 1px solid black;
+      border-top: 1px solid var(--gray-600);
       width: 90%;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2px 0;
+      padding: 4px 0;
+      font-size: 10px;
+      color: var(--gray-500);
+      margin-top: 4px;
     }
 
     .footer-signature {
-      font-size: 12px;
-      border-top: 1px solid black;
+      font-size: 11px;
+      border-top: 1px solid var(--gray-600);
       width: 90%;
       display: flex;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      padding: 2px 0;
-      position: relative; // Torna este o contêiner de referência
+      padding: 4px 0;
+      position: relative;
     }
+  }
+}
+
+.signature-image-container {
+  margin-bottom: 4px;
+
+  .signature-image {
+    max-width: 100px;
+    max-height: 40px;
+    object-fit: contain;
   }
 }
 
@@ -262,10 +336,11 @@
   margin: 0;
 }
 
+
 // Media Query para Responsividade em Dispositivos Móveis
 @media (max-width: 768px) {
   .ci-visualizar-container {
-    padding: 16px;
+    padding: 1rem;
   }
 
   .ci-content-wrapper {
@@ -275,18 +350,27 @@
 
   .actions-and-forms-container {
     width: 100%;
+    order: -1;
   }
 
   .action-buttons {
     flex-direction: row;
     justify-content: center;
-    align-items: stretch;
-    width: 100%;
-    padding: 0;
-    box-sizing: border-box;
+    position: static;
 
-    .btn-voltar, .btn-sair, .btn-imprimir {
-      flex-grow: 1;
+    .btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+
+      svg {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    }
+
+    .btn-success {
+      display: none;
     }
   }
 
@@ -294,9 +378,9 @@
     width: 100%;
     min-height: auto;
     flex-direction: column;
-    padding: 16px;
-    gap: 20px;
-    box-shadow: none;
+    padding: 1rem;
+    gap: 1.5rem;
+    border-radius: var(--radius);
   }
 
   .ci-form-wrapper {
@@ -305,17 +389,13 @@
 
   .form-body {
     min-height: auto;
-    padding: 16px;
-  }
-
-  .btn-imprimir {
-    display: none;
+    padding: 1rem;
   }
 }
 
-// Mixin para os estilos de impressão/PDF, evitando duplicação de código
+// Mixin para os estilos de impressão/PDF
 @mixin print-layout {
-  .floating-buttons {
+  .no-print {
     display: none !important;
   }
 
@@ -338,6 +418,8 @@
     box-sizing: border-box !important;
     background: white !important;
     margin: 0 auto !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
 
   .ci-form-wrapper {
@@ -352,27 +434,31 @@
     height: 100% !important;
   }
 
-  // Redimensiona o conteúdo do formulário para caber no PDF
   .header-title {
     font-size: 14px !important;
     padding: 6px !important;
   }
+
   .header-logo img {
     max-height: 40px !important;
   }
+
   .address-row,
   .area-row {
     padding: 6px !important;
     font-size: 11px !important;
   }
+
   .form-body {
     padding: 16px !important;
     font-size: 12px !important;
     min-height: 110mm !important;
   }
+
   .form-footer {
     font-size: 10px !important;
   }
+
   .footer-box span {
     font-size: 10px !important;
   }
@@ -382,10 +468,6 @@
   }
 }
 
-// Aplica o mixin para o contexto de impressão
 @media print {
   @include print-layout;
 }
-
-
-
