@@ -345,3 +345,31 @@ table {
     gap: 0.75rem;
   }
 }
+
+// Estilo para linha destacada
+tr.highlighted {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  animation: highlight-fade 3s ease-in-out;
+  
+  td {
+    border-top: 2px solid var(--primary-500);
+    border-bottom: 2px solid var(--primary-500);
+    
+    &:first-child {
+      border-left: 2px solid var(--primary-500);
+    }
+    
+    &:last-child {
+      border-right: 2px solid var(--primary-500);
+    }
+  }
+}
+
+@keyframes highlight-fade {
+  0% {
+    background-color: rgba(59, 130, 246, 0.3);
+  }
+  100% {
+    background-color: rgba(59, 130, 246, 0.15);
+  }
+}

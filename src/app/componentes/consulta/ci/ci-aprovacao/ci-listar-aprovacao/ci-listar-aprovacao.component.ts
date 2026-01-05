@@ -33,6 +33,7 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy {
   lastDoc: DocumentSnapshot<DocumentData> | null = null;
   pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
   totalCis = 0;
+  ciDestacadoId: string | null = null;
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
@@ -60,6 +61,18 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy {
       this.perfil = perfil;
       this.loadCis('next');
       this.loadTotalCis();
+    });
+
+    // Captura o ID destacado dos query params
+    this.route.queryParams.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(params => {
+      this.ciDestacadoId = params['destacar'] || null;
+      if (this.ciDestacadoId) {
+        setTimeout(() => {
+          this.scrollToHighlightedRow();
+        }, 500);
+      }
     });
   }
 
@@ -129,5 +142,17 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy {
   logout(): void {
     this.funcionarioService.logout();
     this.router.navigate(['/login']);
+  }
+
+  scrollToHighlightedRow(): void {
+    if (this.ciDestacadoId) {
+      const element = document.getElementById(`ci-row-${this.ciDestacadoId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          this.ciDestacadoId = null;
+        }, 3000);
+      }
+    }
   }
 }

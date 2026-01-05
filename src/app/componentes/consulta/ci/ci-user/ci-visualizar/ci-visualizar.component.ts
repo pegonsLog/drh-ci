@@ -160,7 +160,11 @@ export class CiVisualizarComponent implements OnInit {
   }
 
   voltarParaLista(): void {
-    if (this.matriculaLogado) {
+    if (this.matriculaLogado && this.ci) {
+      this.router.navigate(['/ci-listar', this.matriculaLogado], {
+        queryParams: { destacar: this.ci.id }
+      });
+    } else if (this.matriculaLogado) {
       this.router.navigate(['/ci-listar', this.matriculaLogado]);
     }
   }

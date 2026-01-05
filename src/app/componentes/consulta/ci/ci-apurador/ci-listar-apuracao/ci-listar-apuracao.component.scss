@@ -3,3 +3,31 @@
 .apuracao-header {
   background: linear-gradient(135deg, var(--violet-500) 0%, var(--violet-600) 100%);
 }
+
+// Estilo para linha destacada
+tr.highlighted {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+  animation: highlight-fade 3s ease-in-out;
+  
+  td {
+    border-top: 2px solid var(--violet-500);
+    border-bottom: 2px solid var(--violet-500);
+    
+    &:first-child {
+      border-left: 2px solid var(--violet-500);
+    }
+    
+    &:last-child {
+      border-right: 2px solid var(--violet-500);
+    }
+  }
+}
+
+@keyframes highlight-fade {
+  0% {
+    background-color: rgba(139, 92, 246, 0.3);
+  }
+  100% {
+    background-color: rgba(139, 92, 246, 0.15);
+  }
+}

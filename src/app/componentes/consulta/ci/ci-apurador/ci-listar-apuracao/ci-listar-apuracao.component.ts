@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
@@ -36,6 +36,7 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
 
   mostrarModalExclusao = false;
   ciParaExcluirId: string | undefined;
+  ciDestacadoId: string | null = null;
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
@@ -45,7 +46,8 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
   constructor(
     private ciService: CiService,
     private funcionarioService: FuncionarioService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -55,6 +57,20 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
     ).subscribe(perfil => {
       this.perfilUsuario = perfil;
     });
+    
+    // Captura o ID destacado dos query params
+    this.route.queryParams.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(params => {
+      this.ciDestacadoId = params['destacar'] || null;
+      if (this.ciDestacadoId) {
+        // Remove o query param após capturar
+        setTimeout(() => {
+          this.scrollToHighlightedRow();
+        }, 500);
+      }
+    });
+    
     this.loadCis('next');
     this.loadTotalCis();
   }
@@ -154,6 +170,19 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
     }
     this.mostrarModalExclusao = false;
     this.ciParaExcluirId = undefined;
+  }
+
+  scrollToHighlightedRow(): void {
+    if (this.ciDestacadoId) {
+      const element = document.getElementById(`ci-row-${this.ciDestacadoId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Remove o destaque após 3 segundos
+        setTimeout(() => {
+          this.ciDestacadoId = null;
+        }, 3000);
+      }
+    }
   }
 }
 

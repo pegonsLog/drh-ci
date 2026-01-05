@@ -54,3 +54,31 @@
     border-color: var(--gray-400);
   }
 }
+
+// Estilo para linha destacada
+tr.highlighted {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+  animation: highlight-fade 3s ease-in-out;
+  
+  td {
+    border-top: 2px solid var(--teal-500);
+    border-bottom: 2px solid var(--teal-500);
+    
+    &:first-child {
+      border-left: 2px solid var(--teal-500);
+    }
+    
+    &:last-child {
+      border-right: 2px solid var(--teal-500);
+    }
+  }
+}
+
+@keyframes highlight-fade {
+  0% {
+    background-color: rgba(20, 184, 166, 0.3);
+  }
+  100% {
+    background-color: rgba(20, 184, 166, 0.15);
+  }
+}

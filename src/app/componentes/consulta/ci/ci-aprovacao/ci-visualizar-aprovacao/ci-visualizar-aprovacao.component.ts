@@ -162,7 +162,13 @@ export class CiVisualizarAprovacaoComponent implements OnInit {
   }
 
   voltarParaLista(): void {
-    this.router.navigate(['/ci-listar-aprovacao', this.matriculaLogado]);
+    if (this.ci) {
+      this.router.navigate(['/ci-listar-aprovacao', this.matriculaLogado], {
+        queryParams: { destacar: this.ci.id }
+      });
+    } else {
+      this.router.navigate(['/ci-listar-aprovacao', this.matriculaLogado]);
+    }
   }
 
   sair(): void {

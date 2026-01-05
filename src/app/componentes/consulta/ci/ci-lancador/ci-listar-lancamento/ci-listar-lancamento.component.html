@@ -59,7 +59,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let ci of cis">
+            <tr *ngFor="let ci of cis" [id]="'ci-row-' + ci.id" [class.highlighted]="ci.id === ciDestacadoId">
               <td>
                 <ng-container *ngIf="ci.data.getTime; else rawData">
                   {{ ci.data | date:'dd/MM/yy' }}

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
 import { FuncionarioService } from '../../../../../services/funcionario.service';
@@ -31,6 +31,7 @@ export class CiListarLancamentoComponent implements OnInit, OnDestroy {
   isLoading = false;
   isLastPage = false;
   pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
+  ciDestacadoId: string | null = null;
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
@@ -40,7 +41,8 @@ export class CiListarLancamentoComponent implements OnInit, OnDestroy {
   constructor(
     private ciService: CiService,
     private router: Router,
-    private funcionarioService: FuncionarioService
+    private funcionarioService: FuncionarioService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -50,6 +52,19 @@ export class CiListarLancamentoComponent implements OnInit, OnDestroy {
     ).subscribe(perfil => {
       this.perfilUsuario = perfil;
     });
+    
+    // Captura o ID destacado dos query params
+    this.route.queryParams.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(params => {
+      this.ciDestacadoId = params['destacar'] || null;
+      if (this.ciDestacadoId) {
+        setTimeout(() => {
+          this.scrollToHighlightedRow();
+        }, 500);
+      }
+    });
+    
     this.loadCis('next');
     this.loadTotalCis();
   }
@@ -124,5 +139,17 @@ export class CiListarLancamentoComponent implements OnInit, OnDestroy {
       // Opcional: reverter o estado do checkbox em caso de erro
       event.target.checked = !impressa;
     });
+  }
+
+  scrollToHighlightedRow(): void {
+    if (this.ciDestacadoId) {
+      const element = document.getElementById(`ci-row-${this.ciDestacadoId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          this.ciDestacadoId = null;
+        }, 3000);
+      }
+    }
   }
 }

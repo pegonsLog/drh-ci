@@ -38,6 +38,7 @@ export class CiListarComponent implements OnInit {
   lastDoc: DocumentSnapshot<DocumentData> | null = null;
   pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
   totalCis = 0;
+  ciDestacadoId: string | null = null;
 
   constructor(
     @Inject(CiService) private ciService: CiService,
@@ -52,6 +53,17 @@ export class CiListarComponent implements OnInit {
 
   ngOnInit(): void {
     this.matricula = this.funcionarioService.getMatriculaLogada();
+    
+    // Captura o ID destacado dos query params
+    this.route.queryParams.subscribe(params => {
+      this.ciDestacadoId = params['destacar'] || null;
+      if (this.ciDestacadoId) {
+        setTimeout(() => {
+          this.scrollToHighlightedRow();
+        }, 500);
+      }
+    });
+    
     this.loadCis('next');
     if (this.matricula) {
       this.loadTotalCis();
@@ -240,6 +252,18 @@ export class CiListarComponent implements OnInit {
           duration: 3000,
         });
       });
+    }
+  }
+
+  scrollToHighlightedRow(): void {
+    if (this.ciDestacadoId) {
+      const element = document.getElementById(`ci-row-${this.ciDestacadoId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          this.ciDestacadoId = null;
+        }, 3000);
+      }
     }
   }
 }

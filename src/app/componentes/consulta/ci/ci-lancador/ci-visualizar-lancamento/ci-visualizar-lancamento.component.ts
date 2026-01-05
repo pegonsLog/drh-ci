@@ -101,7 +101,11 @@ export class CiVisualizarLancamentoComponent implements OnInit {
 
   voltar(): void {
     const matricula = this.funcionarioService.getMatriculaLogada();
-    if (matricula) {
+    if (matricula && this.ci) {
+      this.router.navigate(['/ci-listar-lancamento', matricula], {
+        queryParams: { destacar: this.ci.id }
+      });
+    } else if (matricula) {
       this.router.navigate(['/ci-listar-lancamento', matricula]);
     } else {
       this.router.navigate(['/login']);

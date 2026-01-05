@@ -94,8 +94,10 @@ export class CiVisualizarApuracaoComponent implements OnInit {
 
   voltar(): void {
     const matricula = this.funcionarioService.getMatriculaLogada();
-    if (matricula) {
-      this.router.navigate(['/ci-listar-apuracao', matricula]);
+    if (matricula && this.ci) {
+      this.router.navigate(['/ci-listar-apuracao', matricula], {
+        queryParams: { destacar: this.ci.id }
+      });
     } else {
       this.router.navigate(['/login']);
     }
