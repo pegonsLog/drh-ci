@@ -591,6 +591,11 @@
 @media print {
   @include print-layout;
 
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
   html, body {
     height: 210mm !important;
     width: 297mm !important;
@@ -599,15 +604,28 @@
     overflow: hidden !important;
   }
 
+  body {
+    max-height: 210mm !important;
+  }
+
   .ci-visualizar-container {
     min-height: 0 !important;
     height: 210mm !important;
+    max-height: 210mm !important;
     overflow: hidden !important;
+    page-break-after: avoid !important;
   }
 
   .ci-content-wrapper {
     height: 210mm !important;
+    max-height: 210mm !important;
     overflow: hidden !important;
+  }
+
+  .actions-and-forms-container {
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   * {
