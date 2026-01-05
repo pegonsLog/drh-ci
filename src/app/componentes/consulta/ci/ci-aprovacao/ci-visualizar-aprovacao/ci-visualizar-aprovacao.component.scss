@@ -120,6 +120,8 @@
   padding: 20px;
   min-height: 12cm;
   line-height: 1.6;
+  position: relative;
+  z-index: 2;
 }
 
 .form-body-wrapper {
@@ -134,6 +136,7 @@
   display: flex;
   gap: 15px;
   align-items: flex-start;
+  z-index: 1;
 }
 
 .stamp-wrapper {
