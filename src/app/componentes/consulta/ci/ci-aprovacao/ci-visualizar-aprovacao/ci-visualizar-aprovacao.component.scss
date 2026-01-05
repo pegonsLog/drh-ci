@@ -591,4 +591,29 @@
 
 @media print {
   @include print-layout;
+
+  html, body {
+    height: 210mm !important;
+    width: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .ci-visualizar-container {
+    min-height: 0 !important;
+    height: 210mm !important;
+    overflow: hidden !important;
+  }
+
+  .ci-content-wrapper {
+    height: 210mm !important;
+    overflow: hidden !important;
+  }
+
+  * {
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    page-break-inside: avoid !important;
+  }
 }
