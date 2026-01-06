@@ -1,5 +1,76 @@
 @import '../../../../componentes/consulta/ci/ci-user/ci-listar/ci-listar.component.scss';
 
+.filter-bar {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  max-width: 600px;
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--gray-400);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.875rem 3rem 0.875rem 3rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    font-size: 0.9375rem;
+    font-family: var(--font-family);
+    transition: all var(--transition);
+    background: white;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--gray-400);
+    }
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--gray-100);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.375rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      color: var(--gray-600);
+    }
+
+    &:hover {
+      background: var(--gray-200);
+    }
+  }
+}
+
 .user-info {
   display: flex;
   align-items: center;
@@ -63,5 +134,15 @@
   &.lancador {
     background: var(--teal-100);
     color: var(--teal-700);
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+  }
+
+  .search-box {
+    max-width: 100%;
   }
 }

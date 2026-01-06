@@ -40,13 +40,18 @@ export class FuncionarioService {
 
     return forkJoin([stringSearch$, numberSearch$]).pipe(
       map(([stringSnapshot, numberSnapshot]) => {
-        const querySnapshot = stringSnapshot?.size === 1 ? stringSnapshot : numberSnapshot;
+        const querySnapshot = stringSnapshot?.size >= 1 ? stringSnapshot : numberSnapshot;
 
-        if (!querySnapshot || querySnapshot.size !== 1) {
+        if (!querySnapshot || querySnapshot.size === 0) {
           return { success: false };
         }
 
-        const userDoc = querySnapshot.docs[0];
+        // Se houver múltiplos usuários, usa o mais recente (último documento)
+        if (querySnapshot.size > 1) {
+          console.warn('[LOGIN] AVISO: Múltiplos usuários encontrados com a mesma matrícula. Usando o mais recente.');
+        }
+
+        const userDoc = querySnapshot.docs[querySnapshot.docs.length - 1]; // Pega o último (mais recente)
         const userData = userDoc.data();
         const hashedPassword = userData['senha'];
 
@@ -54,15 +59,11 @@ export class FuncionarioService {
           return { success: false };
         }
 
-        // Tenta autenticar com a senha criptografada (padrão)
-        // DEBUG: Log para ver a senha armazenada
-
-
         // 1. Tenta autenticar com a senha criptografada (padrão)
         try {
           const isAuth = bcrypt.compareSync(senha, hashedPassword);
+          
           if (isAuth) {
-
             const perfil = userData['perfil'] || 'user';
             sessionStorage.setItem('matricula', matricula);
             sessionStorage.setItem('perfil', perfil);
@@ -70,18 +71,17 @@ export class FuncionarioService {
             return { success: true, matricula: matricula };
           }
         } catch (e) {
-            console.warn('[AUTH] Erro ao comparar hash. Provavelmente a senha armazenada não é um hash válido.', e);
+            console.warn('[LOGIN] Erro ao comparar hash. Provavelmente a senha armazenada não é um hash válido.', e);
         }
 
         // 2. LÓGICA DE MIGRAÇÃO: Se a autenticação falhar, verifica se a senha é texto plano
         if (hashedPassword === senha) {
-          console.warn(`[MIGRAÇÃO] Senha em texto plano detectada para o usuário ${matricula}. Atualizando para hash.`);
+          console.warn(`[LOGIN/MIGRAÇÃO] Senha em texto plano detectada para o usuário ${matricula}. Atualizando para hash.`);
           try {
             const salt = bcrypt.genSaltSync(10);
             const newHashedPassword = bcrypt.hashSync(senha, salt);
             const userDocRef = doc(this.firestore, 'funcionarios', userDoc.id);
             updateDoc(userDocRef, { senha: newHashedPassword }); // Atualiza em background
-
 
             const perfil = userData['perfil'] || 'user';
             sessionStorage.setItem('matricula', matricula);
@@ -89,16 +89,15 @@ export class FuncionarioService {
             this.perfilUsuario.next(perfil);
             return { success: true, matricula: matricula };
           } catch (e) {
-            console.error('[MIGRAÇÃO] Falha ao tentar criar hash e atualizar a senha.', e);
+            console.error('[LOGIN/MIGRAÇÃO] Falha ao tentar criar hash e atualizar a senha.', e);
             return { success: false }; // Impede o login se a migração falhar
           }
         }
 
-
         return { success: false };
       }),
       catchError(error => {
-        console.error('Erro ao autenticar funcionário:', error);
+        console.error('[LOGIN] Erro ao autenticar funcionário:', error);
         return of({ success: false });
       })
     );
@@ -219,30 +218,52 @@ export class FuncionarioService {
       return of(null);
     }
 
-    // 2. Valida a senha (obrigatória para novos funcionários)
-    const senha = funcionario.senha;
-    if (!senha) {
-      console.error('Erro: Senha não fornecida para o novo funcionário.');
-      return of(null);
-    }
-
-    // 3. Criptografa a senha
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(senha, salt);
-
-    // 4. Monta o objeto final com dados validados e tipados corretamente
-    const dataToSave = {
-      ...funcionario,
-      matricula: matriculaAsNumber,
-      senha: hashedPassword,
-    };
-
-    // 5. Salva no Firestore
+    // 2. Verifica se já existe um funcionário com essa matrícula
     const funcionariosCollectionRef = collection(this.firestore, 'funcionarios');
-    return from(addDoc(funcionariosCollectionRef, dataToSave)).pipe(
-      map(docRef => docRef.id),
+    const qCheck = query(funcionariosCollectionRef, where('matricula', '==', matriculaAsNumber));
+    
+    return from(getDocs(qCheck)).pipe(
+      switchMap(snapshot => {
+        if (snapshot.size > 0) {
+          console.error(`Erro: Já existe um funcionário com a matrícula ${matriculaAsNumber}`);
+          alert(`Erro: Já existe um funcionário cadastrado com a matrícula ${matriculaAsNumber}`);
+          return of(null);
+        }
+
+        // 3. Valida a senha (obrigatória para novos funcionários)
+        const senha = funcionario.senha;
+        if (!senha) {
+          console.error('Erro: Senha não fornecida para o novo funcionário.');
+          return of(null);
+        }
+
+        // 4. Criptografa a senha
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(senha, salt);
+
+        console.log('[ADD FUNCIONARIO] Senha criptografada. Hash:', hashedPassword.substring(0, 10) + '...');
+
+        // 5. Monta o objeto final com dados validados e tipados corretamente
+        const dataToSave = {
+          ...funcionario,
+          matricula: matriculaAsNumber,
+          senha: hashedPassword,
+        };
+
+        // 6. Salva no Firestore
+        return from(addDoc(funcionariosCollectionRef, dataToSave)).pipe(
+          map(docRef => {
+            console.log('[ADD FUNCIONARIO] Funcionário criado com sucesso. ID:', docRef.id);
+            return docRef.id;
+          }),
+          catchError(error => {
+            console.error('Erro ao adicionar funcionário:', error);
+            return of(null);
+          })
+        );
+      }),
       catchError(error => {
-        console.error('Erro ao adicionar funcionário:', error);
+        console.error('Erro ao verificar matrícula duplicada:', error);
         return of(null);
       })
     );
