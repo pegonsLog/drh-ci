@@ -32,6 +32,8 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy, AfterViewI
   // Filtros
   filtroFuncionario: string = '';
   filtroComunicacao: string = '';
+  todosCarregados: boolean = false;
+  allCis: ComunicacaoInterna[] = [];
 
   // Scroll infinito
   pageSize = 8;
@@ -167,7 +169,37 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   aplicarFiltros(): void {
-    let resultado = [...this.cis];
+    const temFiltro = this.filtroFuncionario.trim() || this.filtroComunicacao.trim();
+    
+    if (temFiltro && !this.todosCarregados && this.matricula) {
+      // Carregar todos os dados para filtrar
+      this.isLoading = true;
+      this.ciService.getCisParaAprovacao(this.matricula).subscribe({
+        next: (cis) => {
+          this.allCis = cis.map(ci => {
+            const data = ci.data as any;
+            if (data && typeof data.toDate === 'function') {
+              return { ...ci, data: data.toDate() };
+            }
+            return ci;
+          });
+          this.todosCarregados = true;
+          this.filtrarDados();
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Erro ao carregar todos os CIs:', err);
+          this.isLoading = false;
+        }
+      });
+    } else {
+      this.filtrarDados();
+    }
+  }
+
+  private filtrarDados(): void {
+    const temFiltro = this.filtroFuncionario.trim() || this.filtroComunicacao.trim();
+    let resultado = temFiltro ? [...this.allCis] : [...this.cis];
 
     if (this.filtroFuncionario.trim()) {
       const termo = this.filtroFuncionario.toLowerCase().trim();
@@ -193,7 +225,8 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy, AfterViewI
   limparFiltros(): void {
     this.filtroFuncionario = '';
     this.filtroComunicacao = '';
-    this.aplicarFiltros();
+    this.cisFiltrados = [...this.cis];
+    setTimeout(() => this.observeSentinel(), 100);
   }
 
   loadTotalCis(): void {
