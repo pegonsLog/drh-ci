@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
@@ -18,34 +18,66 @@ import { StatusFormatPipe } from '../../../../../pipes/status-format.pipe';
   templateUrl: './ci-listar-aprovacao.component.html',
   styleUrls: ['./ci-listar-aprovacao.component.scss']
 })
-export class CiListarAprovacaoComponent implements OnInit, OnDestroy {
+export class CiListarAprovacaoComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('scrollSentinel') scrollSentinel!: ElementRef;
+  @ViewChild('tableContainer') tableContainer!: ElementRef;
+  private intersectionObserver!: IntersectionObserver;
+
   cis: ComunicacaoInterna[] = [];
+  cisFiltrados: ComunicacaoInterna[] = [];
   matricula: string | null = null;
   perfil: string = '';
   private unsubscribe$ = new Subject<void>();
 
-  // Paginação no lado do servidor
-  pageSize = 10;
-  pageNumber = 1;
+  // Filtros
+  filtroFuncionario: string = '';
+  filtroComunicacao: string = '';
+
+  // Scroll infinito
+  pageSize = 8;
   isLoading = false;
   isLastPage = false;
-  firstDoc: DocumentSnapshot<DocumentData> | null = null;
   lastDoc: DocumentSnapshot<DocumentData> | null = null;
-  pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
   totalCis = 0;
   ciDestacadoId: string | null = null;
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect();
+    }
   }
 
   constructor(
     private ciService: CiService,
-    public funcionarioService: FuncionarioService, // Tornar público para uso no template
+    public funcionarioService: FuncionarioService,
     private router: Router,
     private route: ActivatedRoute
   ) { }
+
+  ngAfterViewInit(): void {
+    this.setupIntersectionObserver();
+  }
+
+  private setupIntersectionObserver(): void {
+    const options = {
+      root: this.tableContainer?.nativeElement || null,
+      threshold: 0.1
+    };
+    
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !this.isLoading && !this.isLastPage) {
+        this.loadMoreCis();
+      }
+    }, options);
+  }
+
+  private observeSentinel(): void {
+    if (this.scrollSentinel && this.intersectionObserver) {
+      this.intersectionObserver.observe(this.scrollSentinel.nativeElement);
+    }
+  }
 
   ngOnInit(): void {
     this.matricula = this.funcionarioService.getMatriculaLogada();
@@ -59,7 +91,7 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy {
       takeUntil(this.unsubscribe$)
     ).subscribe(perfil => {
       this.perfil = perfil;
-      this.loadCis('next');
+      this.loadCis();
       this.loadTotalCis();
     });
 
@@ -76,35 +108,24 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadCis(direction: 'next' | 'prev' = 'next'): void {
+  loadCis(): void {
     if (this.isLoading || !this.matricula || !this.perfil) return;
     this.isLoading = true;
 
-    let cursor: DocumentSnapshot<DocumentData> | null | undefined = null;
-    if (direction === 'next') {
-      cursor = this.lastDoc;
-    } else {
-      cursor = this.pageCursors[this.pageNumber];
-    }
-
-    this.ciService.getCisParaAprovacaoPaginado(this.matricula, this.perfil, this.pageSize, direction, cursor ?? undefined).subscribe({
+    this.ciService.getCisParaAprovacaoPaginado(this.matricula, this.perfil, this.pageSize, 'next', undefined).subscribe({
       next: (result) => {
-        if (result.cis.length > 0) {
-          this.cis = result.cis.map((ci: ComunicacaoInterna) => {
-            const data = ci.data as any;
-            if (data && typeof data.toDate === 'function') {
-              return { ...ci, data: data.toDate() };
-            }
-            return ci;
-          });
-
-          this.firstDoc = result.firstDoc;
-          this.lastDoc = result.lastDoc;
-
-          if (direction === 'next' && this.lastDoc) {
-            this.pageCursors[this.pageNumber + 1] = result.firstDoc;
+        this.cis = result.cis.map((ci: ComunicacaoInterna) => {
+          const data = ci.data as any;
+          if (data && typeof data.toDate === 'function') {
+            return { ...ci, data: data.toDate() };
           }
-        } else if (direction === 'next') {
+          return ci;
+        });
+
+        this.lastDoc = result.lastDoc;
+        this.aplicarFiltros();
+        
+        if (result.cis.length < this.pageSize) {
           this.isLastPage = true;
         }
         this.isLoading = false;
@@ -116,19 +137,63 @@ export class CiListarAprovacaoComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadMoreCis(): void {
+    if (this.isLoading || this.isLastPage || !this.lastDoc || !this.matricula || !this.perfil) return;
+    this.isLoading = true;
 
-
-  nextPage(): void {
-    if (this.isLastPage || !this.lastDoc) return;
-    this.pageNumber++;
-    this.loadCis('next');
+    this.ciService.getCisParaAprovacaoPaginado(this.matricula, this.perfil, this.pageSize, 'next', this.lastDoc).subscribe({
+      next: (result) => {
+        const newCis = result.cis.map((ci: ComunicacaoInterna) => {
+          const data = ci.data as any;
+          if (data && typeof data.toDate === 'function') {
+            return { ...ci, data: data.toDate() };
+          }
+          return ci;
+        });
+        this.cis = [...this.cis, ...newCis];
+        this.lastDoc = result.lastDoc;
+        this.aplicarFiltros();
+        
+        if (result.cis.length < this.pageSize) {
+          this.isLastPage = true;
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Falha ao carregar mais CIs para aprovação:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  previousPage(): void {
-    if (this.pageNumber <= 1) return;
-    this.pageNumber--;
-    this.isLastPage = false;
-    this.loadCis('prev');
+  aplicarFiltros(): void {
+    let resultado = [...this.cis];
+
+    if (this.filtroFuncionario.trim()) {
+      const termo = this.filtroFuncionario.toLowerCase().trim();
+      resultado = resultado.filter(ci => 
+        ci.de?.toLowerCase().includes(termo) || 
+        ci.para?.toLowerCase().includes(termo)
+      );
+    }
+
+    if (this.filtroComunicacao.trim()) {
+      const termo = this.filtroComunicacao.toLowerCase().trim();
+      resultado = resultado.filter(ci => 
+        ci.comunicacao?.toLowerCase().includes(termo)
+      );
+    }
+
+    this.cisFiltrados = resultado;
+    
+    // Re-observar o sentinel após atualizar a lista
+    setTimeout(() => this.observeSentinel(), 100);
+  }
+
+  limparFiltros(): void {
+    this.filtroFuncionario = '';
+    this.filtroComunicacao = '';
+    this.aplicarFiltros();
   }
 
   loadTotalCis(): void {

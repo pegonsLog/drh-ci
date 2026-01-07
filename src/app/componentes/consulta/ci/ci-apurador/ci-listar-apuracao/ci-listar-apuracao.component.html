@@ -26,8 +26,29 @@
   </div>
 
   <div class="page-content">
-    <div *ngIf="!isLoading; else loading">
-      <div *ngIf="cis.length > 0; else noCis" class="table-container">
+    <!-- Filtros -->
+    <div class="filters-container">
+      <div class="filter-group">
+        <label for="filtroFuncionario">Funcionário (De/Para)</label>
+        <input type="text" id="filtroFuncionario" [(ngModel)]="filtroFuncionario" 
+          (ngModelChange)="aplicarFiltros()" placeholder="Buscar por nome...">
+      </div>
+      <div class="filter-group">
+        <label for="filtroComunicacao">Comunicação</label>
+        <input type="text" id="filtroComunicacao" [(ngModel)]="filtroComunicacao" 
+          (ngModelChange)="aplicarFiltros()" placeholder="Buscar no texto...">
+      </div>
+      <button class="btn btn-secondary btn-clear" (click)="limparFiltros()" 
+        *ngIf="filtroFuncionario || filtroComunicacao">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+        Limpar
+      </button>
+    </div>
+
+    <div *ngIf="!isLoading || cis.length > 0; else loading">
+      <div *ngIf="cisFiltrados.length > 0; else noCis" class="table-container" #tableContainer>
         <table>
           <thead>
             <tr>
@@ -42,7 +63,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let ci of cis" [id]="'ci-row-' + ci.id" [class.highlighted]="ci.id === ciDestacadoId">
+            <tr *ngFor="let ci of cisFiltrados" [id]="'ci-row-' + ci.id" [class.highlighted]="ci.id === ciDestacadoId">
               <td>
                 <ng-container *ngIf="ci.data.getTime; else rawData">
                   {{ ci.data | date:'dd/MM/yy' }}
@@ -100,24 +121,13 @@
             </tr>
           </tbody>
         </table>
-      </div>
-
-      <div class="pagination-controls" *ngIf="cis.length > 0">
-        <button (click)="previousPage()" [disabled]="pageNumber === 1 || isLoading" class="btn btn-secondary">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-          </svg>
-          Anterior
-        </button>
-        <span class="page-info">Página {{ pageNumber }}</span>
-        <button (click)="nextPage()" [disabled]="isLastPage || isLoading" class="btn btn-secondary">
-          Próximo
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-          </svg>
-        </button>
+        <!-- Sentinel para scroll infinito -->
+        <div #scrollSentinel class="scroll-sentinel" *ngIf="!isLastPage">
+          <div *ngIf="isLoading" class="loading-more">
+            <div class="spinner-small"></div>
+            <span>Carregando mais...</span>
+          </div>
+        </div>
       </div>
 
       <ng-template #noCis>

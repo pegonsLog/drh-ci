@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { CiService, ComunicacaoInterna } from '../../../../../services/ci.service';
@@ -18,20 +18,26 @@ import { filter, takeUntil } from 'rxjs/operators';
   templateUrl: './ci-listar-apuracao.component.html',
   styleUrls: ['./ci-listar-apuracao.component.scss']
 })
-export class CiListarApuracaoComponent implements OnInit, OnDestroy {
+export class CiListarApuracaoComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('scrollSentinel') scrollSentinel!: ElementRef;
+  @ViewChild('tableContainer') tableContainer!: ElementRef;
+  private intersectionObserver!: IntersectionObserver;
+  
   cis: ComunicacaoInterna[] = [];
+  cisFiltrados: ComunicacaoInterna[] = [];
   matriculaLogada: string | null = null;
   perfilUsuario: string | null = null;
   private unsubscribe$ = new Subject<void>();
 
-  // Paginação
-  pageSize = 10;
-  firstDoc: DocumentSnapshot<DocumentData> | null = null;
+  // Filtros
+  filtroFuncionario: string = '';
+  filtroComunicacao: string = '';
+
+  // Scroll infinito
+  pageSize = 8;
   lastDoc: DocumentSnapshot<DocumentData> | null = null;
-  pageNumber = 1;
   isLoading = false;
   isLastPage = false;
-  pageCursors: { [page: number]: DocumentSnapshot<DocumentData> | null } = { 1: null };
   totalCis = 0;
 
   mostrarModalExclusao = false;
@@ -41,6 +47,9 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect();
+    }
   }
 
   constructor(
@@ -49,6 +58,29 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute
   ) { }
+
+  ngAfterViewInit(): void {
+    this.setupIntersectionObserver();
+  }
+
+  private setupIntersectionObserver(): void {
+    const options = {
+      root: this.tableContainer?.nativeElement || null,
+      threshold: 0.1
+    };
+    
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !this.isLoading && !this.isLastPage) {
+        this.loadMoreCis();
+      }
+    }, options);
+  }
+
+  private observeSentinel(): void {
+    if (this.scrollSentinel && this.intersectionObserver) {
+      this.intersectionObserver.observe(this.scrollSentinel.nativeElement);
+    }
+  }
 
   ngOnInit(): void {
     this.matriculaLogada = this.funcionarioService.getMatriculaLogada();
@@ -71,45 +103,30 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
       }
     });
     
-    this.loadCis('next');
+    this.loadCis();
     this.loadTotalCis();
   }
 
-  loadCis(direction: 'next' | 'prev', fromStart: boolean = false): void {
+  loadCis(): void {
     if (this.isLoading) {
       return;
     }
     this.isLoading = true;
 
-    let cursor: DocumentSnapshot<DocumentData> | null | undefined = null;
-    if (fromStart) {
-      this.pageNumber = 1;
-      this.pageCursors = { 1: null };
-      this.isLastPage = false;
-    } else if (direction === 'next') {
-      cursor = this.lastDoc;
-    } else {
-      cursor = this.pageCursors[this.pageNumber];
-    }
-
-    this.ciService.getCisParaApuracaoPaginado(this.pageSize, direction, cursor ?? undefined).subscribe({
+    this.ciService.getCisParaApuracaoPaginado(this.pageSize, 'next', undefined).subscribe({
       next: result => {
-        if (result.cis.length > 0) {
-          this.cis = result.cis.map(ci => {
-            const data = ci.data as any;
-            if (data && typeof data.toDate === 'function') {
-              return { ...ci, data: data.toDate() };
-            }
-            return ci;
-          });
-
-          this.firstDoc = result.firstDoc;
-          this.lastDoc = result.lastDoc;
-
-          if (direction === 'next' && this.lastDoc) {
-            this.pageCursors[this.pageNumber + 1] = result.firstDoc;
+        this.cis = result.cis.map(ci => {
+          const data = ci.data as any;
+          if (data && typeof data.toDate === 'function') {
+            return { ...ci, data: data.toDate() };
           }
-        } else if (direction === 'next') {
+          return ci;
+        });
+
+        this.lastDoc = result.lastDoc;
+        this.aplicarFiltros();
+        
+        if (result.cis.length < this.pageSize) {
           this.isLastPage = true;
         }
         this.isLoading = false;
@@ -121,17 +138,63 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
     });
   }
 
-  nextPage(): void {
-    if (this.isLastPage || !this.lastDoc) return;
-    this.pageNumber++;
-    this.loadCis('next');
+  loadMoreCis(): void {
+    if (this.isLoading || this.isLastPage || !this.lastDoc) return;
+    this.isLoading = true;
+
+    this.ciService.getCisParaApuracaoPaginado(this.pageSize, 'next', this.lastDoc).subscribe({
+      next: result => {
+        const newCis = result.cis.map(ci => {
+          const data = ci.data as any;
+          if (data && typeof data.toDate === 'function') {
+            return { ...ci, data: data.toDate() };
+          }
+          return ci;
+        });
+        this.cis = [...this.cis, ...newCis];
+        this.lastDoc = result.lastDoc;
+        this.aplicarFiltros();
+        
+        if (result.cis.length < this.pageSize) {
+          this.isLastPage = true;
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Falha ao carregar mais CIs para apuração:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  previousPage(): void {
-    if (this.pageNumber <= 1) return;
-    this.pageNumber--;
-    this.isLastPage = false;
-    this.loadCis('prev');
+  aplicarFiltros(): void {
+    let resultado = [...this.cis];
+
+    if (this.filtroFuncionario.trim()) {
+      const termo = this.filtroFuncionario.toLowerCase().trim();
+      resultado = resultado.filter(ci => 
+        ci.de?.toLowerCase().includes(termo) || 
+        ci.para?.toLowerCase().includes(termo)
+      );
+    }
+
+    if (this.filtroComunicacao.trim()) {
+      const termo = this.filtroComunicacao.toLowerCase().trim();
+      resultado = resultado.filter(ci => 
+        ci.comunicacao?.toLowerCase().includes(termo)
+      );
+    }
+
+    this.cisFiltrados = resultado;
+    
+    // Re-observar o sentinel após atualizar a lista
+    setTimeout(() => this.observeSentinel(), 100);
+  }
+
+  limparFiltros(): void {
+    this.filtroFuncionario = '';
+    this.filtroComunicacao = '';
+    this.aplicarFiltros();
   }
 
   loadTotalCis(): void {
@@ -156,12 +219,6 @@ export class CiListarApuracaoComponent implements OnInit, OnDestroy {
       this.ciService.deleteCi(idParaExcluir)
         .then(() => {
           this.cis = this.cis.filter(ci => ci.id !== idParaExcluir);
-
-          // Se a página atual ficar vazia após a exclusão e não for a primeira página,
-          // carrega a página anterior.
-          if (this.cis.length === 0 && this.pageNumber > 1) {
-            this.previousPage();
-          }
         })
         .catch(err => {
           console.error('Erro ao excluir CI:', err);
